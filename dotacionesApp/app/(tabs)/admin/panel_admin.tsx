@@ -2,21 +2,36 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 
+const opciones = [
+  { icon: '🏠', label: 'Inicio',        ruta: '/admin/panel_admin' },
+  { icon: '👥', label: 'Usuarios',      ruta: '/admin/Usuarios' },
+  { icon: '👕', label: 'Productos',     ruta: '/admin/productos' },
+  { icon: '📋', label: 'Ver Pedidos',   ruta: '/admin/pedidos' },
+  { icon: '📦', label: 'Inventario',    ruta: '/admin/inventario' },
+  { icon: '↩️', label: 'Devoluciones',  ruta: '/admin/devoluciones' },
+];
+
 export default function PanelAdmin() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Panel Administrador</Text>
-      <Text style={styles.subtitle}>Bienvenido, tienes acceso total al sistema</Text>
+      <Text style={styles.title}>Bienvenido Administrador</Text>
+      <Text style={styles.subtitle}>Tienes acceso total al sistema</Text>
 
       <View style={styles.grid}>
-        <View style={styles.card}><Text style={styles.cardIcon}>👥</Text><Text style={styles.cardText}>Usuarios</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>📦</Text><Text style={styles.cardText}>Inventario</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>📊</Text><Text style={styles.cardText}>Reportes</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>⚙️</Text><Text style={styles.cardText}>Configuración</Text></View>
+        {opciones.map((op) => (
+          <TouchableOpacity
+            key={op.label}
+            style={styles.card}
+            onPress={() => router.push(op.ruta as any)}
+          >
+            <Text style={styles.cardIcon}>{op.icon}</Text>
+            <Text style={styles.cardText}>{op.label}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
-        <Text style={styles.btnSalirText}>Cerrar sesión</Text>
+        <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
       </TouchableOpacity>
     </ScrollView>
   );

@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios, { isAxiosError } from 'axios';
 
-const API_URL = 'http://172.30.4.54/dotaciones-toronto-master/api/login.php';
+const API_URL = 'http://192.168.137.121/dota/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -23,14 +23,14 @@ export default function LoginScreen() {
       setCargando(true);
       setMensaje('');
       const res = await axios.post(
-        API_URL,
+      API_URL, 
         { username: username.trim(), password: password.trim() },
         { headers: { 'Content-Type': 'application/json' }, timeout: 5000 }
       );
       if (res.data?.success === true) {
         setMensaje('✅ Login correcto');
         const rol = res.data.rol?.toLowerCase();
-        if (rol === 'administrador') router.replace('/panel_admin');
+        if (rol === 'administrador') router.replace('/admin/panel_admin');
         else if (rol === 'bodeguero')    router.replace('/panel_bodeguero');
         else if (rol === 'vendedor')     router.replace('/panel_vendedor');
         else if (rol === 'cliente')      router.replace('/panel_cliente');

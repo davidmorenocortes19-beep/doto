@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.4.54/dotaciones-toronto-master/api/registro.php';
+const API_URL = 'http://192.168.137.121/dota/api/registro.php';
 
 const validarPassword = (pass: string): string | null => {
   if (pass.length < 8) return '⚠ Mínimo 8 caracteres';
@@ -18,18 +18,63 @@ const validarPassword = (pass: string): string | null => {
 };
 
 export default function RegistroScreen() {
-  const [nombre,    setNombre]    = useState('');
-  const [documento, setDocumento] = useState('');
-  const [correo,    setCorreo]    = useState('');
-  const [telefono,  setTelefono]  = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [password,  setPassword]  = useState('');
-  const [passError, setPassError] = useState('');
-  const [rol,       setRol]       = useState('Cliente');
-  const [mensaje,   setMensaje]   = useState('');
-  const [cargando,  setCargando]  = useState(false);
+  const [nombre,       setNombre]       = useState('');
+  const [nombreError,  setNombreError]  = useState('');
+  const [documento,    setDocumento]    = useState('');
+  const [docError,     setDocError]     = useState('');
+  const [correo,       setCorreo]       = useState('');
+  const [telefono,     setTelefono]     = useState('');
+  const [telError,     setTelError]     = useState('');
+  const [direccion,    setDireccion]    = useState('');
+  const [password,     setPassword]     = useState('');
+  const [passError,    setPassError]    = useState('');
+  const [rol,          setRol]          = useState('Cliente');
+  const [mensaje,      setMensaje]      = useState('');
+  const [cargando,     setCargando]     = useState(false);
 
   const roles = ['Administrador', 'Cliente', 'Vendedor', 'Bodeguero'];
+
+  const handleNombre = (text: string) => {
+    const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    setNombre(limpio);
+    if (text !== limpio) {
+      setNombreError('⚠ Solo se permiten letras y espacios');
+    } else if (limpio.trim().length > 0 && limpio.trim().length < 3) {
+      setNombreError('⚠ Mínimo 3 caracteres');
+    } else if (limpio.trim().length >= 3) {
+      setNombreError('');
+    } else {
+      setNombreError('');
+    }
+  };
+
+  const handleDocumento = (text: string) => {
+    const limpio = text.replace(/[^0-9]/g, '');
+    setDocumento(limpio);
+    if (text !== limpio) {
+      setDocError('⚠ Solo se permiten números');
+    } else if (limpio.length > 0 && limpio.length < 5) {
+      setDocError('⚠ Mínimo 5 dígitos');
+    } else if (limpio.length >= 5) {
+      setDocError('');
+    } else {
+      setDocError('');
+    }
+  };
+
+  const handleTelefono = (text: string) => {
+    const limpio = text.replace(/[^0-9]/g, '');
+    setTelefono(limpio);
+    if (text !== limpio) {
+      setTelError('⚠ Solo se permiten números');
+    } else if (limpio.length > 0 && limpio.length < 7) {
+      setTelError('⚠ Mínimo 7 dígitos');
+    } else if (limpio.length >= 7) {
+      setTelError('');
+    } else {
+      setTelError('');
+    }
+  };
 
   const handlePassword = (text: string) => {
     setPassword(text);
@@ -43,6 +88,10 @@ export default function RegistroScreen() {
     }
     if (!correo.includes('@') || !correo.includes('.')) {
       setMensaje('⚠ Ingresa un correo válido');
+      return;
+    }
+    if (nombreError || docError || telError) {
+      setMensaje('⚠ Corrige los errores antes de continuar');
       return;
     }
     const errorPass = validarPassword(password);
@@ -62,8 +111,17 @@ export default function RegistroScreen() {
       } else {
         setMensaje('❌ ' + res.data.mensaje);
       }
-    } catch {
-      setMensaje('⚠ Error de conexión con el servidor');
+    } catch (error: any) {
+      if (error.code === 'ECONNABORTED') {
+        setMensaje('⚠ Tiempo de espera agotado (timeout). Verifica que el servidor esté activo');
+      } else if (error.response) {
+        setMensaje('❌ Error del servidor: ' + error.response.status + ' - ' + (error.response.data?.mensaje ?? 'Sin detalle'));
+      } else if (error.request) {
+        setMensaje('⚠ Sin respuesta del servidor. Verifica la IP y que Apache esté activo');
+      } else {
+        setMensaje('⚠ Error inesperado: ' + error.message);
+      }
+      console.log('🔴 ERROR COMPLETO:', JSON.stringify(error, null, 2));
     } finally {
       setCargando(false);
     }
@@ -81,16 +139,44 @@ export default function RegistroScreen() {
           <Text style={styles.subtitle}>Crear cuenta</Text>
 
           <TextInput placeholder="Nombre completo" placeholderTextColor="#999"
-            style={styles.input} onChangeText={setNombre} value={nombre} />
+            style={[styles.input, nombreError ? styles.inputError : null]}
+            onChangeText={handleNombre}
+            value={nombre}
+            autoCorrect={false}
+          />
+          {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+          {nombre.trim().length >= 3 && nombreError === '' && (
+            <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+          )}
+
           <TextInput placeholder="Documento" placeholderTextColor="#999"
-            style={styles.input} keyboardType="numeric"
-            onChangeText={setDocumento} value={documento} />
+            style={[styles.input, docError ? styles.inputError : null]}
+            keyboardType="numeric"
+            onChangeText={handleDocumento}
+            value={documento}
+            maxLength={15}
+          />
+          {docError !== '' && <Text style={styles.fieldHint}>{docError}</Text>}
+          {documento.length >= 5 && docError === '' && (
+            <Text style={styles.fieldOk}>✅ Documento válido</Text>
+          )}
+
           <TextInput placeholder="Correo electrónico" placeholderTextColor="#999"
             style={styles.input} keyboardType="email-address"
             autoCapitalize="none" onChangeText={setCorreo} value={correo} />
+
           <TextInput placeholder="Teléfono" placeholderTextColor="#999"
-            style={styles.input} keyboardType="phone-pad"
-            onChangeText={setTelefono} value={telefono} />
+            style={[styles.input, telError ? styles.inputError : null]}
+            keyboardType="phone-pad"
+            onChangeText={handleTelefono}
+            value={telefono}
+            maxLength={10}
+          />
+          {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
+          {telefono.length >= 7 && telError === '' && (
+            <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
+          )}
+
           <TextInput placeholder="Dirección" placeholderTextColor="#999"
             style={styles.input} onChangeText={setDireccion} value={direccion} />
 
@@ -102,9 +188,9 @@ export default function RegistroScreen() {
             onChangeText={handlePassword}
             value={password}
           />
-          {passError !== '' && <Text style={styles.passHint}>{passError}</Text>}
+          {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
           {password !== '' && passError === '' && (
-            <Text style={styles.passOk}>✅ Contraseña segura</Text>
+            <Text style={styles.fieldOk}>✅ Contraseña segura</Text>
           )}
 
           <Text style={styles.label}>Selecciona tu rol:</Text>
@@ -146,9 +232,11 @@ const styles = StyleSheet.create({
   scroll:         { flexGrow: 1 },
   container:      { flex: 1, justifyContent: 'center', padding: 30, backgroundColor: 'rgba(9,8,13,0.75)' },
   title:          { fontSize: 26, textAlign: 'center', marginBottom: 4, fontWeight: 'bold', color: '#B7975B' },
-  subtitle:       { fontSize: 15, textAlign: 'center', color: '#ccc', marginBottom: 24 },
+  subtitle:       { fontSize: 15, textAlign: 'center', color: '#B7975B', marginBottom: 24 },
   input:          { backgroundColor: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#ccc', fontSize: 15 },
   inputError:     { borderColor: '#e74c3c', marginBottom: 0 },
+  fieldHint:      { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:        { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
   passHint:       { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
   passOk:         { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
   label:          { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#B7975B' },
