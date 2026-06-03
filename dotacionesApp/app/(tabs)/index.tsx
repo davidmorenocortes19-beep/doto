@@ -5,8 +5,9 @@ import {
   KeyboardAvoidingView, Platform, ActivityIndicator, ImageBackground,
 } from 'react-native';
 import axios, { isAxiosError } from 'axios';
+import { sesion } from '../../constants/sesion';
 
-const API_URL = 'http://192.168.137.121/dota/api/login.php';
+const API_URL = 'http://172.30.3.242/dota/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -23,17 +24,28 @@ export default function LoginScreen() {
       setCargando(true);
       setMensaje('');
       const res = await axios.post(
-      API_URL, 
+        API_URL,
         { username: username.trim(), password: password.trim() },
         { headers: { 'Content-Type': 'application/json' }, timeout: 5000 }
       );
+
       if (res.data?.success === true) {
         setMensaje('✅ Login correcto');
-        const rol = res.data.rol?.toLowerCase();
-        if (rol === 'administrador') router.replace('/admin/panel_admin');
-        else if (rol === 'bodeguero')    router.replace('/panel_bodeguero');
-        else if (rol === 'vendedor')     router.replace('/panel_vendedor');
-        else if (rol === 'cliente')      router.replace('/panel_cliente');
+
+        const { nombre, rol, correo, id } = res.data.usuario;
+
+        // ✅ Guardar en variable global
+        sesion.nombre = nombre;
+        sesion.rol    = rol;
+        sesion.correo = correo;
+        sesion.id     = id;
+
+        const rol_lower = res.data.rol?.toLowerCase();
+
+        if (rol_lower === 'administrador') router.replace('/admin/panel_admin');
+        else if (rol_lower === 'bodeguero') router.replace('/bodeguero/panel_bodeguero');
+        else if (rol_lower === 'vendedor')  router.replace('/vendedor/panel_vendedor');
+        else if (rol_lower === 'cliente')   router.replace('/cliente/panel_cliente');
       } else {
         setMensaje('❌ ' + (res.data?.mensaje || 'Credenciales incorrectas'));
       }
@@ -62,7 +74,7 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
 
         <TextInput
-          placeholder="Usuario o correo"
+          placeholder="Correo electrónico"
           placeholderTextColor="#999"
           style={styles.input}
           onChangeText={setUsername}

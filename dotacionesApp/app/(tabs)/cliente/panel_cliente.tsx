@@ -1,22 +1,39 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { router } from 'expo-router';
+import { sesion } from '../../../constants/sesion';
 
-export default function PanelVendedor() {
+const opciones = [
+  { icon: '🏠', label: 'Inicio',       ruta: '/cliente/panel_cliente' },
+  { icon: '👤', label: 'Perfil',       ruta: '/cliente/perfil' },
+  { icon: '👕', label: 'Productos',    ruta: '/cliente/productos' },
+  { icon: '📋', label: 'Ver Pedidos',  ruta: '/cliente/pedidos' },
+  { icon: '🏢', label: 'Nosotros',     ruta: '/cliente/nosotros' },
+];
+
+export default function PanelCliente() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Panel Vendedor</Text>
-      <Text style={styles.subtitle}>Gestiona tus ventas y clientes</Text>
+      <Text style={styles.title}>
+        Bienvenido {sesion.rol}, {sesion.nombre}
+      </Text>
+      <Text style={styles.subtitle}>Consulta tus pedidos y productos</Text>
 
       <View style={styles.grid}>
-        <View style={styles.card}><Text style={styles.cardIcon}>💰</Text><Text style={styles.cardText}>Mis Ventas</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>👥</Text><Text style={styles.cardText}>Clientes</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>📈</Text><Text style={styles.cardText}>Estadísticas</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>🧾</Text><Text style={styles.cardText}>Cotizaciones</Text></View>
+        {opciones.map((op) => (
+          <TouchableOpacity
+            key={op.label}
+            style={styles.card}
+            onPress={() => router.push(op.ruta as any)}
+          >
+            <Text style={styles.cardIcon}>{op.icon}</Text>
+            <Text style={styles.cardText}>{op.label}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
-        <Text style={styles.btnSalirText}>Cerrar sesión</Text>
+        <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
       </TouchableOpacity>
     </ScrollView>
   );

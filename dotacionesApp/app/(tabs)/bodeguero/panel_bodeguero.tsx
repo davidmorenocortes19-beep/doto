@@ -1,22 +1,33 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { router } from 'expo-router';
+import { sesion } from '../../../constants/sesion';
 
-export default function PanelCliente() {
+export default function PanelBodeguero() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Panel Cliente</Text>
-      <Text style={styles.subtitle}>Consulta tus pedidos y productos</Text>
+      <Text style={styles.title}>
+        Bienvenido {sesion.rol}, {sesion.nombre}
+      </Text>
+      <Text style={styles.subtitle}>Gestión de inventario y despachos</Text>
 
       <View style={styles.grid}>
-        <View style={styles.card}><Text style={styles.cardIcon}>🛍️</Text><Text style={styles.cardText}>Mis Pedidos</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>👕</Text><Text style={styles.cardText}>Catálogo</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>📍</Text><Text style={styles.cardText}>Seguimiento</Text></View>
-        <View style={styles.card}><Text style={styles.cardIcon}>👤</Text><Text style={styles.cardText}>Mi Perfil</Text></View>
+        <TouchableOpacity style={styles.card} onPress={() => router.push('/bodeguero/inicio' as any)}>
+          <Text style={styles.cardIcon}>✅</Text>
+          <Text style={styles.cardText}>Inicio</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.card} onPress={() => router.push('/bodeguero/perfil' as any)}>
+          <Text style={styles.cardIcon}>🧑</Text>
+          <Text style={styles.cardText}>Perfil</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.card} onPress={() => router.push('/bodeguero/inventario' as any)}>
+          <Text style={styles.cardIcon}>🚚</Text>
+          <Text style={styles.cardText}>Inventario</Text>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
-        <Text style={styles.btnSalirText}>Cerrar sesión</Text>
+        <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
       </TouchableOpacity>
     </ScrollView>
   );

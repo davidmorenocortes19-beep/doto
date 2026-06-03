@@ -4,21 +4,20 @@ import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
 const opciones = [
-  { icon: '🏠', label: 'Inicio',       ruta: '/admin/panel_admin' },
-  { icon: '👥', label: 'Usuarios',     ruta: '/admin/Usuarios' },
-  { icon: '👕', label: 'Productos',    ruta: '/admin/productos' },
-  { icon: '📋', label: 'Ver Pedidos',  ruta: '/admin/pedidos' },
-  { icon: '📦', label: 'Inventario',   ruta: '/admin/inventario' },
-  { icon: '↩️', label: 'Devoluciones', ruta: '/admin/devoluciones' },
+  { icon: '🏠', label: 'Inicio',       ruta: '/vendedor/panel_vendedor' },
+  { icon: '👤', label: 'Perfil',       ruta: '/vendedor/perfil_vendedor' },
+  { icon: '📋', label: 'Ver Pedidos',  ruta: '/vendedor/pedidos_vendedor' },
+  { icon: '💰', label: 'Ver Ventas',   ruta: '/vendedor/ver_ventas' },
+  { icon: '↩️', label: 'Devoluciones', ruta: '/vendedor/devoluciones' },
 ];
 
-export default function PanelAdmin() {
+export default function PanelVendedor() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
         Bienvenido {sesion.rol}, {sesion.nombre}
       </Text>
-      <Text style={styles.subtitle}>Tienes acceso total al sistema</Text>
+      <Text style={styles.subtitle}>Tienes acceso al panel de ventas</Text>
 
       <View style={styles.grid}>
         {opciones.map((op) => (
@@ -42,7 +41,7 @@ export default function PanelAdmin() {
 
 const styles = StyleSheet.create({
   container:    { flexGrow: 1, padding: 24, backgroundColor: '#09080D' },
-  title:        { fontSize: 24, fontWeight: 'bold', color: '#B7975B', textAlign: 'center', marginTop: 40, marginBottom: 6 },
+  title:        { fontSize: 24, fontWeight: 'bold', color: '#B7975B', textAlign: 'center', marginTop: 40, marginBottom: 4 },
   subtitle:     { fontSize: 14, color: '#aaa', textAlign: 'center', marginBottom: 32 },
   grid:         { flexDirection: 'row', flexWrap: 'wrap', gap: 16, justifyContent: 'center' },
   card:         { width: '44%', backgroundColor: '#1a1a2e', borderRadius: 12, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: '#B7975B' },

@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.137.121/dota/api/registro.php';
+const API_URL = 'http://172.30.3.242/dota/api/registro.php';
 
 const validarPassword = (pass: string): string | null => {
   if (pass.length < 8) return '⚠ Mínimo 8 caracteres';
@@ -136,7 +136,7 @@ export default function RegistroScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.container}>
           <Text style={styles.title}>Dotaciones Toronto</Text>
-          <Text style={styles.subtitle}>Crear cuenta</Text>
+          <Text style={styles.subtitle}>Crea tu cuenta Aqui!</Text>
 
           <TextInput placeholder="Nombre completo" placeholderTextColor="#999"
             style={[styles.input, nombreError ? styles.inputError : null]}
