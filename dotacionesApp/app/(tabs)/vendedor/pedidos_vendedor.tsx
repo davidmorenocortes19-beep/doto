@@ -202,7 +202,7 @@ export default function PedidosCliente() {
             { label: 'Inicio', icon: '🏠', route: '/vendedor/panel_vendedor' },
             { label: 'Pedidos', icon: '📋', active: true },
             { label: 'Devol.', icon: '↩️', route: '/vendedor/devoluciones' },
-            { label: 'Perfil', icon: '👤', route: '/vendedor/perfil' },
+            { label: 'Perfil', icon: '👤', route: '/vendedor/perfil_vendedor' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}

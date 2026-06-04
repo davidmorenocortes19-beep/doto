@@ -235,9 +235,9 @@ export default function VerVentasScreen() {
         <View style={styles.bottomNav}>
           {[
             { label: 'Inicio',  icon: '🏠', route: '/vendedor/panel_vendedor' },
-            { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos' },
+            { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
             { label: 'Ventas',  icon: '💰', active: true },
-            { label: 'Perfil',  icon: '👤', route: '/vendedor/perfil' },
+            { label: 'Perfil',  icon: '👤', route: '/vendedor/perfil_vendedor' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}

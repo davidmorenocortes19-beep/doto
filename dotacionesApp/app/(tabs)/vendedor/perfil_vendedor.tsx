@@ -109,7 +109,7 @@ export default function PerfilVendedor() {
 
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')}>
               <Text style={styles.backBtn}>←</Text>
             </TouchableOpacity>
             <View style={styles.logoArea}>
