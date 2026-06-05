@@ -4,7 +4,7 @@ import {
   StyleSheet, ScrollView, Alert, FlatList,
 } from 'react-native';
 
-// ── Tipos ─────────────────────────────────────────────────────────────────────
+
 type Producto = {
   codigo: string;
   nombre: string;
@@ -26,7 +26,7 @@ type Movimiento = {
 
 type TabName = 'dashboard' | 'productos' | 'movimientos' | 'inventario' | 'buscar';
 
-// ── Datos mock ────────────────────────────────────────────────────────────────
+
 const UNIDADES = ['Unidad', 'Par', 'Caja', 'Metro', 'Kg'];
 const GRUPOS   = ['Dotación', 'Calzado', 'Protección', 'Herramientas', 'Accesorios'];
 
@@ -44,7 +44,7 @@ const movimientosIniciales: Movimiento[] = [
   { id: 3, codigo: 'BOT003', producto: 'Bota de Seguridad',   fecha: '2024-01-17', tipo: 'SALIDA',   cantidad: 10, observaciones: 'Entrega empleados' },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function getEstado(p: Producto): { label: string; color: string } {
   if (p.stockActual <= 0)                              return { label: 'Sin Stock',  color: '#dc3545' };
   if (p.stockActual <= p.stockMin && p.stockMin > 0)  return { label: 'Stock Bajo', color: '#ffc107' };
@@ -55,34 +55,33 @@ function fechaHoy(): string {
   return new Date().toISOString().split('T')[0];
 }
 
-// ── Componente principal ──────────────────────────────────────────────────────
 export default function InventarioBodeguero() {
   const [tabActiva, setTabActiva]       = useState<TabName>('dashboard');
   const [productos, setProductos]       = useState<Producto[]>(productosIniciales);
   const [movimientos, setMovimientos]   = useState<Movimiento[]>(movimientosIniciales);
   const [busqueda, setBusqueda]         = useState('');
 
-  // Formulario producto
+  
   const [fCodigo,   setFCodigo]   = useState('');
   const [fNombre,   setFNombre]   = useState('');
   const [fUnidad,   setFUnidad]   = useState(UNIDADES[0]);
   const [fGrupo,    setFGrupo]    = useState(GRUPOS[0]);
   const [fStockMin, setFStockMin] = useState('0');
 
-  // Formulario movimiento
+  
   const [mCodigo,  setMCodigo]  = useState('');
   const [mFecha,   setMFecha]   = useState(fechaHoy());
   const [mTipo,    setMTipo]    = useState<Movimiento['tipo']>('INGRESO');
   const [mCant,    setMCant]    = useState('');
   const [mObs,     setMObs]     = useState('');
 
-  // ── Resumen dashboard ───────────────────────────────────────────────────────
+  
   const totalProductos   = productos.length;
   const totalMovimientos = movimientos.length;
   const sinStock         = productos.filter(p => p.stockActual <= 0).length;
   const stockBajo        = productos.filter(p => p.stockActual > 0 && p.stockActual <= p.stockMin && p.stockMin > 0).length;
 
-  // ── Registrar producto ──────────────────────────────────────────────────────
+
   function registrarProducto() {
     if (!fCodigo.trim() || !fNombre.trim()) {
       Alert.alert('Error', 'Código y nombre son obligatorios.');
@@ -105,7 +104,7 @@ export default function InventarioBodeguero() {
     Alert.alert('Éxito ✅', 'Producto registrado correctamente.');
   }
 
-  // ── Registrar movimiento ────────────────────────────────────────────────────
+
   function registrarMovimiento() {
     const codigoUp = mCodigo.trim().toUpperCase();
     const cant     = parseFloat(mCant);
@@ -125,7 +124,7 @@ export default function InventarioBodeguero() {
       return;
     }
 
-    // Actualizar stock
+    
     if (mTipo === 'INGRESO' || mTipo === 'AJUSTE_POSITIVO') prod.stockActual += cant;
     else prod.stockActual -= cant;
 

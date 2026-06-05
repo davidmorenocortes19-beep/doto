@@ -14,16 +14,16 @@ export default function EditarUsuarioScreen() {
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  const [nombre,    setNombre]    = useState('');
+  const [nombre, setNombre] = useState('');
   const [documento, setDocumento] = useState('');
-  const [correo,    setCorreo]    = useState('');
-  const [telefono,  setTelefono]  = useState('');
+  const [correo, setCorreo] = useState('');
+  const [telefono, setTelefono] = useState('');
   const [direccion, setDireccion] = useState('');
-  const [idRol,     setIdRol]     = useState<number>(0);
-  const [roles,     setRoles]     = useState<Rol[]>([]);
-  const [cargando,  setCargando]  = useState(true);
+  const [idRol, setIdRol] = useState<number>(0);
+  const [roles, setRoles] = useState<Rol[]>([]);
+  const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
-  const [errorMsg,  setErrorMsg]  = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     if (id) cargarDatos();
@@ -35,7 +35,7 @@ export default function EditarUsuarioScreen() {
       setErrorMsg('');
 
       const resUsuario = await axios.get(`${BASE}/usuarios.php?id=${id}`, { timeout: 8000 });
-      const resRoles   = await axios.get(`${BASE}/roles.php`,             { timeout: 8000 });
+      const resRoles = await axios.get(`${BASE}/roles.php`, { timeout: 8000 });
 
       const u = resUsuario.data;
 
@@ -44,10 +44,10 @@ export default function EditarUsuarioScreen() {
         return;
       }
 
-      setNombre(u.nombre      ?? '');
+      setNombre(u.nombre ?? '');
       setDocumento(u.documento ?? '');
-      setCorreo(u.correo      ?? '');
-      setTelefono(u.telefono  ?? '');
+      setCorreo(u.correo ?? '');
+      setTelefono(u.telefono ?? '');
       setDireccion(u.direccion ?? '');
       setIdRol(Number(u.id_rol_fk) ?? 0);
 
@@ -81,7 +81,7 @@ export default function EditarUsuarioScreen() {
 
       if (res.data.mensaje) {
         Alert.alert('✅ Éxito', res.data.mensaje, [
-          { text: 'OK', onPress: () => router.push('/admin/usuarios') }
+          { text: 'OK', onPress: () => router.push('/admin/Usuarios') }
         ]);
       } else {
         Alert.alert('Error', res.data.error || 'No se pudo actualizar');
@@ -181,20 +181,20 @@ export default function EditarUsuarioScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:         { flex: 1, backgroundColor: '#09080D' },
-  centrado:          { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#09080D' },
-  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
-  titulo:            { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
-  btnVolver:         { padding: 8 },
-  btnVolverTexto:    { color: '#B7975B', fontSize: 14 },
-  form:              { padding: 20, paddingBottom: 40 },
-  label:             { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
-  input:             { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
-  rolesContenedor:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
-  rolBtn:            { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#B7975B' },
-  rolBtnActivo:      { backgroundColor: '#B7975B' },
-  rolBtnTexto:       { color: '#B7975B', fontSize: 13, fontWeight: 'bold' },
+  container: { flex: 1, backgroundColor: '#09080D' },
+  centrado: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#09080D' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
+  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  btnVolver: { padding: 8 },
+  btnVolverTexto: { color: '#B7975B', fontSize: 14 },
+  form: { padding: 20, paddingBottom: 40 },
+  label: { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
+  input: { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  rolesContenedor: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
+  rolBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#B7975B' },
+  rolBtnActivo: { backgroundColor: '#B7975B' },
+  rolBtnTexto: { color: '#B7975B', fontSize: 13, fontWeight: 'bold' },
   rolBtnTextoActivo: { color: '#000' },
-  btnGuardar:        { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 30 },
-  btnGuardarTexto:   { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  btnGuardar: { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 30 },
+  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });

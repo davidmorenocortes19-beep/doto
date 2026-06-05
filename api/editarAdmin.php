@@ -43,7 +43,8 @@ if ($resultado === 'exist') {
     responder(500, ['error' => 'No se pudo actualizar el usuario']);
 }
 
-function responder(int $codigo, array $datos): never {
+function responder(int $codigo, array $datos): never
+{
     http_response_code($codigo);
     echo json_encode($datos, JSON_UNESCAPED_UNICODE);
     exit;

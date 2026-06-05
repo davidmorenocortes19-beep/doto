@@ -20,10 +20,12 @@ if ($user) {
             "id"     => $user['id_usuario'],
             "nombre" => $user['nombre'],
             "correo" => $user['correo'],
-            "rol"    => $user['nombre_rol']
+            "rol"    => $user['nombre_rol'],
+            "documento" => $user['documento'],
+            "telefono"  => $user['telefono'],
+            "direccion" => $user['direccion'],
         ]
     ]);
 } else {
     echo json_encode(["success" => false, "mensaje" => "Credenciales incorrectas"]);
 }
-?>

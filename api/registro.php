@@ -36,7 +36,13 @@ if (!$rolData) {
 $idRol = $rolData['id_rol'];
 
 $resultado = Usuario::crearUsuarioAdmin(
-    $nombre, $documento, $correo, $telefono, $direccion, $password, $idRol
+    $nombre,
+    $documento,
+    $correo,
+    $telefono,
+    $direccion,
+    $password,
+    $idRol
 );
 
 if ($resultado === "exist") {
@@ -46,4 +52,3 @@ if ($resultado === "exist") {
 } else {
     echo json_encode(["success" => false, "mensaje" => "Error al registrar el usuario"]);
 }
-?>
