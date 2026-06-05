@@ -6,7 +6,7 @@ import { sesion } from '../../../constants/sesion';
 const opciones = [
   { icon: '🏠', label: 'Inicio',       ruta: '/admin/panel_admin' },
   { icon: '👥', label: 'Usuarios',     ruta: '/admin/Usuarios' },
-  { icon: '👕', label: 'Productos',    ruta: '/admin/productos' },
+  { icon: '👕', label: 'Productos',    ruta: '/admin/Productos' },
   { icon: '📋', label: 'Ver Pedidos',  ruta: '/admin/pedidos' },
   { icon: '📦', label: 'Inventario',   ruta: '/admin/inventario' },
   { icon: '↩️', label: 'Devoluciones', ruta: '/admin/devoluciones' },

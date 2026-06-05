@@ -4,11 +4,13 @@ import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
 const opciones = [
-  { icon: '🏠', label: 'Inicio',       ruta: '/cliente/panel_cliente' },
-  { icon: '👤', label: 'Perfil',       ruta: '/cliente/perfil' },
-  { icon: '👕', label: 'Productos',    ruta: '/cliente/productos' },
-  { icon: '📋', label: 'Ver Pedidos',  ruta: '/cliente/pedidos' },
-  { icon: '🏢', label: 'Nosotros',     ruta: '/cliente/nosotros' },
+  { icon: '🏠', label: 'Inicio', active: true },
+  { icon: '👤', label: 'Perfil',       router: '/cliente/perfil' },
+  { icon: '👕', label: 'Productos',    router: '/cliente/productos_cliente' },
+  { icon: '📋', label: 'Ver Pedidos',  router: '/cliente/pedidos' },
+  { icon: '🏢', label: 'Nosotros',     router: '/cliente/nosotros' },
+  { icon: '📞', label: 'Contactanos', router: '/cliente/contactanos_cliente' },
+
 ];
 
 export default function PanelCliente() {
@@ -24,7 +26,8 @@ export default function PanelCliente() {
           <TouchableOpacity
             key={op.label}
             style={styles.card}
-            onPress={() => router.push(op.ruta as any)}
+            onPress={() => router.push(op.router as any)}
+            
           >
             <Text style={styles.cardIcon}>{op.icon}</Text>
             <Text style={styles.cardText}>{op.label}</Text>

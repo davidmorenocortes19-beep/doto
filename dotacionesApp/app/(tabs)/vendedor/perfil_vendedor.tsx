@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://172.30.3.242/dota/api/perfil.php';
+const API_URL = 'http://172.30.3.242/doto/api/perfil.php';
 
 type Vendedor = {
   id?: number;
@@ -34,8 +34,9 @@ export default function PerfilVendedor() {
   const cargar = async () => {
     try {
       setCargando(true);
-      // ✅ Pasa el id del usuario logueado
-      const res = await axios.get(`${API_URL}?id=${sesion.id}`, { timeout: 5000 });
+      const id = Number(sesion.id);
+      if (!id || id <= 0) return;
+      const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 5000 });
       if (res.data.success) setVendedor(res.data.data);
     } catch {
       // sin servidor: dejar vacío
@@ -50,8 +51,7 @@ export default function PerfilVendedor() {
       return;
     }
 
-    // ✅ Usa sesion.id en lugar de vendedor?.id
-    const payload: Partial<Vendedor> & { password?: string } = { id: sesion.id };
+    const payload: Partial<Vendedor> & { password?: string } = { id: Number(sesion.id) };
     if (nuevoNombre)    payload.nombre    = nuevoNombre;
     if (nuevoCorreo)    payload.correo    = nuevoCorreo;
     if (nuevoTelefono)  payload.telefono  = nuevoTelefono;
@@ -64,7 +64,6 @@ export default function PerfilVendedor() {
       if (res.data.success) {
         setMensaje('✅ Perfil actualizado correctamente');
         setVendedor(prev => prev ? { ...prev, ...payload } : prev);
-        // Actualizar sesion global si cambió el nombre
         if (nuevoNombre) sesion.nombre = nuevoNombre;
         if (nuevoCorreo) sesion.correo = nuevoCorreo;
         setNuevoNombre('');
@@ -76,13 +75,7 @@ export default function PerfilVendedor() {
         setMensaje('❌ ' + res.data.mensaje);
       }
     } catch {
-      setVendedor(prev => prev ? { ...prev, ...payload } : prev);
-      setMensaje('✅ Perfil actualizado correctamente');
-      setNuevoNombre('');
-      setNuevoCorreo('');
-      setNuevoTelefono('');
-      setNuevaDireccion('');
-      setNuevoPassword('');
+      setMensaje('⚠ Error de conexión con el servidor');
     } finally {
       setCargando(false);
     }
@@ -127,7 +120,9 @@ export default function PerfilVendedor() {
             <View style={styles.avatarWrap}>
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>
-                  {vendedor?.nombre ? vendedor.nombre.charAt(0).toUpperCase() : sesion.nombre.charAt(0).toUpperCase()}
+                  {vendedor?.nombre
+                    ? vendedor.nombre.charAt(0).toUpperCase()
+                    : sesion.nombre.charAt(0).toUpperCase()}
                 </Text>
               </View>
               <Text style={styles.avatarName}>{vendedor?.nombre ?? sesion.nombre}</Text>
@@ -139,7 +134,6 @@ export default function PerfilVendedor() {
             {/* Información actual */}
             <View style={styles.seccion}>
               <Text style={styles.seccionTitulo}>Información Personal</Text>
-
               {[
                 { label: 'Nombre',    valor: vendedor?.nombre },
                 { label: 'Documento', valor: vendedor?.documento },
@@ -197,7 +191,6 @@ export default function PerfilVendedor() {
               </TouchableOpacity>
             </View>
 
-            {/* Cerrar sesión */}
             <TouchableOpacity style={styles.btnSalir} onPress={cerrarSesion}>
               <Text style={styles.btnSalirText}>Cerrar Sesión</Text>
             </TouchableOpacity>
@@ -207,10 +200,10 @@ export default function PerfilVendedor() {
           {/* Bottom nav */}
           <View style={styles.bottomNav}>
             {[
-              { label: 'Inicio',   icon: '🏠', route: '/vendedor/panel_vendedor' },
-              { label: 'Pedidos',  icon: '📋', route: '/vendedor/pedidos_vendedor' },
-              { label: 'Ventas',   icon: '💰', route: '/vendedor/ver_ventas' },
-              { label: 'Perfil',   icon: '👤', active: true },
+              { label: 'Inicio',  icon: '🏠', route: '/vendedor/panel_vendedor' },
+              { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
+              { label: 'Ventas',  icon: '💰', route: '/vendedor/ver_ventas' },
+              { label: 'Perfil',  icon: '👤', active: true },
             ].map(item => (
               <TouchableOpacity
                 key={item.label}
@@ -232,38 +225,38 @@ export default function PerfilVendedor() {
 }
 
 const styles = StyleSheet.create({
-  background:    { flex: 1 },
-  safeArea:      { flex: 1, backgroundColor: 'rgba(9,8,13,0.82)' },
-  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B33', backgroundColor: 'rgba(9,8,13,0.97)' },
-  backBtn:       { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-  logoArea:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:    { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:  { color: '#fff', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:   { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
-  scroll:        { padding: 16, paddingBottom: 24 },
-  avatarWrap:    { alignItems: 'center', marginBottom: 20 },
-  avatar:        { width: 72, height: 72, borderRadius: 36, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  avatarText:    { color: '#fff', fontSize: 30, fontWeight: 'bold' },
-  avatarName:    { color: '#eee', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
-  rolBadge:      { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#B7975B44', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
-  rolText:       { color: '#B7975B', fontSize: 12, fontWeight: 'bold' },
-  seccion:       { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
-  seccionSub:    { color: '#666', fontSize: 11, marginBottom: 12 },
-  infoRow:       { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#ffffff08' },
-  infoLabel:     { color: '#888', fontSize: 13 },
-  infoValor:     { color: '#eee', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
-  input:         { backgroundColor: '#0e0d12', borderWidth: 1, borderColor: '#B7975B33', color: '#eee', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
-  mensaje:       { fontSize: 12, marginBottom: 10, textAlign: 'center' },
-  mensajeOk:     { color: '#2ecc71' },
-  mensajeError:  { color: '#e74c3c' },
-  btnGuardar:    { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnGuardarText:{ color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  btnSalir:      { backgroundColor: '#e74c3c22', borderWidth: 1, borderColor: '#e74c3c44', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
-  btnSalirText:  { color: '#e74c3c', fontWeight: 'bold', fontSize: 14 },
-  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B22', backgroundColor: 'rgba(9,8,13,0.98)' },
-  bnav:          { alignItems: 'center', gap: 2 },
-  bnavIcon:      { fontSize: 18 },
-  bnavLabel:     { fontSize: 9, color: '#666' },
-  bnavActive:    { color: '#B7975B' },
+  background:     { flex: 1 },
+  safeArea:       { flex: 1, backgroundColor: 'rgba(9,8,13,0.82)' },
+  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B33', backgroundColor: 'rgba(9,8,13,0.97)' },
+  backBtn:        { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
+  logoArea:       { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoCircle:     { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
+  logoInitials:   { color: '#fff', fontWeight: 'bold', fontSize: 10 },
+  headerTitle:    { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  scroll:         { padding: 16, paddingBottom: 24 },
+  avatarWrap:     { alignItems: 'center', marginBottom: 20 },
+  avatar:         { width: 72, height: 72, borderRadius: 36, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  avatarText:     { color: '#fff', fontSize: 30, fontWeight: 'bold' },
+  avatarName:     { color: '#eee', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
+  rolBadge:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#B7975B44', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
+  rolText:        { color: '#B7975B', fontSize: 12, fontWeight: 'bold' },
+  seccion:        { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 12, padding: 14, marginBottom: 14 },
+  seccionTitulo:  { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
+  seccionSub:     { color: '#666', fontSize: 11, marginBottom: 12 },
+  infoRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#ffffff08' },
+  infoLabel:      { color: '#888', fontSize: 13 },
+  infoValor:      { color: '#eee', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
+  input:          { backgroundColor: '#0e0d12', borderWidth: 1, borderColor: '#B7975B33', color: '#eee', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+  mensaje:        { fontSize: 12, marginBottom: 10, textAlign: 'center' },
+  mensajeOk:      { color: '#2ecc71' },
+  mensajeError:   { color: '#e74c3c' },
+  btnGuardar:     { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+  btnGuardarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnSalir:       { backgroundColor: '#e74c3c22', borderWidth: 1, borderColor: '#e74c3c44', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
+  btnSalirText:   { color: '#e74c3c', fontWeight: 'bold', fontSize: 14 },
+  bottomNav:      { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B22', backgroundColor: 'rgba(9,8,13,0.98)' },
+  bnav:           { alignItems: 'center', gap: 2 },
+  bnavIcon:       { fontSize: 18 },
+  bnavLabel:      { fontSize: 9, color: '#666' },
+  bnavActive:     { color: '#B7975B' },
 });

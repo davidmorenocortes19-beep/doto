@@ -2,5 +2,5 @@ export const sesion = {
   nombre: '',
   rol:    '',
   correo: '',
-  id:     '',
+  id:     0,
 };

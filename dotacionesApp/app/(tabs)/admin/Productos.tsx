@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; 
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator, Alert
@@ -6,35 +6,31 @@ import {
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.3.242/doto/api/usuarios.php';
+const API_URL = 'http://172.30.3.242/doto/api/productos.php';
 
-type Usuario = {
-  id_usuario:  number;
+type Producto = {
+  id_producto: number;
   nombre:      string;
-  documento:   string;
-  correo:      string;
-  telefono:    string;
-  direccion:   string;
-  id_rol_fk:   number;
-  nombre_rol:  string;
+  precio:      string;
+  talla:       string;
+  color:       string;
+  estado:      'Disponible' | 'Agotado';
 };
 
-export default function UsuariosScreen() {
-  const [usuarios,  setUsuarios]  = useState<Usuario[]>([]);
-  const [filtrados, setFiltrados] = useState<Usuario[]>([]);
+export default function ProductosScreen() {
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [filtrados, setFiltrados] = useState<Producto[]>([]);
   const [busqueda,  setBusqueda]  = useState('');
   const [cargando,  setCargando]  = useState(false);
   const [error,     setError]     = useState('');
 
-  const cargarUsuarios = useCallback(async () => {
+  const cargarProductos = useCallback(async () => {
     try {
       setCargando(true);
       setError('');
       const res = await axios.get(API_URL, { timeout: 5000 });
-
-      // La API devuelve un array directo
-      const data: Usuario[] = Array.isArray(res.data) ? res.data : [];
-      setUsuarios(data);
+      const data: Producto[] = Array.isArray(res.data) ? res.data : [];
+      setProductos(data);
       setFiltrados(data);
     } catch (e: any) {
       if (e.code === 'ECONNABORTED') {
@@ -49,43 +45,64 @@ export default function UsuariosScreen() {
     }
   }, []);
 
-  useEffect(() => { cargarUsuarios(); }, [cargarUsuarios]);
+  useEffect(() => { cargarProductos(); }, [cargarProductos]);
 
   const buscar = (texto: string) => {
     setBusqueda(texto);
     const t = texto.toLowerCase();
     setFiltrados(
-      usuarios.filter(u =>
-        u.nombre.toLowerCase().includes(t)     ||
-        u.documento.toLowerCase().includes(t)  ||
-        u.correo.toLowerCase().includes(t)     ||
-        u.nombre_rol.toLowerCase().includes(t)
+      productos.filter(p =>
+        p.nombre.toLowerCase().includes(t) ||
+        p.color.toLowerCase().includes(t)  ||
+        p.talla.toLowerCase().includes(t)  ||
+        p.estado.toLowerCase().includes(t)
       )
     );
   };
 
-  const renderUsuario = ({ item }: { item: Usuario }) => (
+  const eliminar = (id: number, nombre: string) => {
+    Alert.alert(
+      'Eliminar producto',
+      `¿Deseas eliminar "${nombre}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar', style: 'destructive',
+          onPress: async () => {
+            try {
+              await axios.delete(`${API_URL}?id=${id}`, { timeout: 5000 });
+              cargarProductos();
+            } catch {
+              Alert.alert('Error', 'No se pudo eliminar el producto');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const renderProducto = ({ item }: { item: Producto }) => (
     <View style={styles.fila}>
       <View style={styles.infoBloque}>
         <Text style={styles.nombre}>{item.nombre}</Text>
-        <Text style={styles.detalle}>📄 {item.documento}</Text>
-        <Text style={styles.detalle}>✉️  {item.correo}</Text>
-        <Text style={styles.detalle}>📞 {item.telefono}</Text>
-        <Text style={styles.detalle}>📍 {item.direccion}</Text>
-        <View style={styles.rolBadge}>
-          <Text style={styles.rolTexto}>{item.nombre_rol}</Text>
+        <Text style={styles.detalle}>💰 ${parseFloat(item.precio).toLocaleString('es-CO')}</Text>
+        <Text style={styles.detalle}>👕 Talla: {item.talla || 'N/A'}</Text>
+        <Text style={styles.detalle}>🎨 Color: {item.color || 'N/A'}</Text>
+        <View style={[
+          styles.estadoBadge,
+          item.estado === 'Agotado' && styles.estadoBadgeAgotado
+        ]}>
+          <Text style={styles.estadoTexto}>{item.estado}</Text>
         </View>
       </View>
 
       <View style={styles.acciones}>
         <TouchableOpacity
           style={styles.btnEditar}
-          onPress={() =>
-            router.push({
-              pathname: '/admin/editarUsuario',
-              params: { id: item.id_usuario }
-            })
-          }
+          onPress={() => router.push({
+            pathname: '/admin/editarProducto',
+            params: { id: item.id_producto }
+          })}
         >
           <Text style={styles.btnTexto}>✏️ Editar</Text>
         </TouchableOpacity>
@@ -102,10 +119,10 @@ export default function UsuariosScreen() {
         <TouchableOpacity onPress={() => router.replace('/admin/panel_admin')} style={styles.btnVolver}>
           <Text style={styles.btnVolverTexto}>← Volver</Text>
         </TouchableOpacity>
-        <Text style={styles.titulo}>Usuarios</Text>
+        <Text style={styles.titulo}>Productos</Text>
         <TouchableOpacity
           style={styles.btnAgregar}
-          onPress={() => router.push('/registro')}
+          onPress={() => router.push('/admin/agregarProducto')}
         >
           <Text style={styles.btnAgregarTexto}>+ Agregar</Text>
         </TouchableOpacity>
@@ -115,7 +132,7 @@ export default function UsuariosScreen() {
       <View style={styles.buscadorContenedor}>
         <TextInput
           style={styles.buscador}
-          placeholder="🔍 Buscar por nombre, correo, rol..."
+          placeholder="🔍 Buscar por nombre, color, talla, estado..."
           placeholderTextColor="#999"
           value={busqueda}
           onChangeText={buscar}
@@ -128,16 +145,16 @@ export default function UsuariosScreen() {
       )}
       {error !== '' && <Text style={styles.error}>{error}</Text>}
       {!cargando && filtrados.length === 0 && error === '' && (
-        <Text style={styles.sinResultados}>No se encontraron usuarios</Text>
+        <Text style={styles.sinResultados}>No se encontraron productos</Text>
       )}
 
       {/* LISTA */}
       <FlatList
         data={filtrados}
-        keyExtractor={(item) => item.id_usuario.toString()}
-        renderItem={renderUsuario}
+        keyExtractor={(item) => item.id_producto.toString()}
+        renderItem={renderProducto}
         contentContainerStyle={styles.lista}
-        onRefresh={cargarUsuarios}
+        onRefresh={cargarProductos}
         refreshing={cargando}
       />
 
@@ -160,8 +177,9 @@ const styles = StyleSheet.create({
   infoBloque:         { marginBottom: 12 },
   nombre:             { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 4 },
   detalle:            { color: '#ccc', fontSize: 13, marginBottom: 2 },
-  rolBadge:           { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#B7975B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  rolTexto:           { color: '#000', fontWeight: 'bold', fontSize: 12 },
+  estadoBadge:        { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#2ecc71', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  estadoBadgeAgotado: { backgroundColor: '#e74c3c' },
+  estadoTexto:        { color: '#fff', fontWeight: 'bold', fontSize: 12 },
   acciones:           { flexDirection: 'row', gap: 10 },
   btnEditar:          { flex: 1, backgroundColor: '#e67e22', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnEliminar:        { flex: 1, backgroundColor: '#e74c3c', padding: 10, borderRadius: 8, alignItems: 'center' },

@@ -7,7 +7,7 @@ import {
 import axios, { isAxiosError } from 'axios';
 import { sesion } from '../../constants/sesion';
 
-const API_URL = 'http://172.30.3.242/dota/api/login.php';
+const API_URL = 'http://172.30.3.242/doto/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -34,11 +34,11 @@ export default function LoginScreen() {
 
         const { nombre, rol, correo, id } = res.data.usuario;
 
-        // ✅ Guardar en variable global
+        // ✅ id guardado como número
         sesion.nombre = nombre;
         sesion.rol    = rol;
         sesion.correo = correo;
-        sesion.id     = id;
+        sesion.id     = Number(id);
 
         const rol_lower = res.data.rol?.toLowerCase();
 

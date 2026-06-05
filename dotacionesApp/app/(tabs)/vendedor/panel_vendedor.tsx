@@ -4,11 +4,11 @@ import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
 const opciones = [
-  { icon: '🏠', label: 'Inicio',       ruta: '/vendedor/panel_vendedor' },
-  { icon: '👤', label: 'Perfil',       ruta: '/vendedor/perfil_vendedor' },
-  { icon: '📋', label: 'Ver Pedidos',  ruta: '/vendedor/pedidos_vendedor' },
-  { icon: '💰', label: 'Ver Ventas',   ruta: '/vendedor/ver_ventas' },
-  { icon: '↩️', label: 'Devoluciones', ruta: '/vendedor/devoluciones' },
+  { icon: '🏠', label: 'Inicio',       router: '/vendedor/panel_vendedor' },
+  { icon: '👤', label: 'Perfil',       router: '/vendedor/perfil_vendedor' },
+  { icon: '📋', label: 'Ver Pedidos',  router: '/vendedor/pedidos_vendedor' },
+  { icon: '💰', label: 'Ver Ventas',   router: '/vendedor/ver_ventas' },
+  { icon: '↩️', label: 'Devoluciones', router: '/vendedor/devoluciones' },
 ];
 
 export default function PanelVendedor() {
@@ -24,7 +24,7 @@ export default function PanelVendedor() {
           <TouchableOpacity
             key={op.label}
             style={styles.card}
-            onPress={() => router.push(op.ruta as any)}
+            onPress={() => router.push(op.router as any)}
           >
             <Text style={styles.cardIcon}>{op.icon}</Text>
             <Text style={styles.cardText}>{op.label}</Text>
