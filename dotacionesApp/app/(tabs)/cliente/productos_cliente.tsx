@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.3.242/doto/api/productos.php';
+const API_URL = 'http://192.168.40.8/doto/api/productos.php';
 
 type Producto = {
   id_producto: number;
@@ -33,7 +33,9 @@ export default function ProductosCliente() {
   const cargar = async () => {
     try {
       const res = await axios.get(API_URL, { timeout: 5000 });
-      if (res.data.success) setProductos(res.data.data);
+      // La API devuelve directamente el array, no un objeto con .success
+      const data: Producto[] = Array.isArray(res.data) ? res.data : [];
+      setProductos(data);
     } catch {
       // sin servidor
     }
@@ -76,10 +78,10 @@ export default function ProductosCliente() {
         <Text style={styles.cardImgIcon}>👕</Text>
       </View>
       <Text style={styles.cardNombre}>{item.nombre}</Text>
-      <Text style={styles.cardPrecio}>${item.precio.toLocaleString()}</Text>
+      <Text style={styles.cardPrecio}>${Number(item.precio).toLocaleString('es-CO')}</Text>
       <View style={styles.cardInfo}>
-        <Text style={styles.cardInfoText}>Talla: {item.talla}</Text>
-        <Text style={styles.cardInfoText}>Color: {item.color}</Text>
+        <Text style={styles.cardInfoText}>Talla: {item.talla || 'N/A'}</Text>
+        <Text style={styles.cardInfoText}>Color: {item.color || 'N/A'}</Text>
       </View>
       <View style={[styles.estadoBadge,
         item.estado === 'Disponible' ? styles.estadoDisponible : styles.estadoAgotado
@@ -111,10 +113,10 @@ export default function ProductosCliente() {
       <SafeAreaView style={styles.safeArea}>
 
         {/* Header */}
-  <View style={styles.header}>
-  <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
-    <Text style={styles.backBtn}>←</Text>
-  </TouchableOpacity>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
+            <Text style={styles.backBtn}>←</Text>
+          </TouchableOpacity>
           <View style={styles.logoArea}>
             <View style={styles.logoCircle}>
               <Text style={styles.logoInitials}>DT</Text>
@@ -148,6 +150,8 @@ export default function ProductosCliente() {
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.listContent}
+          onRefresh={cargar}
+          refreshing={false}
           ListEmptyComponent={
             <Text style={styles.empty}>No hay productos disponibles</Text>
           }
@@ -196,7 +200,7 @@ export default function ProductosCliente() {
                     <View style={{ flex: 1 }}>
                       <Text style={styles.carritoNombre}>{item.nombre}</Text>
                       <Text style={styles.carritoDetalle}>
-                        {item.cantidad} x ${item.precio.toLocaleString()}
+                        {item.cantidad} x ${Number(item.precio).toLocaleString('es-CO')}
                       </Text>
                     </View>
                     <TouchableOpacity onPress={() => quitarDelCarrito(item.id_producto)}>
@@ -206,7 +210,7 @@ export default function ProductosCliente() {
                 ))}
                 <View style={styles.carritoTotal}>
                   <Text style={styles.carritoTotalLabel}>Total</Text>
-                  <Text style={styles.carritoTotalValor}>${totalCarrito.toLocaleString()}</Text>
+                  <Text style={styles.carritoTotalValor}>${totalCarrito.toLocaleString('es-CO')}</Text>
                 </View>
                 <TouchableOpacity style={styles.btnPedir} onPress={() => {
                   setCarritoVisible(false);

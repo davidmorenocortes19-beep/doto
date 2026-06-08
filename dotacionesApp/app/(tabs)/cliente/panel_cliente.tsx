@@ -5,10 +5,10 @@ import { sesion } from '../../../constants/sesion';
 
 const opciones = [
   { icon: '🏠', label: 'Inicio', active: true },
-  { icon: '👤', label: 'Perfil',       router: '/cliente/perfil' },
+  { icon: '👤', label: 'Perfil',       router: '/cliente/perfil_cliente' },
   { icon: '👕', label: 'Productos',    router: '/cliente/productos_cliente' },
   { icon: '📋', label: 'Ver Pedidos',  router: '/cliente/pedidos' },
-  { icon: '🏢', label: 'Nosotros',     router: '/cliente/nosotros' },
+  { icon: '🏢', label: 'Nosotros',     router: '/cliente/nosotros_cliente' },
   { icon: '📞', label: 'Contactanos', router: '/cliente/contactanos_cliente' },
 
 ];

@@ -29,7 +29,7 @@ export default function NosotrosCliente() {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
             <Text style={styles.backBtn}>←</Text>
           </TouchableOpacity>
           <View style={styles.logoArea}>

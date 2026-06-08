@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://172.30.3.242/doto/api/perfil.php';
+const API_URL = 'http://192.168.40.8/doto/api/perfil.php';
 
 type Vendedor = {
     id?: number;
@@ -81,13 +81,6 @@ export default function PerfilVendedor() {
         }
     };
 
-    const cerrarSesion = () => {
-        Alert.alert('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', [
-            { text: 'Cancelar', style: 'cancel' },
-            { text: 'Cerrar sesión', style: 'destructive', onPress: () => router.replace('/') },
-        ]);
-    };
-
     return (
         <ImageBackground
             source={require('../../../assets/images/camiseta.png')}
@@ -102,7 +95,7 @@ export default function PerfilVendedor() {
 
                     {/* Header */}
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')}>
+                        <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
                             <Text style={styles.backBtn}>←</Text>
                         </TouchableOpacity>
                         <View style={styles.logoArea}>
@@ -190,10 +183,6 @@ export default function PerfilVendedor() {
                                 <Text style={styles.btnGuardarText}>Guardar Cambios</Text>
                             </TouchableOpacity>
                         </View>
-
-                        <TouchableOpacity style={styles.btnSalir} onPress={cerrarSesion}>
-                            <Text style={styles.btnSalirText}>Cerrar Sesión</Text>
-                        </TouchableOpacity>
 
                     </ScrollView>
 
