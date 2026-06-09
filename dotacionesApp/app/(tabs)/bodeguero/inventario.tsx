@@ -1,462 +1,448 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ScrollView, Alert, FlatList,
+  StyleSheet, ActivityIndicator, FlatList, Alert
 } from 'react-native';
+import { router } from 'expo-router';
+import axios from 'axios';
 
+const API_URL = 'http://192.168.40.8/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://192.168.40.8/doto/api/productos.php';
 
-type Producto = {
-  codigo: string;
+type InventarioItem = {
+  id_inventario: number;
+  id_producto_fk: number;
   nombre: string;
-  unidad: string;
-  grupo: string;
-  stockMin: number;
-  stockActual: number;
+  precio: string;
+  talla: string;
+  color: string;
+  estado: 'Disponible' | 'Agotado';
+  cantidad_actual: number;
+  stock_minimo: number;
 };
 
-type Movimiento = {
-  id: number;
-  codigo: string;
-  producto: string;
-  fecha: string;
-  tipo: 'INGRESO' | 'SALIDA' | 'AJUSTE_POSITIVO' | 'AJUSTE_NEGATIVO';
-  cantidad: number;
-  observaciones: string;
+type ProductoCatalogo = {
+  id_producto: number;
+  nombre: string;
+  precio: string;
+  talla: string;
+  color: string;
+  estado: 'Disponible' | 'Agotado';
 };
 
-type TabName = 'dashboard' | 'productos' | 'movimientos' | 'inventario' | 'buscar';
-
-
-const UNIDADES = ['Unidad', 'Par', 'Caja', 'Metro', 'Kg'];
-const GRUPOS   = ['Dotación', 'Calzado', 'Protección', 'Herramientas', 'Accesorios'];
-
-const productosIniciales: Producto[] = [
-  { codigo: 'CAM001', nombre: 'Camisa Manga Larga',   unidad: 'Unidad', grupo: 'Dotación',    stockMin: 10, stockActual: 25 },
-  { codigo: 'PAN002', nombre: 'Pantalón Industrial',  unidad: 'Unidad', grupo: 'Dotación',    stockMin: 10, stockActual: 8  },
-  { codigo: 'BOT003', nombre: 'Bota de Seguridad',    unidad: 'Par',    grupo: 'Calzado',     stockMin: 5,  stockActual: 0  },
-  { codigo: 'CAS004', nombre: 'Casco Protector',      unidad: 'Unidad', grupo: 'Protección',  stockMin: 5,  stockActual: 12 },
-  { codigo: 'GUA005', nombre: 'Guantes de Cuero',     unidad: 'Par',    grupo: 'Protección',  stockMin: 20, stockActual: 15 },
-];
-
-const movimientosIniciales: Movimiento[] = [
-  { id: 1, codigo: 'CAM001', producto: 'Camisa Manga Larga',  fecha: '2024-01-15', tipo: 'INGRESO',  cantidad: 50, observaciones: 'Pedido mensual' },
-  { id: 2, codigo: 'PAN002', producto: 'Pantalón Industrial', fecha: '2024-01-16', tipo: 'SALIDA',   cantidad: 5,  observaciones: 'Entrega a obra' },
-  { id: 3, codigo: 'BOT003', producto: 'Bota de Seguridad',   fecha: '2024-01-17', tipo: 'SALIDA',   cantidad: 10, observaciones: 'Entrega empleados' },
-];
-
-
-function getEstado(p: Producto): { label: string; color: string } {
-  if (p.stockActual <= 0)                              return { label: 'Sin Stock',  color: '#dc3545' };
-  if (p.stockActual <= p.stockMin && p.stockMin > 0)  return { label: 'Stock Bajo', color: '#ffc107' };
-  return { label: 'Normal', color: '#28a745' };
+function getEstado(item: InventarioItem): { label: string; color: string } {
+  if (Number(item.cantidad_actual) <= 0) return { label: 'Agotado', color: '#e74c3c' };
+  if (Number(item.cantidad_actual) <= Number(item.stock_minimo)) return { label: 'Stock bajo', color: '#f39c12' };
+  return { label: 'Disponible', color: '#2ecc71' };
 }
 
-function fechaHoy(): string {
-  return new Date().toISOString().split('T')[0];
-}
+export default function InventarioScreen() {
+  const [items, setItems] = useState<InventarioItem[]>([]);
+  const [filtrados, setFiltrados] = useState<InventarioItem[]>([]);
+  const [busqueda, setBusqueda] = useState('');
+  const [idInventario, setIdInventario] = useState<number | null>(null);
+  const [idProducto, setIdProducto] = useState('');
+  const [cantidadActual, setCantidadActual] = useState('');
+  const [stockMinimo, setStockMinimo] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [productos, setProductos] = useState<ProductoCatalogo[]>([]);
+  const [productoBusqueda, setProductoBusqueda] = useState('');
 
-export default function InventarioBodeguero() {
-  const [tabActiva, setTabActiva]       = useState<TabName>('dashboard');
-  const [productos, setProductos]       = useState<Producto[]>(productosIniciales);
-  const [movimientos, setMovimientos]   = useState<Movimiento[]>(movimientosIniciales);
-  const [busqueda, setBusqueda]         = useState('');
-
-  
-  const [fCodigo,   setFCodigo]   = useState('');
-  const [fNombre,   setFNombre]   = useState('');
-  const [fUnidad,   setFUnidad]   = useState(UNIDADES[0]);
-  const [fGrupo,    setFGrupo]    = useState(GRUPOS[0]);
-  const [fStockMin, setFStockMin] = useState('0');
-
-  
-  const [mCodigo,  setMCodigo]  = useState('');
-  const [mFecha,   setMFecha]   = useState(fechaHoy());
-  const [mTipo,    setMTipo]    = useState<Movimiento['tipo']>('INGRESO');
-  const [mCant,    setMCant]    = useState('');
-  const [mObs,     setMObs]     = useState('');
-
-  
-  const totalProductos   = productos.length;
-  const totalMovimientos = movimientos.length;
-  const sinStock         = productos.filter(p => p.stockActual <= 0).length;
-  const stockBajo        = productos.filter(p => p.stockActual > 0 && p.stockActual <= p.stockMin && p.stockMin > 0).length;
-
-
-  function registrarProducto() {
-    if (!fCodigo.trim() || !fNombre.trim()) {
-      Alert.alert('Error', 'Código y nombre son obligatorios.');
-      return;
+  const cargarProductos = useCallback(async () => {
+    try {
+      const res = await axios.get(PRODUCTOS_API_URL, { timeout: 5000 });
+      setProductos(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setProductos([]);
     }
-    if (productos.find(p => p.codigo === fCodigo.trim().toUpperCase())) {
-      Alert.alert('Error', `El código "${fCodigo}" ya existe.`);
-      return;
+  }, []);
+
+  const cargarInventario = useCallback(async () => {
+    try {
+      setCargando(true);
+      setMensaje('');
+      const res = await axios.get(API_URL, { timeout: 5000 });
+      const data: InventarioItem[] = Array.isArray(res.data) ? res.data : [];
+      setItems(data);
+      setFiltrados(data);
+    } catch (error: any) {
+      if (error.code === 'ECONNABORTED') {
+        setMensaje('Tiempo de espera agotado. Verifica que Apache esté activo');
+      } else if (error.request) {
+        setMensaje('Sin respuesta del servidor. Verifica la IP');
+      } else {
+        setMensaje('Error: ' + error.message);
+      }
+    } finally {
+      setCargando(false);
     }
-    const nuevo: Producto = {
-      codigo:      fCodigo.trim().toUpperCase(),
-      nombre:      fNombre.trim(),
-      unidad:      fUnidad,
-      grupo:       fGrupo,
-      stockMin:    parseInt(fStockMin) || 0,
-      stockActual: 0,
-    };
-    setProductos(prev => [...prev, nuevo]);
-    setFCodigo(''); setFNombre(''); setFStockMin('0');
-    Alert.alert('Éxito ✅', 'Producto registrado correctamente.');
-  }
+  }, []);
 
+  useEffect(() => {
+    cargarInventario();
+    cargarProductos();
+  }, [cargarInventario, cargarProductos]);
 
-  function registrarMovimiento() {
-    const codigoUp = mCodigo.trim().toUpperCase();
-    const cant     = parseFloat(mCant);
+  const productosFiltrados = useMemo(() => {
+    const t = productoBusqueda.trim().toLowerCase();
 
-    if (!codigoUp || !mFecha || isNaN(cant) || cant <= 0) {
-      Alert.alert('Error', 'Todos los campos son obligatorios y la cantidad debe ser mayor a 0.');
-      return;
-    }
+    if (!t) return productos.slice(0, 6);
 
-    const idx = productos.findIndex(p => p.codigo === codigoUp);
-    if (idx === -1) { Alert.alert('Error', `Producto "${codigoUp}" no encontrado.`); return; }
-
-    const prod = { ...productos[idx] };
-
-    if ((mTipo === 'SALIDA' || mTipo === 'AJUSTE_NEGATIVO') && prod.stockActual < cant) {
-      Alert.alert('Error', 'Stock insuficiente para realizar la salida.');
-      return;
-    }
-
-    
-    if (mTipo === 'INGRESO' || mTipo === 'AJUSTE_POSITIVO') prod.stockActual += cant;
-    else prod.stockActual -= cant;
-
-    const nuevosProductos = [...productos];
-    nuevosProductos[idx]  = prod;
-    setProductos(nuevosProductos);
-
-    const nuevoMov: Movimiento = {
-      id:            movimientos.length + 1,
-      codigo:        codigoUp,
-      producto:      prod.nombre,
-      fecha:         mFecha,
-      tipo:          mTipo,
-      cantidad:      cant,
-      observaciones: mObs.trim(),
-    };
-    setMovimientos(prev => [nuevoMov, ...prev]);
-
-    setMCodigo(''); setMCant(''); setMObs(''); setMFecha(fechaHoy());
-    Alert.alert('Éxito ✅', 'Movimiento registrado correctamente.');
-  }
-
-  // ── Productos filtrados (búsqueda) ──────────────────────────────────────────
-  const productosFiltrados = busqueda.trim().length >= 2
-    ? productos.filter(p =>
-        p.codigo.includes(busqueda.toUpperCase()) ||
-        p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        p.grupo.toLowerCase().includes(busqueda.toLowerCase())
+    return productos
+      .filter((producto) =>
+        producto.nombre.toLowerCase().includes(t) ||
+        String(producto.id_producto).includes(t) ||
+        (producto.talla ?? '').toLowerCase().includes(t) ||
+        (producto.color ?? '').toLowerCase().includes(t)
       )
-    : [];
+      .slice(0, 6);
+  }, [productoBusqueda, productos]);
 
-  // ── Tabs ────────────────────────────────────────────────────────────────────
-  const tabs: { key: TabName; label: string; icon: string }[] = [
-    { key: 'dashboard',   label: 'Dashboard',  icon: '📊' },
-    { key: 'productos',   label: 'Productos',  icon: '📦' },
-    { key: 'movimientos', label: 'Movimientos',icon: '📋' },
-    { key: 'inventario',  label: 'Inventario', icon: '🗂️' },
-    { key: 'buscar',      label: 'Buscar',     icon: '🔍' },
-  ];
+  const resumen = useMemo(() => {
+    const agotados = items.filter((item) => Number(item.cantidad_actual) <= 0).length;
+    const bajos = items.filter((item) =>
+      Number(item.cantidad_actual) > 0 &&
+      Number(item.cantidad_actual) <= Number(item.stock_minimo)
+    ).length;
+
+    return { total: items.length, agotados, bajos };
+  }, [items]);
+
+  const buscar = (texto: string) => {
+    setBusqueda(texto);
+    const t = texto.toLowerCase();
+    setFiltrados(
+      items.filter((item) =>
+        item.nombre.toLowerCase().includes(t) ||
+        String(item.id_producto_fk).includes(t) ||
+        String(item.cantidad_actual).includes(t) ||
+        item.estado.toLowerCase().includes(t) ||
+        (item.talla ?? '').toLowerCase().includes(t) ||
+        (item.color ?? '').toLowerCase().includes(t)
+      )
+    );
+  };
+
+  const limpiarFormulario = () => {
+    setIdInventario(null);
+    setIdProducto('');
+    setProductoBusqueda('');
+    setCantidadActual('');
+    setStockMinimo('');
+  };
+
+  const validarFormulario = () => {
+    if (!idProducto || !cantidadActual || !stockMinimo) {
+      return 'Todos los campos son obligatorios';
+    }
+
+    if (!/^[0-9]+$/.test(idProducto)) return 'El ID del producto debe ser numérico';
+    if (!/^[0-9]+$/.test(cantidadActual)) return 'La cantidad actual debe ser numérica';
+    if (!/^[0-9]+$/.test(stockMinimo)) return 'El stock mínimo debe ser numérico';
+    if (Number(idProducto) <= 0) return 'El ID del producto debe ser mayor a 0';
+
+    return null;
+  };
+
+  const guardarInventario = async () => {
+    const error = validarFormulario();
+    if (error) {
+      setMensaje(error);
+      return;
+    }
+
+    const payload = {
+      id_inventario: idInventario,
+      id_producto_fk: Number(idProducto),
+      cantidad_actual: Number(cantidadActual),
+      stock_minimo: Number(stockMinimo),
+    };
+
+    try {
+      setGuardando(true);
+      setMensaje('');
+
+      if (idInventario) {
+        await axios.put(API_URL, payload, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 5000,
+        });
+        setMensaje('Inventario actualizado correctamente');
+      } else {
+        await axios.post(API_URL, payload, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 5000,
+        });
+        setMensaje('Inventario creado correctamente');
+      }
+
+      limpiarFormulario();
+      cargarInventario();
+    } catch (error: any) {
+      if (error.response) {
+        setMensaje(error.response.data?.error ?? 'No se pudo guardar el inventario');
+      } else {
+        setMensaje('Sin respuesta del servidor');
+      }
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const editar = (item: InventarioItem) => {
+    setIdInventario(Number(item.id_inventario));
+    setIdProducto(String(item.id_producto_fk));
+    setProductoBusqueda(item.nombre);
+    setCantidadActual(String(item.cantidad_actual));
+    setStockMinimo(String(item.stock_minimo));
+    setMensaje('');
+  };
+
+  const confirmarEliminar = (item: InventarioItem) => {
+    Alert.alert(
+      'Eliminar inventario',
+      `¿Deseas eliminar el inventario de "${item.nombre}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => eliminar(item.id_inventario),
+        },
+      ]
+    );
+  };
+
+  const eliminar = async (id: number) => {
+    try {
+      setCargando(true);
+      await axios.delete(`${API_URL}?id=${id}`, { timeout: 5000 });
+      setMensaje('Inventario eliminado correctamente');
+      cargarInventario();
+    } catch (error: any) {
+      if (error.response) {
+        setMensaje(error.response.data?.error ?? 'No se pudo eliminar el inventario');
+      } else {
+        setMensaje('Sin respuesta del servidor');
+      }
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const renderItem = ({ item }: { item: InventarioItem }) => {
+    const estado = getEstado(item);
+
+    return (
+      <View style={[styles.fila, { borderLeftColor: estado.color }]}>
+        <View style={styles.infoBloque}>
+          <View style={styles.filaHeader}>
+            <Text style={styles.nombre}>{item.nombre}</Text>
+            <View style={[styles.estadoBadge, { backgroundColor: estado.color }]}>
+              <Text style={styles.estadoTexto}>{estado.label}</Text>
+            </View>
+          </View>
+
+          <Text style={styles.detalle}>ID producto: {item.id_producto_fk}</Text>
+          <Text style={styles.detalle}>Precio: ${Number(item.precio).toLocaleString('es-CO')}</Text>
+          <Text style={styles.detalle}>Talla: {item.talla || 'N/A'} | Color: {item.color || 'N/A'}</Text>
+          <Text style={styles.stock}>Cantidad actual: {item.cantidad_actual}</Text>
+          <Text style={styles.detalle}>Stock mínimo: {item.stock_minimo}</Text>
+        </View>
+
+        <View style={styles.acciones}>
+          <TouchableOpacity style={styles.btnEditar} onPress={() => editar(item)}>
+            <Text style={styles.btnTexto}>Editar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btnEliminar} onPress={() => confirmarEliminar(item)}>
+            <Text style={styles.btnTexto}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
 
   return (
-    <View style={styles.root}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.replace('/bodeguero/panel_bodeguero')} style={styles.btnVolver}>
+          <Text style={styles.btnVolverTexto}>← Volver</Text>
+        </TouchableOpacity>
+        <Text style={styles.titulo}>Inventario</Text>
+        <TouchableOpacity style={styles.btnRecargar} onPress={cargarInventario}>
+          <Text style={styles.btnRecargarTexto}>Recargar</Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* ── Barra de tabs ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar}>
-        {tabs.map(t => (
-          <TouchableOpacity
-            key={t.key}
-            style={[styles.tabBtn, tabActiva === t.key && styles.tabBtnActive]}
-            onPress={() => setTabActiva(t.key)}
-          >
-            <Text style={styles.tabIcon}>{t.icon}</Text>
-            <Text style={[styles.tabLabel, tabActiva === t.key && styles.tabLabelActive]}>
-              {t.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.resumen}>
+        <View style={styles.statCard}>
+          <Text style={styles.statValor}>{resumen.total}</Text>
+          <Text style={styles.statLabel}>Registros</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={[styles.statValor, { color: '#f39c12' }]}>{resumen.bajos}</Text>
+          <Text style={styles.statLabel}>Stock bajo</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={[styles.statValor, { color: '#e74c3c' }]}>{resumen.agotados}</Text>
+          <Text style={styles.statLabel}>Agotados</Text>
+        </View>
+      </View>
 
-      {/* ── Contenido por tab ── */}
-      <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.formulario}>
+        <Text style={styles.formTitle}>{idInventario ? 'Editar inventario' : 'Registrar inventario'}</Text>
 
-        {/* DASHBOARD */}
-        {tabActiva === 'dashboard' && (
-          <View>
-            <Text style={styles.sectionTitle}>Dashboard General</Text>
-            <View style={styles.statsGrid}>
-              <StatCard valor={totalProductos}   label="Total Productos" />
-              <StatCard valor={totalMovimientos} label="Total Movimientos" />
-              <StatCard valor={sinStock}         label="Sin Stock"    color="#dc3545" />
-              <StatCard valor={stockBajo}        label="Stock Bajo"   color="#ffc107" />
-            </View>
+        <TextInput
+          placeholder="Buscar producto por nombre, talla, color o ID..."
+          placeholderTextColor="#999"
+          style={styles.input}
+          value={productoBusqueda}
+          onChangeText={(text) => {
+            setProductoBusqueda(text);
+            setIdProducto('');
+          }}
+        />
 
-            <Text style={styles.cardTitle}>Alertas de Stock</Text>
-            {productos.filter(p => p.stockActual <= p.stockMin).length === 0
-              ? <Text style={styles.emptyText}>No hay alertas de stock.</Text>
-              : productos.filter(p => p.stockActual <= p.stockMin).map(p => {
-                  const est = getEstado(p);
-                  return (
-                    <View key={p.codigo} style={[styles.alertRow, { borderLeftColor: est.color }]}>
-                      <Text style={styles.alertCodigo}>{p.codigo}</Text>
-                      <Text style={styles.alertNombre}>{p.nombre}</Text>
-                      <Text style={[styles.alertEstado, { color: est.color }]}>{est.label}</Text>
-                      <Text style={styles.alertStock}>Stock: {p.stockActual}</Text>
-                    </View>
-                  );
-                })
-            }
-          </View>
-        )}
+        {productosFiltrados.length > 0 && (
+          <View style={styles.productosSelector}>
+            {productosFiltrados.map((producto) => {
+              const activo = idProducto === String(producto.id_producto);
 
-        {/* PRODUCTOS */}
-        {tabActiva === 'productos' && (
-          <View>
-            <Text style={styles.sectionTitle}>Registrar Nuevo Producto</Text>
-
-            <Text style={styles.label}>Código *</Text>
-            <TextInput style={styles.input} placeholder="Código único" placeholderTextColor="#666"
-              autoCapitalize="characters" value={fCodigo} onChangeText={setFCodigo} />
-
-            <Text style={styles.label}>Nombre *</Text>
-            <TextInput style={styles.input} placeholder="Nombre del producto" placeholderTextColor="#666"
-              value={fNombre} onChangeText={setFNombre} />
-
-            <Text style={styles.label}>Unidad de Medida</Text>
-            <View style={styles.pickerRow}>
-              {UNIDADES.map(u => (
-                <TouchableOpacity key={u} style={[styles.chip, fUnidad === u && styles.chipActive]}
-                  onPress={() => setFUnidad(u)}>
-                  <Text style={[styles.chipText, fUnidad === u && styles.chipTextActive]}>{u}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <Text style={styles.label}>Grupo</Text>
-            <View style={styles.pickerRow}>
-              {GRUPOS.map(g => (
-                <TouchableOpacity key={g} style={[styles.chip, fGrupo === g && styles.chipActive]}
-                  onPress={() => setFGrupo(g)}>
-                  <Text style={[styles.chipText, fGrupo === g && styles.chipTextActive]}>{g}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <Text style={styles.label}>Stock Mínimo</Text>
-            <TextInput style={styles.input} placeholder="0" placeholderTextColor="#666"
-              keyboardType="numeric" value={fStockMin} onChangeText={setFStockMin} />
-
-            <TouchableOpacity style={styles.btnPrimary} onPress={registrarProducto}>
-              <Text style={styles.btnText}>✅ Registrar Producto</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* MOVIMIENTOS */}
-        {tabActiva === 'movimientos' && (
-          <View>
-            <Text style={styles.sectionTitle}>Nuevo Movimiento</Text>
-
-            <Text style={styles.label}>Código del Producto *</Text>
-            <TextInput style={styles.input} placeholder="Código" placeholderTextColor="#666"
-              autoCapitalize="characters" value={mCodigo} onChangeText={setMCodigo} />
-
-            <Text style={styles.label}>Fecha *</Text>
-            <TextInput style={styles.input} placeholder="YYYY-MM-DD" placeholderTextColor="#666"
-              value={mFecha} onChangeText={setMFecha} />
-
-            <Text style={styles.label}>Tipo de Movimiento *</Text>
-            <View style={styles.pickerRow}>
-              {(['INGRESO', 'SALIDA', 'AJUSTE_POSITIVO', 'AJUSTE_NEGATIVO'] as Movimiento['tipo'][]).map(t => (
-                <TouchableOpacity key={t} style={[styles.chip, mTipo === t && styles.chipActive]}
-                  onPress={() => setMTipo(t)}>
-                  <Text style={[styles.chipText, mTipo === t && styles.chipTextActive]}>
-                    {t.replace('_', ' ')}
+              return (
+                <TouchableOpacity
+                  key={producto.id_producto}
+                  style={[styles.productoOpcion, activo && styles.productoOpcionActiva]}
+                  onPress={() => {
+                    setIdProducto(String(producto.id_producto));
+                    setProductoBusqueda(producto.nombre);
+                  }}
+                >
+                  <Text style={[styles.productoNombre, activo && styles.productoNombreActivo]}>
+                    {producto.nombre}
+                  </Text>
+                  <Text style={[styles.productoDetalle, activo && styles.productoDetalleActivo]}>
+                    ID {producto.id_producto} | Talla {producto.talla || 'N/A'} | Color {producto.color || 'N/A'}
                   </Text>
                 </TouchableOpacity>
-              ))}
-            </View>
-
-            <Text style={styles.label}>Cantidad *</Text>
-            <TextInput style={styles.input} placeholder="0" placeholderTextColor="#666"
-              keyboardType="numeric" value={mCant} onChangeText={setMCant} />
-
-            <Text style={styles.label}>Observaciones</Text>
-            <TextInput style={[styles.input, { height: 80 }]} placeholder="Observaciones opcionales"
-              placeholderTextColor="#666" multiline value={mObs} onChangeText={setMObs} />
-
-            <TouchableOpacity style={styles.btnPrimary} onPress={registrarMovimiento}>
-              <Text style={styles.btnText}>💾 Guardar Movimiento</Text>
-            </TouchableOpacity>
-
-            <Text style={[styles.cardTitle, { marginTop: 24 }]}>Últimos movimientos</Text>
-            {movimientos.slice(0, 10).map(m => (
-              <View key={m.id} style={styles.movRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.movCodigo}>{m.codigo} — {m.producto}</Text>
-                  <Text style={styles.movFecha}>{m.fecha} · {m.cantidad} uds</Text>
-                  {m.observaciones ? <Text style={styles.movObs}>{m.observaciones}</Text> : null}
-                </View>
-                <Text style={[styles.movTipo, {
-                  color: m.tipo === 'INGRESO' || m.tipo === 'AJUSTE_POSITIVO' ? '#28a745' : '#dc3545'
-                }]}>
-                  {m.tipo.replace('_', ' ')}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* INVENTARIO */}
-        {tabActiva === 'inventario' && (
-          <View>
-            <Text style={styles.sectionTitle}>Stock Actual</Text>
-            {productos.map(p => {
-              const est = getEstado(p);
-              return (
-                <View key={p.codigo} style={[styles.stockRow, { borderLeftColor: est.color }]}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.stockCodigo}>{p.codigo}</Text>
-                    <Text style={styles.stockNombre}>{p.nombre}</Text>
-                    <Text style={styles.stockDetalle}>{p.unidad} · {p.grupo}</Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={[styles.stockCantidad, { color: est.color }]}>{p.stockActual}</Text>
-                    <Text style={styles.stockMin}>Mín: {p.stockMin}</Text>
-                    <Text style={[styles.stockEstado, { color: est.color }]}>{est.label}</Text>
-                  </View>
-                </View>
               );
             })}
           </View>
         )}
 
-        {/* BUSCAR */}
-        {tabActiva === 'buscar' && (
-          <View>
-            <Text style={styles.sectionTitle}>Búsqueda de Productos</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Buscar por código, nombre o grupo..."
-              placeholderTextColor="#666"
-              value={busqueda}
-              onChangeText={setBusqueda}
-            />
-            {busqueda.trim().length > 0 && busqueda.trim().length < 2 && (
-              <Text style={styles.emptyText}>Escribe al menos 2 caracteres.</Text>
-            )}
-            {productosFiltrados.length === 0 && busqueda.trim().length >= 2 && (
-              <Text style={styles.emptyText}>No se encontraron productos.</Text>
-            )}
-            {productosFiltrados.map(p => {
-              const est = getEstado(p);
-              return (
-                <View key={p.codigo} style={[styles.stockRow, { borderLeftColor: est.color }]}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.stockCodigo}>{p.codigo}</Text>
-                    <Text style={styles.stockNombre}>{p.nombre}</Text>
-                    <Text style={styles.stockDetalle}>{p.unidad} · {p.grupo}</Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end' }}>
-                    <Text style={[styles.stockCantidad, { color: est.color }]}>{p.stockActual}</Text>
-                    <Text style={styles.stockMin}>Mín: {p.stockMin}</Text>
-                    <Text style={[styles.stockEstado, { color: est.color }]}>{est.label}</Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
+        {idProducto !== '' && (
+          <Text style={styles.productoSeleccionado}>Producto seleccionado: ID {idProducto}</Text>
         )}
 
-      </ScrollView>
+        <TextInput
+          placeholder="Cantidad actual"
+          placeholderTextColor="#999"
+          style={styles.input}
+          keyboardType="numeric"
+          value={cantidadActual}
+          onChangeText={(text) => setCantidadActual(text.replace(/[^0-9]/g, ''))}
+        />
+        <TextInput
+          placeholder="Stock mínimo"
+          placeholderTextColor="#999"
+          style={styles.input}
+          keyboardType="numeric"
+          value={stockMinimo}
+          onChangeText={(text) => setStockMinimo(text.replace(/[^0-9]/g, ''))}
+        />
+
+        <TouchableOpacity
+          style={[styles.btnGuardar, guardando && { opacity: 0.7 }]}
+          onPress={guardarInventario}
+          disabled={guardando}
+        >
+          {guardando
+            ? <ActivityIndicator color="#fff" />
+            : <Text style={styles.btnGuardarTexto}>{idInventario ? 'Actualizar' : 'Registrar'}</Text>}
+        </TouchableOpacity>
+
+        {idInventario && (
+          <TouchableOpacity style={styles.btnCancelar} onPress={limpiarFormulario}>
+            <Text style={styles.btnCancelarTexto}>Cancelar edición</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {mensaje !== '' && <Text style={styles.mensaje}>{mensaje}</Text>}
+
+      <View style={styles.buscadorContenedor}>
+        <TextInput
+          style={styles.buscador}
+          placeholder="Buscar por producto, ID, talla, color o estado..."
+          placeholderTextColor="#999"
+          value={busqueda}
+          onChangeText={buscar}
+        />
+      </View>
+
+      {cargando && (
+        <ActivityIndicator size="large" color="#B7975B" style={{ marginTop: 20 }} />
+      )}
+
+      {!cargando && filtrados.length === 0 && (
+        <Text style={styles.sinResultados}>No se encontraron registros de inventario</Text>
+      )}
+
+      <FlatList
+        data={filtrados}
+        keyExtractor={(item) => item.id_inventario.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.lista}
+        onRefresh={cargarInventario}
+        refreshing={cargando}
+      />
     </View>
   );
 }
 
-// ── Sub-componente ─────────────────────────────────────────────────────────────
-function StatCard({ valor, label, color = '#B7975B' }: { valor: number; label: string; color?: string }) {
-  return (
-    <View style={styles.statCard}>
-      <Text style={[styles.statValor, { color }]}>{valor}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-}
-
-// ── Estilos ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  root:    { flex: 1, backgroundColor: '#09080D' },
-  content: { padding: 20, paddingBottom: 40 },
-
-  // Tabs
-  tabBar:        { flexGrow: 0, backgroundColor: '#0d0d1a', borderBottomWidth: 1, borderBottomColor: '#B7975B' },
-  tabBtn:        { alignItems: 'center', paddingVertical: 10, paddingHorizontal: 16 },
-  tabBtnActive:  { borderBottomWidth: 2, borderBottomColor: '#B7975B' },
-  tabIcon:       { fontSize: 18 },
-  tabLabel:      { color: '#aaa', fontSize: 11, marginTop: 2 },
-  tabLabelActive:{ color: '#B7975B', fontWeight: 'bold' },
-
-  // Secciones
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#B7975B', marginBottom: 20 },
-  cardTitle:    { fontSize: 15, fontWeight: 'bold', color: '#B7975B', marginBottom: 12 },
-  emptyText:    { color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: 12 },
-
-  // Stats
-  statsGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 },
-  statCard:   { width: '46%', backgroundColor: '#1a1a2e', borderRadius: 10, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#333' },
-  statValor:  { fontSize: 28, fontWeight: 'bold' },
-  statLabel:  { color: '#aaa', fontSize: 12, marginTop: 4, textAlign: 'center' },
-
-  // Alertas
-  alertRow:   { backgroundColor: '#1a1a2e', borderRadius: 8, padding: 12, marginBottom: 8, borderLeftWidth: 4 },
-  alertCodigo:{ color: '#B7975B', fontWeight: 'bold', fontSize: 13 },
-  alertNombre:{ color: '#fff', fontSize: 13, marginTop: 2 },
-  alertEstado:{ fontWeight: 'bold', fontSize: 12, marginTop: 4 },
-  alertStock: { color: '#aaa', fontSize: 12 },
-
-  // Formularios
-  label: { color: '#aaa', fontSize: 13, marginBottom: 4, marginTop: 12 },
-  input: {
-    backgroundColor: '#0d0d1a',
-    borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 8,
-    padding: 12,
-    color: '#fff',
-    fontSize: 14,
-  },
-
-  // Chips (selector)
-  pickerRow:     { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  chip:          { backgroundColor: '#0d0d1a', borderWidth: 1, borderColor: '#333', borderRadius: 20, paddingVertical: 6, paddingHorizontal: 12 },
-  chipActive:    { backgroundColor: '#B7975B', borderColor: '#B7975B' },
-  chipText:      { color: '#aaa', fontSize: 12 },
-  chipTextActive:{ color: '#fff', fontWeight: 'bold' },
-
-  // Botones
-  btnPrimary: { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 20 },
-  btnText:    { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-
-  // Movimientos
-  movRow:    { backgroundColor: '#1a1a2e', borderRadius: 8, padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#333' },
-  movCodigo: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
-  movFecha:  { color: '#aaa', fontSize: 12, marginTop: 2 },
-  movObs:    { color: '#666', fontSize: 11, marginTop: 2, fontStyle: 'italic' },
-  movTipo:   { fontWeight: 'bold', fontSize: 11, textAlign: 'right', maxWidth: 90 },
-
-  // Stock
-  stockRow:      { backgroundColor: '#1a1a2e', borderRadius: 8, padding: 14, marginBottom: 10, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 4 },
-  stockCodigo:   { color: '#B7975B', fontWeight: 'bold', fontSize: 13 },
-  stockNombre:   { color: '#fff', fontSize: 14, marginTop: 2 },
-  stockDetalle:  { color: '#aaa', fontSize: 12, marginTop: 2 },
-  stockCantidad: { fontSize: 22, fontWeight: 'bold' },
-  stockMin:      { color: '#aaa', fontSize: 11 },
-  stockEstado:   { fontWeight: 'bold', fontSize: 11, marginTop: 2 },
+  container: { flex: 1, backgroundColor: '#09080D' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
+  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  btnVolver: { padding: 8 },
+  btnVolverTexto: { color: '#B7975B', fontSize: 14 },
+  btnRecargar: { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
+  btnRecargarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  resumen: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
+  statCard: { flex: 1, backgroundColor: '#1a1a2e', borderRadius: 8, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#333' },
+  statValor: { color: '#B7975B', fontSize: 24, fontWeight: 'bold' },
+  statLabel: { color: '#aaa', fontSize: 11, textAlign: 'center', marginTop: 2 },
+  formulario: { margin: 12, backgroundColor: '#1a1a2e', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#B7975B' },
+  formTitle: { color: '#B7975B', fontSize: 16, fontWeight: 'bold', marginBottom: 10 },
+  input: { backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
+  productosSelector: { marginBottom: 8, gap: 6 },
+  productoOpcion: { backgroundColor: '#0d0d1a', borderWidth: 1, borderColor: '#333', borderRadius: 8, padding: 10 },
+  productoOpcionActiva: { backgroundColor: '#B7975B', borderColor: '#B7975B' },
+  productoNombre: { color: '#B7975B', fontWeight: 'bold', fontSize: 13 },
+  productoNombreActivo: { color: '#fff' },
+  productoDetalle: { color: '#aaa', fontSize: 11, marginTop: 2 },
+  productoDetalleActivo: { color: '#fff' },
+  productoSeleccionado: { color: '#2ecc71', fontSize: 12, marginBottom: 8 },
+  btnGuardar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnCancelar: { padding: 10, alignItems: 'center' },
+  btnCancelarTexto: { color: '#B7975B', textDecorationLine: 'underline', fontSize: 13 },
+  mensaje: { color: '#eee', textAlign: 'center', marginHorizontal: 12, marginBottom: 8, fontSize: 13 },
+  buscadorContenedor: { paddingHorizontal: 12, paddingBottom: 12 },
+  buscador: { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  lista: { paddingHorizontal: 12, paddingBottom: 20 },
+  fila: { backgroundColor: '#1a1a2e', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#333', borderLeftWidth: 4 },
+  filaHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 4 },
+  infoBloque: { marginBottom: 12 },
+  nombre: { flex: 1, fontSize: 16, fontWeight: 'bold', color: '#B7975B' },
+  detalle: { color: '#ccc', fontSize: 13, marginBottom: 2 },
+  stock: { color: '#fff', fontSize: 14, fontWeight: 'bold', marginTop: 4, marginBottom: 2 },
+  estadoBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  estadoTexto: { color: '#fff', fontWeight: 'bold', fontSize: 11 },
+  acciones: { flexDirection: 'row', gap: 10 },
+  btnEditar: { flex: 1, backgroundColor: '#e67e22', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEliminar: { flex: 1, backgroundColor: '#e74c3c', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  sinResultados: { color: '#aaa', textAlign: 'center', marginTop: 20, fontSize: 14 },
 });
