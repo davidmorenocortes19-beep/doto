@@ -1,6 +1,6 @@
 <?php
 
-require_once BASE_PATH . '/core/DataBase.php';
+require_once BASE_PATH . '/core/Database.php';
 
 class Usuario {
 

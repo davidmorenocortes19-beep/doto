@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/ventas.php';
+const API_URL = 'http://172.30.3.242/doto/api/ventas.php';
 
 type Producto = {
   nombre: string;
@@ -238,6 +238,7 @@ export default function VerVentasScreen() {
             { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
             { label: 'Ventas',  icon: '💰', active: true },
             { label: 'Perfil',  icon: '👤', route: '/vendedor/perfil_vendedor' },
+            { label: 'Devol.', icon: '↩️', route: '/vendedor/devoluciones' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}

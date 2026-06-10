@@ -27,7 +27,6 @@ export default function ContactanosCliente() {
         >
             <SafeAreaView style={styles.safeArea}>
 
-                {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.replace('/(tabs)/cliente/panel_cliente')}>
                         <Text style={styles.backBtn}>←</Text>
@@ -43,7 +42,6 @@ export default function ContactanosCliente() {
 
                 <ScrollView contentContainerStyle={styles.scroll}>
 
-                    {/* Formulario */}
                     <View style={styles.seccion}>
                         <Text style={styles.seccionTitulo}>Contáctanos</Text>
                         <Text style={styles.seccionSub}>
@@ -65,7 +63,6 @@ export default function ContactanosCliente() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Info de contacto */}
                     <View style={styles.infoBox}>
                         <TouchableOpacity onPress={() => Linking.openURL('tel:+573212099989')}>
                             <Text style={styles.infoTel}>+57 321 209 9989</Text>
@@ -85,7 +82,6 @@ export default function ContactanosCliente() {
 
                 </ScrollView>
 
-                {/* Bottom nav */}
                 <View style={styles.bottomNav}>
                     {[
                         { label: 'Inicio', icon: '🏠', route: '/cliente/index_cliente' },

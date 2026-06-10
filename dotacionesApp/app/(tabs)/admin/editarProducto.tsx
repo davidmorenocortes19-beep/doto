@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert, ScrollView
+  StyleSheet, ActivityIndicator, Alert, ScrollView, Pressable
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/productos.php';
+const BASE = 'http://172.30.3.242/doto/api';
 
 export default function EditarProductoScreen() {
   const params     = useLocalSearchParams();
@@ -20,6 +20,7 @@ export default function EditarProductoScreen() {
   const [cargando,  setCargando]  = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [errorMsg,  setErrorMsg]  = useState('');
+  const [exitoMsg,  setExitoMsg]  = useState('');
 
   useEffect(() => { if (id) cargarProducto(); }, [id]);
 
@@ -27,7 +28,7 @@ export default function EditarProductoScreen() {
     try {
       setCargando(true);
       setErrorMsg('');
-      const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 8000 });
+      const res = await axios.get(`${BASE}/productos.php?id=${id}`, { timeout: 8000 });
       const p   = res.data;
 
       if (!p || p.error) {
@@ -35,11 +36,11 @@ export default function EditarProductoScreen() {
         return;
       }
 
-      setNombre(p.nombre             ?? '');
-      setPrecio(String(p.precio)     ?? '');
-      setTalla(p.talla               ?? '');
-      setColor(p.color               ?? '');
-      setEstado(p.estado             ?? 'Disponible');
+      setNombre(p.nombre         ?? '');
+      setPrecio(String(p.precio) ?? '');
+      setTalla(p.talla           ?? '');
+      setColor(p.color           ?? '');
+      setEstado(p.estado         ?? 'Disponible');
 
     } catch (e: any) {
       setErrorMsg(`Error al cargar: ${e?.message ?? 'desconocido'}`);
@@ -61,7 +62,7 @@ export default function EditarProductoScreen() {
 
     try {
       setGuardando(true);
-      const res = await axios.put(API_URL, {
+      const res = await axios.put(`${BASE}/productos.php`, {
         id_producto: Number(id),
         nombre,
         precio:  parseFloat(precio),
@@ -71,14 +72,26 @@ export default function EditarProductoScreen() {
       }, { timeout: 8000 });
 
       if (res.data.mensaje) {
-        Alert.alert('✅ Éxito', res.data.mensaje, [
-          { text: 'OK', onPress: () => router.push('/admin/Productos') }
-        ]);
+        setExitoMsg('✅ Producto actualizado correctamente');
+        setTimeout(() => {
+          setExitoMsg('');
+          router.push('/admin/Productos');
+        }, 2000);
       } else {
         Alert.alert('Error', res.data.error || 'No se pudo actualizar');
       }
-    } catch {
-      Alert.alert('Error', 'No se pudo conectar con el servidor');
+    } catch (e: any) {
+      const status  = e?.response?.status;
+      const data    = e?.response?.data;
+      const mensaje = e?.message;
+
+      if (data?.error) {
+        Alert.alert(`Error ${status}`, data.error);
+      } else if (mensaje) {
+        Alert.alert('Error de conexión', mensaje);
+      } else {
+        Alert.alert('Error', 'No se pudo conectar con el servidor');
+      }
     } finally {
       setGuardando(false);
     }
@@ -109,7 +122,6 @@ export default function EditarProductoScreen() {
   return (
     <View style={styles.container}>
 
-      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('/admin/Productos')} style={styles.btnVolver}>
           <Text style={styles.btnVolverTexto}>← Volver</Text>
@@ -118,8 +130,16 @@ export default function EditarProductoScreen() {
         <View style={{ width: 70 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.form}>
+      {exitoMsg ? (
+        <View style={styles.exitoContenedor}>
+          <Text style={styles.exitoTexto}>{exitoMsg}</Text>
+        </View>
+      ) : null}
 
+      <ScrollView
+        contentContainerStyle={styles.form}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={styles.label}>Nombre *</Text>
         <TextInput
           style={styles.input}
@@ -175,9 +195,15 @@ export default function EditarProductoScreen() {
             </TouchableOpacity>
           ))}
         </View>
+      </ScrollView>
 
-        <TouchableOpacity
-          style={[styles.btnGuardar, guardando && { opacity: 0.6 }]}
+      <View style={styles.footerBtn}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.btnGuardar,
+            guardando && { opacity: 0.6 },
+            pressed && { opacity: 0.8 }
+          ]}
           onPress={guardar}
           disabled={guardando}
         >
@@ -185,9 +211,9 @@ export default function EditarProductoScreen() {
             ? <ActivityIndicator color="#fff" />
             : <Text style={styles.btnGuardarTexto}>💾 Guardar cambios</Text>
           }
-        </TouchableOpacity>
+        </Pressable>
+      </View>
 
-      </ScrollView>
     </View>
   );
 }
@@ -208,6 +234,9 @@ const styles = StyleSheet.create({
   estadoBtnAgotado:     { backgroundColor: '#e74c3c', borderColor: '#e74c3c' },
   estadoBtnTexto:       { color: '#B7975B', fontWeight: 'bold', fontSize: 14 },
   estadoBtnTextoActivo: { color: '#fff' },
-  btnGuardar:           { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 30 },
+  btnGuardar:           { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center' },
   btnGuardarTexto:      { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  footerBtn:            { padding: 10, paddingTop: 10, backgroundColor: '#09080D' },
+  exitoContenedor:      { backgroundColor: '#1a4a1a', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#4CAF50' },
+  exitoTexto:           { color: '#4CAF50', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

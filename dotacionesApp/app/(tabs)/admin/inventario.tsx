@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
   StyleSheet, ActivityIndicator, Alert
@@ -6,8 +8,8 @@ import {
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://192.168.40.8/doto/api/productos.php';
+const API_URL = 'http://172.30.0.43/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://172.30.0.43/doto/api/productos.php';
 
 type InventarioItem = {
   id_inventario: number;
@@ -57,6 +59,11 @@ export default function InventarioAdminScreen() {
   const [idProducto, setIdProducto] = useState('');
   const [cantidadActual, setCantidadActual] = useState('');
   const [stockMinimo, setStockMinimo] = useState('');
+
+  // Autocompletado para productos
+  const [autocomplete, setAutocomplete] = useState<ProductoCatalogo[]>([]);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const autocompleteTimer = useRef<number | null>(null);
 
   const cargarProductos = useCallback(async () => {
     try {
@@ -141,6 +148,42 @@ export default function InventarioAdminScreen() {
     setCantidadActual('');
     setStockMinimo('');
   };
+
+  // Autocompletado para búsqueda de productos
+  const buscarAutocomplete = useCallback((texto: string) => {
+    if (!texto || texto.trim().length === 0) {
+      setAutocomplete([]);
+      setShowAutocomplete(false);
+      return;
+    }
+
+    if (autocompleteTimer.current) clearTimeout(autocompleteTimer.current);
+
+    autocompleteTimer.current = setTimeout(() => {
+      const t = texto.toLowerCase();
+      const filtrados = productos
+        .filter(p =>
+          p.nombre.toLowerCase().includes(t) ||
+          String(p.id_producto).includes(t) ||
+          (p.talla ?? '').toLowerCase().includes(t) ||
+          (p.color ?? '').toLowerCase().includes(t)
+        )
+        .slice(0, 6);
+      setAutocomplete(filtrados);
+      setShowAutocomplete(true);
+    }, 250) as unknown as number;
+  }, [productos]);
+
+  const seleccionarAutocomplete = useCallback((producto: ProductoCatalogo) => {
+    setIdProducto(String(producto.id_producto));
+    setProductoBusqueda(producto.nombre);
+    setShowAutocomplete(false);
+    setAutocomplete([]);
+  }, []);
+
+  const ocultarAutocomplete = useCallback(() => {
+    setTimeout(() => setShowAutocomplete(false), 150);
+  }, []);
 
   const validarFormulario = () => {
     if (!idProducto || !cantidadActual || !stockMinimo) {
@@ -296,16 +339,33 @@ export default function InventarioAdminScreen() {
       <View style={styles.formulario}>
         <Text style={styles.formTitulo}>{idInventario ? 'Editar inventario' : 'Registrar inventario'}</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar producto por nombre, talla, color o ID..."
-          placeholderTextColor="#999"
-          value={productoBusqueda}
-          onChangeText={(text) => {
-            setProductoBusqueda(text);
-            setIdProducto('');
-          }}
-        />
+        <View style={styles.autocompleteContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Buscar producto por nombre, talla, color o ID..."
+            placeholderTextColor="#999"
+            value={productoBusqueda}
+            onChangeText={(text) => {
+              setProductoBusqueda(text);
+              setIdProducto('');
+              buscarAutocomplete(text);
+            }}
+            onBlur={ocultarAutocomplete}
+            onFocus={() => { if (productoBusqueda) buscarAutocomplete(productoBusqueda); }}
+          />
+
+          {showAutocomplete && autocomplete.length > 0 && (
+            <View style={styles.autocompleteDropdown}>
+              {autocomplete.map(p => (
+                <TouchableOpacity key={p.id_producto} style={styles.autocompleteItem}
+                  onPress={() => seleccionarAutocomplete(p)}>
+                  <Text style={styles.autocompleteCode}>{p.nombre}</Text>
+                  <Text style={styles.autocompleteName}>ID {p.id_producto} | Talla {p.talla || 'N/A'} | Color {p.color || 'N/A'}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
 
         {productosFiltrados.length > 0 && (
           <View style={styles.productosSelector}>
@@ -405,46 +465,52 @@ export default function InventarioAdminScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: '#09080D' },
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
-  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
-  btnVolver:          { padding: 8 },
-  btnVolverTexto:     { color: '#B7975B', fontSize: 14 },
-  btnAgregar:         { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
-  btnAgregarTexto:    { color: '#fff', fontWeight: 'bold', fontSize: 13 },
-  resumenContenedor:  { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
-  resumenCard:        { flex: 1, backgroundColor: '#1a1a2e', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#B7975B' },
-  resumenValor:       { color: '#B7975B', fontSize: 24, fontWeight: 'bold' },
-  resumenLabel:       { color: '#ccc', fontSize: 11, marginTop: 2, textAlign: 'center' },
-  formulario:         { margin: 12, backgroundColor: '#1a1a2e', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#B7975B' },
-  formTitulo:         { color: '#B7975B', fontWeight: 'bold', fontSize: 16, marginBottom: 10 },
-  input:              { backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
-  productosSelector:  { marginBottom: 8, gap: 6 },
-  productoOpcion:     { backgroundColor: '#0d0d1a', borderWidth: 1, borderColor: '#333', borderRadius: 8, padding: 10 },
-  productoOpcionActiva:{ backgroundColor: '#B7975B', borderColor: '#B7975B' },
-  productoNombre:     { color: '#B7975B', fontWeight: 'bold', fontSize: 13 },
-  productoNombreActivo:{ color: '#fff' },
-  productoDetalle:    { color: '#aaa', fontSize: 11, marginTop: 2 },
-  productoDetalleActivo:{ color: '#fff' },
-  productoSeleccionado:{ color: '#2ecc71', fontSize: 12, marginBottom: 8 },
-  btnGuardar:         { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnGuardarTexto:    { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  btnCancelar:        { padding: 10, alignItems: 'center' },
-  btnCancelarTexto:   { color: '#B7975B', textDecorationLine: 'underline', fontSize: 13 },
-  mensaje:            { color: '#eee', textAlign: 'center', marginHorizontal: 12, marginBottom: 8, fontSize: 13 },
+  container: { flex: 1, backgroundColor: '#09080D' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
+  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  btnVolver: { padding: 8 },
+  btnVolverTexto: { color: '#B7975B', fontSize: 14 },
+  btnAgregar: { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
+  btnAgregarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  resumenContenedor: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
+  resumenCard: { flex: 1, backgroundColor: '#1a1a2e', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#B7975B' },
+  resumenValor: { color: '#B7975B', fontSize: 24, fontWeight: 'bold' },
+  resumenLabel: { color: '#ccc', fontSize: 11, marginTop: 2, textAlign: 'center' },
+  formulario: { margin: 12, backgroundColor: '#1a1a2e', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#B7975B' },
+  formTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 16, marginBottom: 10 },
+  input: { backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
+  productosSelector: { marginBottom: 8, gap: 6 },
+  productoOpcion: { backgroundColor: '#0d0d1a', borderWidth: 1, borderColor: '#333', borderRadius: 8, padding: 10 },
+  productoOpcionActiva: { backgroundColor: '#B7975B', borderColor: '#B7975B' },
+  productoNombre: { color: '#B7975B', fontWeight: 'bold', fontSize: 13 },
+  productoNombreActivo: { color: '#fff' },
+  productoDetalle: { color: '#aaa', fontSize: 11, marginTop: 2 },
+  productoDetalleActivo: { color: '#fff' },
+  productoSeleccionado: { color: '#2ecc71', fontSize: 12, marginBottom: 8 },
+  btnGuardar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnCancelar: { padding: 10, alignItems: 'center' },
+  btnCancelarTexto: { color: '#B7975B', textDecorationLine: 'underline', fontSize: 13 },
+  mensaje: { color: '#eee', textAlign: 'center', marginHorizontal: 12, marginBottom: 8, fontSize: 13 },
   buscadorContenedor: { padding: 12, paddingTop: 0 },
-  buscador:           { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
-  lista:              { paddingHorizontal: 12, paddingBottom: 20 },
-  fila:               { backgroundColor: '#1a1a2e', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#B7975B' },
-  infoBloque:         { marginBottom: 12 },
-  nombre:             { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 4 },
-  detalle:            { color: '#ccc', fontSize: 13, marginBottom: 2 },
-  estadoBadge:        { marginTop: 6, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  estadoTexto:        { color: '#fff', fontWeight: 'bold', fontSize: 12 },
-  acciones:           { flexDirection: 'row', gap: 10 },
-  btnEditar:          { flex: 1, backgroundColor: '#e67e22', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnEliminar:        { flex: 1, backgroundColor: '#e74c3c', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnTexto:           { color: '#fff', fontWeight: 'bold', fontSize: 13 },
-  error:              { color: '#e74c3c', textAlign: 'center', marginTop: 20, fontSize: 14 },
-  sinResultados:      { color: '#aaa', textAlign: 'center', marginTop: 30, fontSize: 14 },
+  buscador: { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  lista: { paddingHorizontal: 12, paddingBottom: 20 },
+  fila: { backgroundColor: '#1a1a2e', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#B7975B' },
+  infoBloque: { marginBottom: 12 },
+  nombre: { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 4 },
+  detalle: { color: '#ccc', fontSize: 13, marginBottom: 2 },
+  estadoBadge: { marginTop: 6, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  estadoTexto: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
+  acciones: { flexDirection: 'row', gap: 10 },
+  btnEditar: { flex: 1, backgroundColor: '#e67e22', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEliminar: { flex: 1, backgroundColor: '#e74c3c', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  error: { color: '#e74c3c', textAlign: 'center', marginTop: 20, fontSize: 14 },
+  sinResultados: { color: '#aaa', textAlign: 'center', marginTop: 30, fontSize: 14 },
+
+  autocompleteContainer: { position: 'relative', marginBottom: 8 },
+  autocompleteDropdown: { position: 'absolute', top: 54, left: 0, right: 0, backgroundColor: '#0d0d1a', borderWidth: 1, borderColor: '#333', borderRadius: 8, maxHeight: 200, zIndex: 1000 },
+  autocompleteItem: { padding: 10, borderBottomWidth: 1, borderBottomColor: '#222' },
+  autocompleteCode: { color: '#B7975B', fontWeight: 'bold' },
+  autocompleteName: { color: '#aaa', fontSize: 11, marginTop: 4 },
 });

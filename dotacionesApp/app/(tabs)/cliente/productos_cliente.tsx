@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/productos.php';
+const API_URL = 'http://172.30.3.242/doto/api/productos.php';
 
 type Producto = {
   id_producto: number;
@@ -74,9 +74,6 @@ export default function ProductosCliente() {
 
   const renderProducto = ({ item }: { item: Producto }) => (
     <View style={styles.card}>
-      <View style={styles.cardImgPlaceholder}>
-        <Text style={styles.cardImgIcon}>👕</Text>
-      </View>
       <Text style={styles.cardNombre}>{item.nombre}</Text>
       <Text style={styles.cardPrecio}>${Number(item.precio).toLocaleString('es-CO')}</Text>
       <View style={styles.cardInfo}>

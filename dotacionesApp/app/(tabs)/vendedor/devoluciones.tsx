@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 
 
-const API_URL = 'http://192.168.40.8/doto/api/devoluciones.php';
+const API_URL = 'http://172.30.3.242/doto/api/devoluciones.php';
 
 type Devolucion = {
   id?: number;
@@ -212,6 +212,7 @@ export default function DevolucionesScreen() {
             { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
             { label: 'Devol.',  icon: '↩️', active: true },
             { label: 'Perfil',  icon: '👤', route: '/vendedor/perfil_vendedor' },
+            { label: 'Ventas', icon: '💰', route: '/vendedor/ver_ventas' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}

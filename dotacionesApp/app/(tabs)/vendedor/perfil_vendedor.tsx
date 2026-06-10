@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://192.168.40.8/doto/api/perfil.php';
+const API_URL = 'http://172.30.3.242/doto/api/perfil.php';
 
 type Vendedor = {
   id?: number;
@@ -204,6 +204,7 @@ export default function PerfilVendedor() {
               { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
               { label: 'Ventas',  icon: '💰', route: '/vendedor/ver_ventas' },
               { label: 'Perfil',  icon: '👤', active: true },
+              { label: 'Devol.', icon: '↩️', route: '/vendedor/devoluciones' },
             ].map(item => (
               <TouchableOpacity
                 key={item.label}

@@ -1,5 +1,4 @@
 <?php
-
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -12,5 +11,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 define('BASE_PATH', dirname(__DIR__));
 
-
-require __DIR__ . '/../core/DataBase.php';
+require_once BASE_PATH . '/core/Database.php';

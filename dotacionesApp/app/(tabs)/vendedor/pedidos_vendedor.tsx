@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/pedidos.php';
+const API_URL = 'http://172.30.3.242/doto/api/pedidos.php';
 
 type Producto = {
   nombre: string;
@@ -203,6 +203,7 @@ export default function PedidosCliente() {
             { label: 'Pedidos', icon: '📋', active: true },
             { label: 'Devol.', icon: '↩️', route: '/vendedor/devoluciones' },
             { label: 'Perfil', icon: '👤', route: '/vendedor/perfil_vendedor' },
+            { label: 'Ventas', icon: '💰', route: '/vendedor/ver_ventas' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}

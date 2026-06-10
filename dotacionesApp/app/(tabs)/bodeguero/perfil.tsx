@@ -18,7 +18,6 @@ export default function PerfilBodeguero() {
       return;
     }
 
-    // TODO: conectar con API — por ahora solo actualiza el objeto sesion local
     if (nombre)    sesion.nombre = nombre;
 
     Alert.alert('Éxito ✅', 'Perfil actualizado correctamente.');
@@ -29,7 +28,6 @@ export default function PerfilBodeguero() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Mi Perfil</Text>
 
-      {/* ── Información actual ── */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Información Personal</Text>
         <InfoRow label="Nombre"    value={sesion.nombre} />
@@ -40,7 +38,6 @@ export default function PerfilBodeguero() {
         <InfoRow label="Rol"       value={sesion.rol} />
       </View>
 
-      {/* ── Formulario de actualización ── */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Actualizar Información</Text>
 

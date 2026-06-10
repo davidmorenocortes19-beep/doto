@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/dota/api/registro.php';
+const API_URL = 'http://172.30.3.242/doto/api/registro.php';
 
 const validarPassword = (pass: string): string | null => {
   if (pass.length < 8) return '⚠ Mínimo 8 caracteres';
