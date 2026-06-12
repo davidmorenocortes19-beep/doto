@@ -6,8 +6,8 @@ import {
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://192.168.40.8/doto/api/productos.php';
+const API_URL = 'http://172.30.2.10/dota/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://172.30.2.10/dota/api/productos.php';
 
 type InventarioItem = {
   id_inventario: number;

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/ventas.php';
+const API_URL = 'http://172.30.2.10/dota/api/ventas.php';
 
 type Producto = {
   nombre: string;

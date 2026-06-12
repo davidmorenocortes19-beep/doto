@@ -6,7 +6,7 @@ import {
 import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
-const API = 'http://192.168.40.8/doto/api/inventario.php';
+const API = 'http://172.30.2.10/dota/api/inventario.php';
 
 export default function IndexBodeguero() {
   const [nombre,   setNombre]   = useState(sesion.nombre);
