@@ -10,7 +10,7 @@ class Producto {
         $db = DataBase::conectar();
 
         $stmt = $db->query("
-            SELECT id_producto, nombre, precio, talla, color, estado
+            SELECT id_producto, nombre, precio, talla, color, imagen, estado
             FROM producto
             ORDER BY nombre ASC
         ");
@@ -24,7 +24,7 @@ class Producto {
         $db = DataBase::conectar();
 
         $stmt = $db->prepare("
-            SELECT id_producto, nombre, precio, talla, color, estado
+            SELECT id_producto, nombre, precio, talla, color, imagen, estado
             FROM producto
             WHERE id_producto = ?
         ");
@@ -34,7 +34,7 @@ class Producto {
     }
 
     // ── CREAR PRODUCTO ───────────────────────────────────────────────
-    public static function crear($nombre, $precio, $talla, $color, $estado = 'Disponible') {
+    public static function crear($nombre, $precio, $talla, $color, $imagen = '', $estado = 'Disponible') {
 
         $db = DataBase::conectar();
 
@@ -43,15 +43,15 @@ class Producto {
         if ($stmt->fetch()) return "exist";
 
         $stmt = $db->prepare("
-            INSERT INTO producto (nombre, precio, talla, color, estado)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO producto (nombre, precio, talla, color, imagen, estado)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
 
-        return $stmt->execute([$nombre, $precio, $talla, $color, $estado]);
+        return $stmt->execute([$nombre, $precio, $talla, $color, $imagen, $estado]);
     }
 
     // ── ACTUALIZAR PRODUCTO ──────────────────────────────────────────
-    public static function actualizar($id, $nombre, $precio, $talla, $color, $estado) {
+    public static function actualizar($id, $nombre, $precio, $talla, $color, $imagen, $estado) {
 
         $db = DataBase::conectar();
 
@@ -68,11 +68,12 @@ class Producto {
                 precio  = ?,
                 talla   = ?,
                 color   = ?,
+                imagen  = ?,
                 estado  = ?
             WHERE id_producto = ?
         ");
 
-        return $stmt->execute([$nombre, $precio, $talla, $color, $estado, $id]);
+        return $stmt->execute([$nombre, $precio, $talla, $color, $imagen, $estado, $id]);
     }
 
     // ── ELIMINAR PRODUCTO ────────────────────────────────────────────
@@ -90,7 +91,7 @@ class Producto {
         $db = DataBase::conectar();
 
         $stmt = $db->prepare("
-            SELECT id_producto, nombre, precio, talla, color, estado
+            SELECT id_producto, nombre, precio, talla, color, imagen, estado
             FROM producto
             WHERE estado = ?
             ORDER BY nombre ASC

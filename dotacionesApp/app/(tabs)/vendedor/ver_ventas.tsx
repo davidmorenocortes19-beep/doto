@@ -102,9 +102,9 @@ export default function VerVentasScreen() {
     productos.reduce((acc, p) => acc + p.precio * (p.cantidad || 1), 0);
 
   const colorEstado = (estado: string) => {
-    if (estado === 'Completada') return { bg: '#2ecc7122', border: '#2ecc7144', text: '#2ecc71' };
-    if (estado === 'Cancelada')  return { bg: '#e74c3c22', border: '#e74c3c44', text: '#e74c3c' };
-    return { bg: '#e67e2222', border: '#e67e2244', text: '#e67e22' };
+    if (estado === 'Completada') return { bg: '#333333', border: '#333333', text: '#333333' };
+    if (estado === 'Cancelada')  return { bg: '#B7975B22', border: '#333333', text: '#333333' };
+    return { bg: '#333333', border: '#333333', text: '#333333' };
   };
 
   const ventasFiltradas = ventas.filter(v =>
@@ -213,7 +213,7 @@ export default function VerVentasScreen() {
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar por cliente, fecha, estado..."
-            placeholderTextColor="#666"
+            placeholderTextColor="#333333"
             value={busqueda}
             onChangeText={setBusqueda}
           />
@@ -312,61 +312,61 @@ export default function VerVentasScreen() {
 
 const styles = StyleSheet.create({
   background:    { flex: 1 },
-  safeArea:      { flex: 1, backgroundColor: 'rgba(9,8,13,0.82)' },
+  safeArea:      { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
 
-  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B33', backgroundColor: 'rgba(9,8,13,0.97)' },
-  backBtn:       { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
+  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
+  backBtn:       { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
   logoArea:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:    { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:  { color: '#fff', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:   { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  logoInitials:  { color: '#333333', fontWeight: 'bold', fontSize: 10 },
+  headerTitle:   { color: '#333333', fontWeight: 'bold', fontSize: 15 },
 
   resumen:       { flexDirection: 'row', gap: 8, padding: 12 },
-  resumenCard:   { flex: 1, backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 10, padding: 10, alignItems: 'center' },
-  resumenNum:    { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
-  resumenLabel:  { color: '#888', fontSize: 10, marginTop: 2, textAlign: 'center' },
+  resumenCard:   { flex: 1, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 10, padding: 10, alignItems: 'center' },
+  resumenNum:    { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+  resumenLabel:  { color: '#333333', fontSize: 10, marginTop: 2, textAlign: 'center' },
 
-  searchWrap:    { flexDirection: 'row', alignItems: 'center', marginHorizontal: 12, marginBottom: 10, backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B44', borderRadius: 8 },
-  searchInput:   { flex: 1, color: '#eee', padding: 9, fontSize: 12 },
+  searchWrap:    { flexDirection: 'row', alignItems: 'center', marginHorizontal: 12, marginBottom: 10, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 8 },
+  searchInput:   { flex: 1, color: '#333333', padding: 9, fontSize: 12 },
   searchIcon:    { paddingRight: 10, fontSize: 14 },
 
   listContent:   { paddingHorizontal: 12, paddingBottom: 24 },
-  empty:         { color: '#666', textAlign: 'center', marginTop: 60, fontSize: 14 },
+  empty:         { color: '#333333', textAlign: 'center', marginTop: 60, fontSize: 14 },
 
-  card:          { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 12, padding: 14, marginBottom: 12 },
+  card:          { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 14, marginBottom: 12 },
   cardHeader:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  cardTitle:     { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  cardTitle:     { color: '#333333', fontWeight: 'bold', fontSize: 15 },
   estadoBadge:   { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, borderWidth: 1 },
   estadoText:    { fontSize: 11, fontWeight: 'bold' },
 
   cardRow:       { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  rowLabel:      { color: '#888', fontSize: 12 },
-  rowValue:      { color: '#ccc', fontSize: 12, fontWeight: '500' },
-  totalRow:      { borderTopWidth: 1, borderTopColor: '#B7975B33', paddingTop: 10, marginTop: 6 },
-  totalLabel:    { color: '#aaa', fontWeight: 'bold', fontSize: 14 },
-  totalValor:    { color: '#B7975B', fontWeight: 'bold', fontSize: 16 },
+  rowLabel:      { color: '#333333', fontSize: 12 },
+  rowValue:      { color: '#333333', fontSize: 12, fontWeight: '500' },
+  totalRow:      { borderTopWidth: 1, borderTopColor: '#333333', paddingTop: 10, marginTop: 6 },
+  totalLabel:    { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  totalValor:    { color: '#333333', fontWeight: 'bold', fontSize: 16 },
 
   acciones:      { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
   btnDetalle:    { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnCompletar:  { backgroundColor: '#27ae60', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnCancelar:   { backgroundColor: '#7f8c8d', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnEliminar:   { backgroundColor: '#e74c3c', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnText:       { color: '#fff', fontSize: 12 },
+  btnCompletar:  { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnCancelar:   { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnEliminar:   { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnText:       { color: '#333333', fontSize: 12 },
 
-  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B22', backgroundColor: 'rgba(9,8,13,0.98)' },
+  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
   bnav:          { alignItems: 'center', gap: 2 },
   bnavIcon:      { fontSize: 18 },
-  bnavLabel:     { fontSize: 9, color: '#666' },
-  bnavActive:    { color: '#B7975B' },
+  bnavLabel:     { fontSize: 9, color: '#333333' },
+  bnavActive:    { color: '#333333' },
 
-  modalOverlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'center', alignItems: 'center' },
-  modalBox:      { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B55', borderRadius: 14, padding: 18, width: '90%' },
-  modalTitle:    { color: '#B7975B', fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 14 },
-  prodTitle:     { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginTop: 12, marginBottom: 6 },
-  productoItem:  { backgroundColor: '#0e0d12', borderRadius: 8, padding: 10, marginBottom: 6 },
-  productoNombre:{ color: '#eee', fontSize: 13, fontWeight: '500', marginBottom: 4 },
+  modalOverlay:  { flex: 1, backgroundColor: 'rgba(51,51,51,0.35)', justifyContent: 'center', alignItems: 'center' },
+  modalBox:      { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 14, padding: 18, width: '90%' },
+  modalTitle:    { color: '#333333', fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 14 },
+  prodTitle:     { color: '#333333', fontSize: 13, fontWeight: 'bold', marginTop: 12, marginBottom: 6 },
+  productoItem:  { backgroundColor: '#F8F9FA', borderRadius: 8, padding: 10, marginBottom: 6 },
+  productoNombre:{ color: '#333333', fontSize: 13, fontWeight: '500', marginBottom: 4 },
   productoDetalle:{ flexDirection: 'row', justifyContent: 'space-between' },
-  productoInfo:  { color: '#aaa', fontSize: 11 },
+  productoInfo:  { color: '#333333', fontSize: 11 },
   btnCerrar:     { backgroundColor: '#B7975B', padding: 11, borderRadius: 8, alignItems: 'center', marginTop: 16 },
-  btnCerrarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnCerrarText: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
 });

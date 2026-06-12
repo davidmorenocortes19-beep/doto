@@ -21,12 +21,11 @@ FOREIGN KEY(id_rol_fk) REFERENCES rol(id_rol)
 
 CREATE TABLE producto (
 id_producto INT AUTO_INCREMENT PRIMARY KEY,
-imagen 
 nombre VARCHAR(100) NOT NULL,
 precio DECIMAL(10,2) NOT NULL,
 talla VARCHAR(10),
 color VARCHAR(30),
-
+imagen VARCHAR(255),
 estado ENUM('Disponible','Agotado') DEFAULT 'Disponible'
 );
 
@@ -124,3 +123,15 @@ motivo VARCHAR(200),
 fecha_devolucion DATE,
 FOREIGN KEY (id_detalle_venta_fk) REFERENCES detalle_venta(id_detalle_venta)
 );
+
+INSERT INTO rol (nombre_rol, descripcion_rol) 
+
+VALUES  
+
+('Administrador','Control total del sistema'), 
+
+('Cliente','Usuario que compra productos'), 
+
+('Vendedor','Gestiona ventas'), 
+
+('Bodeguero','Administra inventario'); 

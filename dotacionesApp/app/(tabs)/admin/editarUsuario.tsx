@@ -161,7 +161,7 @@ export default function EditarUsuarioScreen() {
     return (
       <View style={styles.centrado}>
         <ActivityIndicator size="large" color="#B7975B" />
-        <Text style={{ color: '#B7975B', marginTop: 10 }}>Cargando usuario...</Text>
+        <Text style={{ color: '#333333', marginTop: 10 }}>Cargando usuario...</Text>
       </View>
     );
   }
@@ -169,11 +169,11 @@ export default function EditarUsuarioScreen() {
   if (errorMsg) {
     return (
       <View style={styles.centrado}>
-        <Text style={{ color: '#e74c3c', fontSize: 14, textAlign: 'center', paddingHorizontal: 20 }}>
+        <Text style={{ color: '#333333', fontSize: 14, textAlign: 'center', paddingHorizontal: 20 }}>
           {errorMsg}
         </Text>
         <TouchableOpacity onPress={cargarDatos} style={{ marginTop: 20 }}>
-          <Text style={{ color: '#B7975B' }}>🔄 Reintentar</Text>
+          <Text style={{ color: '#333333' }}>🔄 Reintentar</Text>
         </TouchableOpacity>
       </View>
     );
@@ -201,7 +201,7 @@ export default function EditarUsuarioScreen() {
         {/* NOMBRE */}
         <TextInput
           placeholder="Nombre completo"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, nombreError ? styles.inputError : null]}
           onChangeText={handleNombre}
           value={nombre}
@@ -215,7 +215,7 @@ export default function EditarUsuarioScreen() {
         {/* DOCUMENTO — solo lectura */}
         <TextInput
           placeholder="Documento"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, styles.inputDeshabilitado]}
           value={documento}
           editable={false}
@@ -226,7 +226,7 @@ export default function EditarUsuarioScreen() {
         {/* CORREO */}
         <TextInput
           placeholder="Correo electrónico"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, correoError ? styles.inputError : null]}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -241,7 +241,7 @@ export default function EditarUsuarioScreen() {
         {/* TELÉFONO */}
         <TextInput
           placeholder="Teléfono"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, telError ? styles.inputError : null]}
           keyboardType="phone-pad"
           onChangeText={handleTelefono}
@@ -256,7 +256,7 @@ export default function EditarUsuarioScreen() {
         {/* DIRECCIÓN */}
         <TextInput
           placeholder="Dirección"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, dirError ? styles.inputError : null]}
           onChangeText={handleDireccion}
           value={direccion}
@@ -296,7 +296,7 @@ export default function EditarUsuarioScreen() {
           disabled={guardando}
         >
           {guardando
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color="#333333" />
             : <Text style={styles.buttonText}>💾 GUARDAR CAMBIOS</Text>
           }
         </Pressable>
@@ -307,28 +307,28 @@ export default function EditarUsuarioScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: '#09080D' },
-  centrado:           { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#09080D' },
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
-  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  container:          { flex: 1, backgroundColor: '#F8F9FA' },
+  centrado:           { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA' },
+  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
+  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#333333' },
   btnVolver:          { padding: 8 },
-  btnVolverTexto:     { color: '#B7975B', fontSize: 14 },
+  btnVolverTexto:     { color: '#333333', fontSize: 14 },
   form:               { padding: 20, paddingBottom: 20 },
-  input:              { backgroundColor: '#1a1a2e', color: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#B7975B', fontSize: 15 },
-  inputError:         { borderColor: '#e74c3c', borderWidth: 2, marginBottom: 0 },
-  inputDeshabilitado: { backgroundColor: '#111', color: '#666', borderColor: '#444' },
-  nota:               { color: '#666', fontSize: 11, marginBottom: 8, marginLeft: 4, fontStyle: 'italic' },
-  fieldHint:          { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk:            { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  label:              { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#B7975B' },
+  input:              { backgroundColor: '#F8F9FA', color: '#333333', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#333333', fontSize: 15 },
+  inputError:         { borderColor: '#333333', borderWidth: 2, marginBottom: 0 },
+  inputDeshabilitado: { backgroundColor: '#F8F9FA', color: '#333333', borderColor: '#333333' },
+  nota:               { color: '#333333', fontSize: 11, marginBottom: 8, marginLeft: 4, fontStyle: 'italic' },
+  fieldHint:          { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:            { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  label:              { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#333333' },
   rolContainer:       { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  rolBtn:             { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#1a1a2e', alignItems: 'center', borderWidth: 1, borderColor: '#B7975B' },
+  rolBtn:             { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#F8F9FA', alignItems: 'center', borderWidth: 1, borderColor: '#333333' },
   rolActivo:          { backgroundColor: '#B7975B' },
-  rolTexto:           { fontWeight: 'bold', color: '#B7975B', fontSize: 13 },
-  rolTextoActivo:     { fontWeight: 'bold', color: '#fff', fontSize: 13 },
+  rolTexto:           { fontWeight: 'bold', color: '#333333', fontSize: 13 },
+  rolTextoActivo:     { fontWeight: 'bold', color: '#333333', fontSize: 13 },
   button:             { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
-  buttonText:         { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  footerBtn:          { padding: 20, paddingTop: 10, backgroundColor: '#09080D' },
-  exitoContenedor:    { backgroundColor: '#1a4a1a', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#4CAF50' },
-  exitoTexto:         { color: '#4CAF50', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
+  buttonText:         { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+  footerBtn:          { padding: 20, paddingTop: 10, backgroundColor: '#F8F9FA' },
+  exitoContenedor:    { backgroundColor: '#F8F9FA', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#333333' },
+  exitoTexto:         { color: '#333333', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

@@ -6,7 +6,7 @@ import {
 import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
-const API = 'http://172.30.3.242/doto/api/inventario.php';
+const API = 'http://172.30.0.43/doto/api/inventario.php';
 
 export default function IndexBodeguero() {
   const [nombre,   setNombre]   = useState(sesion.nombre);
@@ -78,18 +78,18 @@ export default function IndexBodeguero() {
 }
 
 const s = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: '#09080D', padding: 24, paddingBottom: 40 },
+  container: { flexGrow: 1, backgroundColor: '#F8F9FA', padding: 24, paddingBottom: 40 },
 
   // Header
   header: {
     alignItems: 'center',
     marginTop: 40,
     marginBottom: 32,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#F8F9FA',
     borderRadius: 16,
     padding: 28,
     borderWidth: 1,
-    borderColor: '#B7975B',
+    borderColor: '#333333',
   },
   avatarCircle: {
     width: 72, height: 72, borderRadius: 36,
@@ -97,45 +97,45 @@ const s = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     marginBottom: 14,
   },
-  avatarLetra: { fontSize: 32, fontWeight: 'bold', color: '#fff' },
-  bienvenido:  { fontSize: 15, color: '#aaa', textAlign: 'center' },
-  nombre:      { fontSize: 26, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginTop: 4 },
+  avatarLetra: { fontSize: 32, fontWeight: 'bold', color: '#333333' },
+  bienvenido:  { fontSize: 15, color: '#333333', textAlign: 'center' },
+  nombre:      { fontSize: 26, fontWeight: 'bold', color: '#333333', textAlign: 'center', marginTop: 4 },
   rolBadge: {
     marginTop: 10,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: '#F8F9FA',
     borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: '#B7975B',
+    borderColor: '#333333',
   },
-  rolText: { color: '#B7975B', fontSize: 13, fontWeight: '600' },
+  rolText: { color: '#333333', fontSize: 13, fontWeight: '600' },
 
   // Card
   card: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#F8F9FA',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: '#333333',
   },
   cardIcon:  { fontSize: 28, marginBottom: 8 },
-  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 8 },
-  cardBody:  { fontSize: 14, color: '#ccc', lineHeight: 22 },
+  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#333333', marginBottom: 8 },
+  cardBody:  { fontSize: 14, color: '#333333', lineHeight: 22 },
 
   // Accesos rápidos
-  seccionTitle: { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 12 },
+  seccionTitle: { fontSize: 16, fontWeight: 'bold', color: '#333333', marginBottom: 12 },
   grid:         { flexDirection: 'row', gap: 12 },
   gridCard: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#F8F9FA',
     borderRadius: 12,
     padding: 20,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#B7975B',
+    borderColor: '#333333',
   },
   gridIcon:  { fontSize: 30, marginBottom: 8 },
-  gridLabel: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  gridLabel: { color: '#333333', fontWeight: 'bold', fontSize: 13 },
 });

@@ -116,7 +116,7 @@ export default function UsuariosScreen() {
         <TextInput
           style={styles.buscador}
           placeholder="🔍 Buscar por nombre, correo, rol..."
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           value={busqueda}
           onChangeText={buscar}
         />
@@ -146,26 +146,26 @@ export default function UsuariosScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: '#09080D' },
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
-  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  container:          { flex: 1, backgroundColor: '#F8F9FA' },
+  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
+  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#333333' },
   btnVolver:          { padding: 8 },
-  btnVolverTexto:     { color: '#B7975B', fontSize: 14 },
+  btnVolverTexto:     { color: '#333333', fontSize: 14 },
   btnAgregar:         { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
-  btnAgregarTexto:    { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  btnAgregarTexto:    { color: '#333333', fontWeight: 'bold', fontSize: 13 },
   buscadorContenedor: { padding: 12 },
-  buscador:           { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  buscador:           { backgroundColor: '#F8F9FA', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333333', fontSize: 14 },
   lista:              { paddingHorizontal: 12, paddingBottom: 20 },
-  fila:               { backgroundColor: '#1a1a2e', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#B7975B' },
+  fila:               { backgroundColor: '#F8F9FA', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#333333' },
   infoBloque:         { marginBottom: 12 },
-  nombre:             { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 4 },
-  detalle:            { color: '#ccc', fontSize: 13, marginBottom: 2 },
+  nombre:             { fontSize: 16, fontWeight: 'bold', color: '#333333', marginBottom: 4 },
+  detalle:            { color: '#333333', fontSize: 13, marginBottom: 2 },
   rolBadge:           { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#B7975B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  rolTexto:           { color: '#000', fontWeight: 'bold', fontSize: 12 },
+  rolTexto:           { color: '#333333', fontWeight: 'bold', fontSize: 12 },
   acciones:           { flexDirection: 'row', gap: 10 },
-  btnEditar:          { flex: 1, backgroundColor: '#e67e22', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnEliminar:        { flex: 1, backgroundColor: '#e74c3c', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnTexto:           { color: '#fff', fontWeight: 'bold', fontSize: 13 },
-  error:              { color: '#e74c3c', textAlign: 'center', marginTop: 20, fontSize: 14 },
-  sinResultados:      { color: '#aaa', textAlign: 'center', marginTop: 30, fontSize: 14 },
+  btnEditar:          { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEliminar:        { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnTexto:           { color: '#333333', fontWeight: 'bold', fontSize: 13 },
+  error:              { color: '#333333', textAlign: 'center', marginTop: 20, fontSize: 14 },
+  sinResultados:      { color: '#333333', textAlign: 'center', marginTop: 30, fontSize: 14 },
 });

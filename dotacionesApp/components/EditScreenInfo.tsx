@@ -12,22 +12,22 @@ export default function EditScreenInfo({ path }: { path: string }) {
       <View style={styles.getStartedContainer}>
         <Text
           style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
+          lightColor="rgba(51,51,51,0.35)"
+          darkColor="rgba(248,249,250,0.96)">
           Open up the code for this screen:
         </Text>
 
         <View
           style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
-          darkColor="rgba(255,255,255,0.05)"
-          lightColor="rgba(0,0,0,0.05)">
+          darkColor="rgba(183,151,91,0.08)"
+          lightColor="rgba(183,151,91,0.12)">
           <MonoText>{path}</MonoText>
         </View>
 
         <Text
           style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
+          lightColor="rgba(51,51,51,0.35)"
+          darkColor="rgba(248,249,250,0.96)">
           Change any of the text, save the file, and your app will automatically update.
         </Text>
       </View>

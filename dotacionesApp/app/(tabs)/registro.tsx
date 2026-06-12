@@ -138,7 +138,7 @@ export default function RegistroScreen() {
           <Text style={styles.title}>Dotaciones Toronto</Text>
           <Text style={styles.subtitle}>Crea tu cuenta Aqui!</Text>
 
-          <TextInput placeholder="Nombre completo" placeholderTextColor="#999"
+          <TextInput placeholder="Nombre completo" placeholderTextColor="#333333"
             style={[styles.input, nombreError ? styles.inputError : null]}
             onChangeText={handleNombre}
             value={nombre}
@@ -149,7 +149,7 @@ export default function RegistroScreen() {
             <Text style={styles.fieldOk}>✅ Nombre válido</Text>
           )}
 
-          <TextInput placeholder="Documento" placeholderTextColor="#999"
+          <TextInput placeholder="Documento" placeholderTextColor="#333333"
             style={[styles.input, docError ? styles.inputError : null]}
             keyboardType="numeric"
             onChangeText={handleDocumento}
@@ -161,11 +161,11 @@ export default function RegistroScreen() {
             <Text style={styles.fieldOk}>✅ Documento válido</Text>
           )}
 
-          <TextInput placeholder="Correo electrónico" placeholderTextColor="#999"
+          <TextInput placeholder="Correo electrónico" placeholderTextColor="#333333"
             style={styles.input} keyboardType="email-address"
             autoCapitalize="none" onChangeText={setCorreo} value={correo} />
 
-          <TextInput placeholder="Teléfono" placeholderTextColor="#999"
+          <TextInput placeholder="Teléfono" placeholderTextColor="#333333"
             style={[styles.input, telError ? styles.inputError : null]}
             keyboardType="phone-pad"
             onChangeText={handleTelefono}
@@ -177,12 +177,12 @@ export default function RegistroScreen() {
             <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
           )}
 
-          <TextInput placeholder="Dirección" placeholderTextColor="#999"
+          <TextInput placeholder="Dirección" placeholderTextColor="#333333"
             style={styles.input} onChangeText={setDireccion} value={direccion} />
 
           <TextInput
             placeholder="Contraseña"
-            placeholderTextColor="#999"
+            placeholderTextColor="#333333"
             secureTextEntry
             style={[styles.input, passError ? styles.inputError : null]}
             onChangeText={handlePassword}
@@ -212,7 +212,7 @@ export default function RegistroScreen() {
             disabled={cargando}
           >
             {cargando
-              ? <ActivityIndicator color="#fff" />
+              ? <ActivityIndicator color="#333333" />
               : <Text style={styles.buttonText}>REGISTRAR</Text>}
           </TouchableOpacity>
 
@@ -230,23 +230,23 @@ export default function RegistroScreen() {
 const styles = StyleSheet.create({
   background:     { flex: 1 },
   scroll:         { flexGrow: 1 },
-  container:      { flex: 1, justifyContent: 'center', padding: 30, backgroundColor: 'rgba(9,8,13,0.75)' },
-  title:          { fontSize: 26, textAlign: 'center', marginBottom: 4, fontWeight: 'bold', color: '#B7975B' },
-  subtitle:       { fontSize: 15, textAlign: 'center', color: '#B7975B', marginBottom: 24 },
-  input:          { backgroundColor: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#ccc', fontSize: 15 },
-  inputError:     { borderColor: '#e74c3c', marginBottom: 0 },
-  fieldHint:      { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk:        { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  passHint:       { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  passOk:         { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  label:          { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#B7975B' },
+  container:      { flex: 1, justifyContent: 'center', padding: 30, backgroundColor: 'rgba(248,249,250,0.96)' },
+  title:          { fontSize: 26, textAlign: 'center', marginBottom: 4, fontWeight: 'bold', color: '#333333' },
+  subtitle:       { fontSize: 15, textAlign: 'center', color: '#333333', marginBottom: 24 },
+  input:          { backgroundColor: '#F8F9FA', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#333333', fontSize: 15 },
+  inputError:     { borderColor: '#333333', marginBottom: 0 },
+  fieldHint:      { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:        { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  passHint:       { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  passOk:         { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  label:          { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#333333' },
   rolContainer:   { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
-  rolBtn:         { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#ddd', alignItems: 'center' },
+  rolBtn:         { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#333333', alignItems: 'center' },
   rolActivo:      { backgroundColor: '#B7975B' },
-  rolTexto:       { fontWeight: 'bold', color: '#333', fontSize: 13 },
-  rolTextoActivo: { fontWeight: 'bold', color: '#fff', fontSize: 13 },
+  rolTexto:       { fontWeight: 'bold', color: '#333333', fontSize: 13 },
+  rolTextoActivo: { fontWeight: 'bold', color: '#333333', fontSize: 13 },
   button:         { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 6 },
-  buttonText:     { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  mensaje:        { marginTop: 14, textAlign: 'center', color: '#eee', fontSize: 13 },
-  linkLogin:      { marginTop: 20, textAlign: 'center', color: '#B7975B', textDecorationLine: 'underline', fontSize: 14 },
+  buttonText:     { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+  mensaje:        { marginTop: 14, textAlign: 'center', color: '#333333', fontSize: 13 },
+  linkLogin:      { marginTop: 20, textAlign: 'center', color: '#333333', textDecorationLine: 'underline', fontSize: 14 },
 });

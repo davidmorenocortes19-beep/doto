@@ -16,6 +16,7 @@ export default function EditarProductoScreen() {
   const [precio,    setPrecio]    = useState('');
   const [talla,     setTalla]     = useState('');
   const [color,     setColor]     = useState('');
+  const [imagen,    setImagen]    = useState('');
   const [estado,    setEstado]    = useState<'Disponible' | 'Agotado'>('Disponible');
   const [cargando,  setCargando]  = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -41,6 +42,7 @@ export default function EditarProductoScreen() {
       setPrecio(String(p.precio) ?? '');
       setTalla(p.talla           ?? '');
       setColor(p.color           ?? '');
+      setImagen(p.imagen         ?? '');
       setEstado(p.estado         ?? 'Disponible');
     } catch (e: any) {
       setErrorMsg(`Error al cargar: ${e?.message ?? 'desconocido'}`);
@@ -116,6 +118,7 @@ export default function EditarProductoScreen() {
         precio:  parseFloat(precio),
         talla,
         color,
+        imagen,
         estado,
       }, { timeout: 8000 });
 
@@ -141,7 +144,7 @@ export default function EditarProductoScreen() {
     return (
       <View style={styles.centrado}>
         <ActivityIndicator size="large" color="#B7975B" />
-        <Text style={{ color: '#B7975B', marginTop: 10 }}>Cargando producto...</Text>
+        <Text style={{ color: '#333333', marginTop: 10 }}>Cargando producto...</Text>
       </View>
     );
   }
@@ -149,11 +152,11 @@ export default function EditarProductoScreen() {
   if (errorMsg) {
     return (
       <View style={styles.centrado}>
-        <Text style={{ color: '#e74c3c', fontSize: 14, textAlign: 'center', paddingHorizontal: 20 }}>
+        <Text style={{ color: '#333333', fontSize: 14, textAlign: 'center', paddingHorizontal: 20 }}>
           {errorMsg}
         </Text>
         <TouchableOpacity onPress={cargarProducto} style={{ marginTop: 20 }}>
-          <Text style={{ color: '#B7975B' }}>🔄 Reintentar</Text>
+          <Text style={{ color: '#333333' }}>🔄 Reintentar</Text>
         </TouchableOpacity>
       </View>
     );
@@ -181,7 +184,7 @@ export default function EditarProductoScreen() {
         {/* NOMBRE */}
         <TextInput
           placeholder="Nombre del producto"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, nombreError ? styles.inputError : null]}
           value={nombre}
           onChangeText={handleNombre}
@@ -194,7 +197,7 @@ export default function EditarProductoScreen() {
         {/* PRECIO */}
         <TextInput
           placeholder="Precio (ej: 25000)"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, precioError ? styles.inputError : null]}
           value={precio}
           onChangeText={handlePrecio}
@@ -208,7 +211,7 @@ export default function EditarProductoScreen() {
         {/* TALLA */}
         <TextInput
           placeholder="Talla (ej: M, XL, 42...)"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, tallaError ? styles.inputError : null]}
           value={talla}
           onChangeText={handleTalla}
@@ -222,7 +225,7 @@ export default function EditarProductoScreen() {
         {/* COLOR */}
         <TextInput
           placeholder="Color del producto"
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           style={[styles.input, colorError ? styles.inputError : null]}
           value={color}
           onChangeText={handleColor}
@@ -231,6 +234,16 @@ export default function EditarProductoScreen() {
         {color !== '' && colorError === '' && (
           <Text style={styles.fieldOk}>✅ Color válido</Text>
         )}
+
+        {/* IMAGEN */}
+        <TextInput
+          placeholder="URL o ruta de imagen"
+          placeholderTextColor="#333333"
+          style={styles.input}
+          value={imagen}
+          onChangeText={setImagen}
+          autoCapitalize="none"
+        />
 
         {/* ESTADO */}
         <Text style={styles.label}>Estado</Text>
@@ -264,7 +277,7 @@ export default function EditarProductoScreen() {
           disabled={guardando}
         >
           {guardando
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color="#333333" />
             : <Text style={styles.btnGuardarTexto}>💾 GUARDAR CAMBIOS</Text>
           }
         </Pressable>
@@ -275,27 +288,27 @@ export default function EditarProductoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:            { flex: 1, backgroundColor: '#09080D' },
-  centrado:             { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#09080D' },
-  header:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
-  titulo:               { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  container:            { flex: 1, backgroundColor: '#F8F9FA' },
+  centrado:             { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA' },
+  header:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
+  titulo:               { fontSize: 20, fontWeight: 'bold', color: '#333333' },
   btnVolver:            { padding: 8 },
-  btnVolverTexto:       { color: '#B7975B', fontSize: 14 },
+  btnVolverTexto:       { color: '#333333', fontSize: 14 },
   form:                 { padding: 20, paddingBottom: 20 },
-  input:                { backgroundColor: '#1a1a2e', color: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#B7975B', fontSize: 15 },
-  inputError:           { borderColor: '#e74c3c', borderWidth: 2, marginBottom: 0 },
-  fieldHint:            { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk:              { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  label:                { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 8 },
+  input:                { backgroundColor: '#F8F9FA', color: '#333333', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#333333', fontSize: 15 },
+  inputError:           { borderColor: '#333333', borderWidth: 2, marginBottom: 0 },
+  fieldHint:            { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:              { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  label:                { color: '#333333', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 8 },
   estadoContenedor:     { flexDirection: 'row', gap: 10, marginTop: 4 },
-  estadoBtn:            { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', alignItems: 'center' },
-  estadoBtnDisponible:  { backgroundColor: '#2ecc71', borderColor: '#2ecc71' },
-  estadoBtnAgotado:     { backgroundColor: '#e74c3c', borderColor: '#e74c3c' },
-  estadoBtnTexto:       { color: '#B7975B', fontWeight: 'bold', fontSize: 14 },
-  estadoBtnTextoActivo: { color: '#fff' },
+  estadoBtn:            { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#333333', alignItems: 'center' },
+  estadoBtnDisponible:  { backgroundColor: '#B7975B', borderColor: '#333333' },
+  estadoBtnAgotado:     { backgroundColor: '#B7975B', borderColor: '#333333' },
+  estadoBtnTexto:       { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  estadoBtnTextoActivo: { color: '#333333' },
   btnGuardar:           { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
-  btnGuardarTexto:      { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  footerBtn:            { padding: 20, paddingTop: 10, backgroundColor: '#09080D' },
-  exitoContenedor:      { backgroundColor: '#1a4a1a', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#4CAF50' },
-  exitoTexto:           { color: '#4CAF50', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
+  btnGuardarTexto:      { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+  footerBtn:            { padding: 20, paddingTop: 10, backgroundColor: '#F8F9FA' },
+  exitoContenedor:      { backgroundColor: '#F8F9FA', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#333333' },
+  exitoTexto:           { color: '#333333', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

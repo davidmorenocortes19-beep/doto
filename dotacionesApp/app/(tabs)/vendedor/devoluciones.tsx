@@ -183,7 +183,7 @@ export default function DevolucionesScreen() {
             <TextInput
               style={styles.searchInput}
               placeholder="Buscar..."
-              placeholderTextColor="#666"
+              placeholderTextColor="#333333"
               value={busqueda}
               onChangeText={setBusqueda}
             />
@@ -242,22 +242,22 @@ export default function DevolucionesScreen() {
 
             <Text style={styles.fieldLabel}>ID Venta</Text>
             <TextInput style={styles.fieldInput} keyboardType="numeric"
-              placeholder="Ej: 10" placeholderTextColor="#555"
+              placeholder="Ej: 10" placeholderTextColor="#333333"
               value={idVenta} onChangeText={setIdVenta} />
 
             <Text style={styles.fieldLabel}>Cantidad</Text>
             <TextInput style={styles.fieldInput} keyboardType="numeric"
-              placeholder="Ej: 2" placeholderTextColor="#555"
+              placeholder="Ej: 2" placeholderTextColor="#333333"
               value={cantidad} onChangeText={setCantidad} />
 
             <Text style={styles.fieldLabel}>Motivo</Text>
             <TextInput style={[styles.fieldInput, styles.textArea]} multiline
-              placeholder="Descripción del motivo" placeholderTextColor="#555"
+              placeholder="Descripción del motivo" placeholderTextColor="#333333"
               value={motivo} onChangeText={setMotivo} />
 
             <Text style={styles.fieldLabel}>Fecha (YYYY-MM-DD)</Text>
             <TextInput style={styles.fieldInput}
-              placeholder="2026-04-01" placeholderTextColor="#555"
+              placeholder="2026-04-01" placeholderTextColor="#333333"
               value={fecha} onChangeText={setFecha} />
 
             {formError !== '' && (
@@ -286,56 +286,56 @@ export default function DevolucionesScreen() {
 
 const styles = StyleSheet.create({
   background:    { flex: 1 },
-  safeArea:      { flex: 1, backgroundColor: 'rgba(9,8,13,0.82)' },
+  safeArea:      { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
 
-  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B33', backgroundColor: 'rgba(9,8,13,0.97)' },
-  backBtn:       { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
+  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
+  backBtn:       { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
   logoArea:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:    { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:  { color: '#fff', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:   { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  logoInitials:  { color: '#333333', fontWeight: 'bold', fontSize: 10 },
+  headerTitle:   { color: '#333333', fontWeight: 'bold', fontSize: 15 },
 
   topBar:        { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12 },
   searchWrap:    { flex: 1, position: 'relative', justifyContent: 'center' },
-  searchInput:   { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B44', color: '#eee', borderRadius: 8, padding: 8, paddingRight: 32, fontSize: 12 },
+  searchInput:   { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 8, padding: 8, paddingRight: 32, fontSize: 12 },
   searchIcon:    { position: 'absolute', right: 8, fontSize: 14 },
   btnAdd:        { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 9, borderRadius: 8 },
-  btnAddText:    { color: '#fff', fontWeight: 'bold', fontSize: 12 },
+  btnAddText:    { color: '#333333', fontWeight: 'bold', fontSize: 12 },
 
   listContent:   { paddingHorizontal: 12, paddingBottom: 16 },
-  empty:         { color: '#666', textAlign: 'center', marginTop: 40, fontSize: 13 },
+  empty:         { color: '#333333', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
-  card:          { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 10, padding: 12, marginBottom: 10 },
+  card:          { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 10, padding: 12, marginBottom: 10 },
   cardHeader:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  cardId:        { color: '#B7975B', fontWeight: 'bold', fontSize: 13 },
-  cardFecha:     { color: '#888', fontSize: 11 },
-  motivoBadge:   { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, marginBottom: 8, alignSelf: 'flex-start' },
-  motivoText:    { color: '#B7975B', fontSize: 11 },
+  cardId:        { color: '#333333', fontWeight: 'bold', fontSize: 13 },
+  cardFecha:     { color: '#333333', fontSize: 11 },
+  motivoBadge:   { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#333333', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, marginBottom: 8, alignSelf: 'flex-start' },
+  motivoText:    { color: '#333333', fontSize: 11 },
   cardRow:       { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  rowLabel:      { color: '#888', fontSize: 11 },
-  rowValue:      { color: '#ccc', fontSize: 11, fontWeight: '500' },
+  rowLabel:      { color: '#333333', fontSize: 11 },
+  rowValue:      { color: '#333333', fontSize: 11, fontWeight: '500' },
   cardActions:   { flexDirection: 'row', gap: 8, justifyContent: 'flex-end' },
-  btnEdit:       { backgroundColor: '#e67e22', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 6 },
-  btnEditText:   { color: '#fff', fontSize: 11 },
-  btnDel:        { backgroundColor: '#e74c3c', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 6 },
-  btnDelText:    { color: '#fff', fontSize: 11 },
+  btnEdit:       { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 6 },
+  btnEditText:   { color: '#333333', fontSize: 11 },
+  btnDel:        { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 6 },
+  btnDelText:    { color: '#333333', fontSize: 11 },
 
-  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B22', backgroundColor: 'rgba(9,8,13,0.98)' },
+  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
   bnav:          { alignItems: 'center', gap: 2 },
   bnavIcon:      { fontSize: 18 },
-  bnavLabel:     { fontSize: 9, color: '#666' },
-  bnavActive:    { color: '#B7975B' },
+  bnavLabel:     { fontSize: 9, color: '#333333' },
+  bnavActive:    { color: '#333333' },
 
-  modalOverlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center' },
-  modalBox:      { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B55', borderRadius: 14, padding: 18, width: '88%' },
-  modalTitle:    { color: '#B7975B', fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
-  fieldLabel:    { color: '#aaa', fontSize: 11, marginBottom: 3, marginTop: 10 },
-  fieldInput:    { backgroundColor: '#0e0d12', borderWidth: 1, borderColor: '#B7975B33', color: '#eee', borderRadius: 7, padding: 8, fontSize: 12 },
+  modalOverlay:  { flex: 1, backgroundColor: 'rgba(51,51,51,0.35)', justifyContent: 'center', alignItems: 'center' },
+  modalBox:      { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 14, padding: 18, width: '88%' },
+  modalTitle:    { color: '#333333', fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
+  fieldLabel:    { color: '#333333', fontSize: 11, marginBottom: 3, marginTop: 10 },
+  fieldInput:    { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 7, padding: 8, fontSize: 12 },
   textArea:      { height: 60, textAlignVertical: 'top' },
-  formError:     { color: '#e74c3c', fontSize: 11, marginTop: 8 },
+  formError:     { color: '#333333', fontSize: 11, marginTop: 8 },
   modalBtns:     { flexDirection: 'row', gap: 8, marginTop: 16 },
-  btnCancel:     { flex: 1, backgroundColor: '#333', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnCancelText: { color: '#ccc', fontSize: 13 },
+  btnCancel:     { flex: 1, backgroundColor: '#333333', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnCancelText: { color: '#333333', fontSize: 13 },
   btnSave:       { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnSaveText:   { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  btnSaveText:   { color: '#333333', fontWeight: 'bold', fontSize: 13 },
 });

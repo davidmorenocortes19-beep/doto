@@ -3,11 +3,12 @@ import { router } from 'expo-router';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
   StyleSheet, ImageBackground, SafeAreaView, Alert,
-  Linking, Modal,
+  Linking, Modal, Image,
 } from 'react-native';
 import axios from 'axios';
 
 const API_URL = 'http://172.30.3.242/doto/api/productos.php';
+const API_BASE = 'http://172.30.3.242/doto/';
 
 type Producto = {
   id_producto: number;
@@ -15,6 +16,7 @@ type Producto = {
   precio: number;
   talla: string;
   color: string;
+  imagen?: string;
   estado: 'Disponible' | 'Agotado';
 };
 
@@ -63,6 +65,12 @@ export default function ProductosCliente() {
 
   const totalCarrito = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
 
+  const obtenerImagen = (imagen?: string) => {
+    if (!imagen) return '';
+    if (/^https?:\/\//i.test(imagen)) return imagen;
+    return `${API_BASE}${imagen.replace(/^\/+/, '')}`;
+  };
+
   const enviarContacto = () => {
     if (!nombre || !correo || !mensaje) {
       Alert.alert('⚠ Todos los campos son obligatorios');
@@ -74,6 +82,17 @@ export default function ProductosCliente() {
 
   const renderProducto = ({ item }: { item: Producto }) => (
     <View style={styles.card}>
+      {obtenerImagen(item.imagen) ? (
+        <Image
+          source={{ uri: obtenerImagen(item.imagen) }}
+          style={styles.cardImg}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={styles.cardImgPlaceholder}>
+          <Text style={styles.cardImgIcon}>📦</Text>
+        </View>
+      )}
       <Text style={styles.cardNombre}>{item.nombre}</Text>
       <Text style={styles.cardPrecio}>${Number(item.precio).toLocaleString('es-CO')}</Text>
       <View style={styles.cardInfo}>
@@ -227,78 +246,79 @@ export default function ProductosCliente() {
 
 const styles = StyleSheet.create({
   background:         { flex: 1 },
-  safeArea:           { flex: 1, backgroundColor: 'rgba(9,8,13,0.82)' },
+  safeArea:           { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
 
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B33', backgroundColor: 'rgba(9,8,13,0.97)' },
-  backBtn:            { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
+  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
+  backBtn:            { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
   logoArea:           { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:         { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:       { color: '#fff', fontWeight: 'bold', fontSize: 10 },
-  brand:              { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  logoInitials:       { color: '#333333', fontWeight: 'bold', fontSize: 10 },
+  brand:              { color: '#333333', fontWeight: 'bold', fontSize: 15 },
   carritoBtn:         { position: 'relative', padding: 4 },
   carritoIcon:        { fontSize: 22 },
-  carritoBadge:       { position: 'absolute', top: 0, right: 0, backgroundColor: '#e74c3c', borderRadius: 8, minWidth: 16, alignItems: 'center' },
-  carritoBadgeText:   { color: '#fff', fontSize: 10, fontWeight: 'bold', paddingHorizontal: 3 },
+  carritoBadge:       { position: 'absolute', top: 0, right: 0, backgroundColor: '#B7975B', borderRadius: 8, minWidth: 16, alignItems: 'center' },
+  carritoBadgeText:   { color: '#333333', fontSize: 10, fontWeight: 'bold', paddingHorizontal: 3 },
 
-  hero:               { padding: 20, borderBottomWidth: 1, borderBottomColor: '#B7975B22' },
-  heroTitle:          { color: '#B7975B', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
-  heroDesc:           { color: '#ccc', fontSize: 12, lineHeight: 19 },
+  hero:               { padding: 20, borderBottomWidth: 1, borderBottomColor: '#333333' },
+  heroTitle:          { color: '#333333', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
+  heroDesc:           { color: '#333333', fontSize: 12, lineHeight: 19 },
 
   listContent:        { padding: 10, paddingBottom: 24 },
   row:                { justifyContent: 'space-between', marginBottom: 10 },
-  empty:              { color: '#666', textAlign: 'center', marginTop: 40, fontSize: 13 },
+  empty:              { color: '#333333', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
-  card:               { width: '48%', backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 10, padding: 10 },
-  cardImgPlaceholder: { backgroundColor: '#0e0d12', borderRadius: 8, alignItems: 'center', justifyContent: 'center', height: 70, marginBottom: 8 },
+  card:               { width: '48%', backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 10, padding: 10 },
+  cardImg:            { width: '100%', height: 76, borderRadius: 8, marginBottom: 8, backgroundColor: '#F8F9FA' },
+  cardImgPlaceholder: { backgroundColor: '#F8F9FA', borderRadius: 8, alignItems: 'center', justifyContent: 'center', height: 70, marginBottom: 8 },
   cardImgIcon:        { fontSize: 32 },
-  cardNombre:         { color: '#eee', fontWeight: 'bold', fontSize: 13, marginBottom: 4 },
-  cardPrecio:         { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
+  cardNombre:         { color: '#333333', fontWeight: 'bold', fontSize: 13, marginBottom: 4 },
+  cardPrecio:         { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
   cardInfo:           { marginBottom: 6 },
-  cardInfoText:       { color: '#888', fontSize: 11 },
+  cardInfoText:       { color: '#333333', fontSize: 11 },
   estadoBadge:        { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8, borderWidth: 1 },
-  estadoDisponible:   { backgroundColor: '#2ecc7122', borderColor: '#2ecc7144' },
-  estadoAgotado:      { backgroundColor: '#e74c3c22', borderColor: '#e74c3c44' },
+  estadoDisponible:   { backgroundColor: '#B7975B22', borderColor: '#333333' },
+  estadoAgotado:      { backgroundColor: '#B7975B22', borderColor: '#333333' },
   estadoText:         { fontSize: 10, fontWeight: 'bold' },
-  estadoDispText:     { color: '#2ecc71' },
-  estadoAgotText:     { color: '#e74c3c' },
+  estadoDispText:     { color: '#333333' },
+  estadoAgotText:     { color: '#333333' },
   btnAgregar:         { backgroundColor: '#B7975B', padding: 7, borderRadius: 6, alignItems: 'center' },
-  btnAgregarDisabled: { backgroundColor: '#555' },
-  btnAgregarText:     { color: '#fff', fontSize: 11, fontWeight: 'bold' },
+  btnAgregarDisabled: { backgroundColor: '#B7975B' },
+  btnAgregarText:     { color: '#333333', fontSize: 11, fontWeight: 'bold' },
 
-  seccion:            { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo:      { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
-  contactoSub:        { color: '#888', fontSize: 12, marginBottom: 12 },
-  input:              { backgroundColor: '#0e0d12', borderWidth: 1, borderColor: '#B7975B33', color: '#eee', borderRadius: 8, padding: 10, fontSize: 13, marginBottom: 10 },
+  seccion:            { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 14, marginBottom: 14 },
+  seccionTitulo:      { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
+  contactoSub:        { color: '#333333', fontSize: 12, marginBottom: 12 },
+  input:              { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 8, padding: 10, fontSize: 13, marginBottom: 10 },
   textArea:           { height: 80, textAlignVertical: 'top' },
   btnEnviar:          { backgroundColor: '#B7975B', padding: 12, borderRadius: 8, alignItems: 'center' },
-  btnEnviarText:      { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnEnviarText:      { color: '#333333', fontWeight: 'bold', fontSize: 14 },
 
-  footer:             { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 12, padding: 16, marginBottom: 8, alignItems: 'center' },
-  footerTel:          { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
-  footerInfo:         { color: '#aaa', fontSize: 12, marginBottom: 4, textAlign: 'center' },
+  footer:             { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 16, marginBottom: 8, alignItems: 'center' },
+  footerTel:          { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
+  footerInfo:         { color: '#333333', fontSize: 12, marginBottom: 4, textAlign: 'center' },
   horario:            { marginTop: 10, alignItems: 'center' },
-  horarioTitulo:      { color: '#B7975B', fontWeight: 'bold', fontSize: 13, marginBottom: 6 },
-  horarioText:        { color: '#aaa', fontSize: 12, marginBottom: 3 },
-  footerCopy:         { color: '#555', fontSize: 11, marginTop: 12 },
+  horarioTitulo:      { color: '#333333', fontWeight: 'bold', fontSize: 13, marginBottom: 6 },
+  horarioText:        { color: '#333333', fontSize: 12, marginBottom: 3 },
+  footerCopy:         { color: '#333333', fontSize: 11, marginTop: 12 },
 
-  bottomNav:          { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B22', backgroundColor: 'rgba(9,8,13,0.98)' },
+  bottomNav:          { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
   bnav:               { alignItems: 'center', gap: 2 },
   bnavIcon:           { fontSize: 18 },
-  bnavLabel:          { fontSize: 9, color: '#666' },
-  bnavActive:         { color: '#B7975B' },
+  bnavLabel:          { fontSize: 9, color: '#333333' },
+  bnavActive:         { color: '#333333' },
 
-  modalOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
-  modalBox:           { backgroundColor: '#1e1c24', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '70%' },
+  modalOverlay:       { flex: 1, backgroundColor: 'rgba(51,51,51,0.35)', justifyContent: 'flex-end' },
+  modalBox:           { backgroundColor: '#F8F9FA', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '70%' },
   modalHeader:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  modalTitle:         { color: '#B7975B', fontWeight: 'bold', fontSize: 16 },
-  modalCerrar:        { color: '#888', fontSize: 18 },
-  carritoItem:        { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#ffffff08' },
-  carritoNombre:      { color: '#eee', fontSize: 13, fontWeight: '500' },
-  carritoDetalle:     { color: '#888', fontSize: 12 },
-  carritoQuitar:      { color: '#e74c3c', fontSize: 16, paddingLeft: 10 },
-  carritoTotal:       { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#B7975B33', marginTop: 8 },
-  carritoTotalLabel:  { color: '#aaa', fontWeight: 'bold', fontSize: 14 },
-  carritoTotalValor:  { color: '#B7975B', fontWeight: 'bold', fontSize: 16 },
+  modalTitle:         { color: '#333333', fontWeight: 'bold', fontSize: 16 },
+  modalCerrar:        { color: '#333333', fontSize: 18 },
+  carritoItem:        { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#333333' },
+  carritoNombre:      { color: '#333333', fontSize: 13, fontWeight: '500' },
+  carritoDetalle:     { color: '#333333', fontSize: 12 },
+  carritoQuitar:      { color: '#333333', fontSize: 16, paddingLeft: 10 },
+  carritoTotal:       { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#333333', marginTop: 8 },
+  carritoTotalLabel:  { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  carritoTotalValor:  { color: '#333333', fontWeight: 'bold', fontSize: 16 },
   btnPedir:           { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
-  btnPedirText:       { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnPedirText:       { color: '#333333', fontWeight: 'bold', fontSize: 14 },
 });

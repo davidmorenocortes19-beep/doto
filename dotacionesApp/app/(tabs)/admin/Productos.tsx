@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  StyleSheet, ActivityIndicator, Alert
+  StyleSheet, ActivityIndicator, Alert, Image
 } from 'react-native';
 import { router } from 'expo-router';
 import axios from 'axios';
 
 const API_URL = 'http://172.30.3.242/doto/api/productos.php';
+const API_BASE = 'http://172.30.3.242/doto/';
 
 type Producto = {
   id_producto: number;
@@ -14,6 +15,7 @@ type Producto = {
   precio:      string;
   talla:       string;
   color:       string;
+  imagen?:     string;
   estado:      'Disponible' | 'Agotado';
 };
 
@@ -81,8 +83,25 @@ export default function ProductosScreen() {
     );
   };
 
+  const obtenerImagen = (imagen?: string) => {
+    if (!imagen) return '';
+    if (/^https?:\/\//i.test(imagen)) return imagen;
+    return `${API_BASE}${imagen.replace(/^\/+/, '')}`;
+  };
+
   const renderProducto = ({ item }: { item: Producto }) => (
     <View style={styles.fila}>
+      {obtenerImagen(item.imagen) ? (
+        <Image
+          source={{ uri: obtenerImagen(item.imagen) }}
+          style={styles.imagenProducto}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={styles.imagenPlaceholder}>
+          <Text style={styles.imagenPlaceholderText}>📦</Text>
+        </View>
+      )}
       <View style={styles.infoBloque}>
         <Text style={styles.nombre}>{item.nombre}</Text>
         <Text style={styles.detalle}>💰 ${parseFloat(item.precio).toLocaleString('es-CO')}</Text>
@@ -133,7 +152,7 @@ export default function ProductosScreen() {
         <TextInput
           style={styles.buscador}
           placeholder="🔍 Buscar por nombre, color, talla, estado..."
-          placeholderTextColor="#999"
+          placeholderTextColor="#333333"
           value={busqueda}
           onChangeText={buscar}
         />
@@ -163,27 +182,30 @@ export default function ProductosScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: '#09080D' },
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#000' },
-  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
+  container:          { flex: 1, backgroundColor: '#F8F9FA' },
+  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
+  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#333333' },
   btnVolver:          { padding: 8 },
-  btnVolverTexto:     { color: '#B7975B', fontSize: 14 },
+  btnVolverTexto:     { color: '#333333', fontSize: 14 },
   btnAgregar:         { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
-  btnAgregarTexto:    { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  btnAgregarTexto:    { color: '#333333', fontWeight: 'bold', fontSize: 13 },
   buscadorContenedor: { padding: 12 },
-  buscador:           { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  buscador:           { backgroundColor: '#F8F9FA', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333333', fontSize: 14 },
   lista:              { paddingHorizontal: 12, paddingBottom: 20 },
-  fila:               { backgroundColor: '#1a1a2e', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#B7975B' },
+  fila:               { backgroundColor: '#F8F9FA', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#333333' },
+  imagenProducto:     { width: '100%', height: 120, borderRadius: 8, marginBottom: 12, backgroundColor: '#F8F9FA' },
+  imagenPlaceholder:  { width: '100%', height: 90, borderRadius: 8, marginBottom: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8F9FA' },
+  imagenPlaceholderText: { fontSize: 30 },
   infoBloque:         { marginBottom: 12 },
-  nombre:             { fontSize: 16, fontWeight: 'bold', color: '#B7975B', marginBottom: 4 },
-  detalle:            { color: '#ccc', fontSize: 13, marginBottom: 2 },
-  estadoBadge:        { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#2ecc71', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
-  estadoBadgeAgotado: { backgroundColor: '#e74c3c' },
-  estadoTexto:        { color: '#fff', fontWeight: 'bold', fontSize: 12 },
+  nombre:             { fontSize: 16, fontWeight: 'bold', color: '#333333', marginBottom: 4 },
+  detalle:            { color: '#333333', fontSize: 13, marginBottom: 2 },
+  estadoBadge:        { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#B7975B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  estadoBadgeAgotado: { backgroundColor: '#B7975B' },
+  estadoTexto:        { color: '#333333', fontWeight: 'bold', fontSize: 12 },
   acciones:           { flexDirection: 'row', gap: 10 },
-  btnEditar:          { flex: 1, backgroundColor: '#e67e22', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnEliminar:        { flex: 1, backgroundColor: '#e74c3c', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnTexto:           { color: '#fff', fontWeight: 'bold', fontSize: 13 },
-  error:              { color: '#e74c3c', textAlign: 'center', marginTop: 20, fontSize: 14 },
-  sinResultados:      { color: '#aaa', textAlign: 'center', marginTop: 30, fontSize: 14 },
+  btnEditar:          { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEliminar:        { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnTexto:           { color: '#333333', fontWeight: 'bold', fontSize: 13 },
+  error:              { color: '#333333', textAlign: 'center', marginTop: 20, fontSize: 14 },
+  sinResultados:      { color: '#333333', textAlign: 'center', marginTop: 30, fontSize: 14 },
 });

@@ -39,7 +39,7 @@ export default function PerfilVendedor() {
       const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 5000 });
       if (res.data.success) setVendedor(res.data.data);
     } catch {
-      // sin servidor: dejar vac√≠o
+      // sin servidor: dejar vacÌo
     } finally {
       setCargando(false);
     }
@@ -47,7 +47,7 @@ export default function PerfilVendedor() {
 
   const guardarCambios = async () => {
     if (!nuevoNombre && !nuevoCorreo && !nuevoTelefono && !nuevaDireccion && !nuevoPassword) {
-      setMensaje('‚ö† Ingresa al menos un campo para actualizar');
+      setMensaje('? Ingresa al menos un campo para actualizar');
       return;
     }
 
@@ -62,7 +62,7 @@ export default function PerfilVendedor() {
       setCargando(true);
       const res = await axios.put(API_URL, payload, { timeout: 5000 });
       if (res.data.success) {
-        setMensaje('‚úÖ Perfil actualizado correctamente');
+        setMensaje('? Perfil actualizado correctamente');
         setVendedor(prev => prev ? { ...prev, ...payload } : prev);
         if (nuevoNombre) sesion.nombre = nuevoNombre;
         if (nuevoCorreo) sesion.correo = nuevoCorreo;
@@ -72,19 +72,19 @@ export default function PerfilVendedor() {
         setNuevaDireccion('');
         setNuevoPassword('');
       } else {
-        setMensaje('‚ùå ' + res.data.mensaje);
+        setMensaje('? ' + res.data.mensaje);
       }
     } catch {
-      setMensaje('‚ö† Error de conexi√≥n con el servidor');
+      setMensaje('? Error de conexiÛn con el servidor');
     } finally {
       setCargando(false);
     }
   };
 
   const cerrarSesion = () => {
-    Alert.alert('Cerrar sesi√≥n', '¬øEst√°s seguro de que deseas cerrar sesi√≥n?', [
+    Alert.alert('Cerrar sesiÛn', 'øEst·s seguro de que deseas cerrar sesiÛn?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesi√≥n', style: 'destructive', onPress: () => router.replace('/') },
+      { text: 'Cerrar sesiÛn', style: 'destructive', onPress: () => router.replace('/') },
     ]);
   };
 
@@ -103,7 +103,7 @@ export default function PerfilVendedor() {
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')}>
-              <Text style={styles.backBtn}>‚Üê</Text>
+              <Text style={styles.backBtn}>?</Text>
             </TouchableOpacity>
             <View style={styles.logoArea}>
               <View style={styles.logoCircle}>
@@ -131,52 +131,52 @@ export default function PerfilVendedor() {
               </View>
             </View>
 
-            {/* Informaci√≥n actual */}
+            {/* InformaciÛn actual */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Informaci√≥n Personal</Text>
+              <Text style={styles.seccionTitulo}>InformaciÛn Personal</Text>
               {[
                 { label: 'Nombre',    valor: vendedor?.nombre },
                 { label: 'Documento', valor: vendedor?.documento },
                 { label: 'Correo',    valor: vendedor?.correo },
-                { label: 'Tel√©fono',  valor: vendedor?.telefono },
-                { label: 'Direcci√≥n', valor: vendedor?.direccion },
+                { label: 'TelÈfono',  valor: vendedor?.telefono },
+                { label: 'DirecciÛn', valor: vendedor?.direccion },
               ].map(item => (
                 <View key={item.label} style={styles.infoRow}>
                   <Text style={styles.infoLabel}>{item.label}</Text>
-                  <Text style={styles.infoValor}>{item.valor ?? '‚Äî'}</Text>
+                  <Text style={styles.infoValor}>{item.valor ?? 'ó'}</Text>
                 </View>
               ))}
             </View>
 
-            {/* Formulario de actualizaci√≥n */}
+            {/* Formulario de actualizaciÛn */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Actualizar Informaci√≥n</Text>
+              <Text style={styles.seccionTitulo}>Actualizar InformaciÛn</Text>
               <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
               <TextInput style={styles.input} placeholder="Nuevo nombre"
-                placeholderTextColor="#555" value={nuevoNombre}
+                placeholderTextColor="#333333" value={nuevoNombre}
                 onChangeText={setNuevoNombre} autoCorrect={false} />
 
               <TextInput style={styles.input} placeholder="Nuevo correo"
-                placeholderTextColor="#555" value={nuevoCorreo}
+                placeholderTextColor="#333333" value={nuevoCorreo}
                 onChangeText={setNuevoCorreo} keyboardType="email-address"
                 autoCapitalize="none" />
 
-              <TextInput style={styles.input} placeholder="Nuevo tel√©fono"
-                placeholderTextColor="#555" value={nuevoTelefono}
+              <TextInput style={styles.input} placeholder="Nuevo telÈfono"
+                placeholderTextColor="#333333" value={nuevoTelefono}
                 onChangeText={setNuevoTelefono} keyboardType="phone-pad" />
 
-              <TextInput style={styles.input} placeholder="Nueva direcci√≥n"
-                placeholderTextColor="#555" value={nuevaDireccion}
+              <TextInput style={styles.input} placeholder="Nueva direcciÛn"
+                placeholderTextColor="#333333" value={nuevaDireccion}
                 onChangeText={setNuevaDireccion} />
 
-              <TextInput style={styles.input} placeholder="Nueva contrase√±a"
-                placeholderTextColor="#555" value={nuevoPassword}
+              <TextInput style={styles.input} placeholder="Nueva contraseÒa"
+                placeholderTextColor="#333333" value={nuevoPassword}
                 onChangeText={setNuevoPassword} secureTextEntry />
 
               {mensaje !== '' && (
                 <Text style={[styles.mensaje,
-                  mensaje.startsWith('‚úÖ') ? styles.mensajeOk : styles.mensajeError
+                  mensaje.startsWith('?') ? styles.mensajeOk : styles.mensajeError
                 ]}>
                   {mensaje}
                 </Text>
@@ -197,11 +197,11 @@ export default function PerfilVendedor() {
           {/* Bottom nav */}
           <View style={styles.bottomNav}>
             {[
-              { label: 'Inicio',  icon: 'üè†', route: '/vendedor/panel_vendedor' },
-              { label: 'Pedidos', icon: 'üìã', route: '/vendedor/pedidos_vendedor' },
-              { label: 'Ventas',  icon: 'üí∞', route: '/vendedor/ver_ventas' },
-              { label: 'Perfil',  icon: 'üë§', active: true },
-              { label: 'Devol.', icon: '‚Ü©Ô∏è', route: '/vendedor/devoluciones' },
+              { label: 'Inicio',  icon: '??', route: '/vendedor/panel_vendedor' },
+              { label: 'Pedidos', icon: '??', route: '/vendedor/pedidos_vendedor' },
+              { label: 'Ventas',  icon: '??', route: '/vendedor/ver_ventas' },
+              { label: 'Perfil',  icon: '??', active: true },
+              { label: 'Devol.', icon: '??', route: '/vendedor/devoluciones' },
             ].map(item => (
               <TouchableOpacity
                 key={item.label}
@@ -224,37 +224,37 @@ export default function PerfilVendedor() {
 
 const styles = StyleSheet.create({
   background:     { flex: 1 },
-  safeArea:       { flex: 1, backgroundColor: 'rgba(9,8,13,0.82)' },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B33', backgroundColor: 'rgba(9,8,13,0.97)' },
-  backBtn:        { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
+  safeArea:       { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
+  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
+  backBtn:        { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
   logoArea:       { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:     { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:   { color: '#fff', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:    { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  logoInitials:   { color: '#333333', fontWeight: 'bold', fontSize: 10 },
+  headerTitle:    { color: '#333333', fontWeight: 'bold', fontSize: 15 },
   scroll:         { padding: 16, paddingBottom: 24 },
   avatarWrap:     { alignItems: 'center', marginBottom: 20 },
   avatar:         { width: 72, height: 72, borderRadius: 36, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  avatarText:     { color: '#fff', fontSize: 30, fontWeight: 'bold' },
-  avatarName:     { color: '#eee', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
-  rolBadge:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#B7975B44', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
-  rolText:        { color: '#B7975B', fontSize: 12, fontWeight: 'bold' },
-  seccion:        { backgroundColor: '#1e1c24', borderWidth: 1, borderColor: '#B7975B33', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo:  { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
-  seccionSub:     { color: '#666', fontSize: 11, marginBottom: 12 },
-  infoRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#ffffff08' },
-  infoLabel:      { color: '#888', fontSize: 13 },
-  infoValor:      { color: '#eee', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
-  input:          { backgroundColor: '#0e0d12', borderWidth: 1, borderColor: '#B7975B33', color: '#eee', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+  avatarText:     { color: '#333333', fontSize: 30, fontWeight: 'bold' },
+  avatarName:     { color: '#333333', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
+  rolBadge:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#333333', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
+  rolText:        { color: '#333333', fontSize: 12, fontWeight: 'bold' },
+  seccion:        { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 14, marginBottom: 14 },
+  seccionTitulo:  { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
+  seccionSub:     { color: '#333333', fontSize: 11, marginBottom: 12 },
+  infoRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#333333' },
+  infoLabel:      { color: '#333333', fontSize: 13 },
+  infoValor:      { color: '#333333', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
+  input:          { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
   mensaje:        { fontSize: 12, marginBottom: 10, textAlign: 'center' },
-  mensajeOk:      { color: '#2ecc71' },
-  mensajeError:   { color: '#e74c3c' },
+  mensajeOk:      { color: '#333333' },
+  mensajeError:   { color: '#333333' },
   btnGuardar:     { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnGuardarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  btnSalir:       { backgroundColor: '#e74c3c22', borderWidth: 1, borderColor: '#e74c3c44', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
-  btnSalirText:   { color: '#e74c3c', fontWeight: 'bold', fontSize: 14 },
-  bottomNav:      { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B22', backgroundColor: 'rgba(9,8,13,0.98)' },
+  btnGuardarText: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  btnSalir:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#333333', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
+  btnSalirText:   { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  bottomNav:      { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
   bnav:           { alignItems: 'center', gap: 2 },
   bnavIcon:       { fontSize: 18 },
-  bnavLabel:      { fontSize: 9, color: '#666' },
-  bnavActive:     { color: '#B7975B' },
+  bnavLabel:      { fontSize: 9, color: '#333333' },
+  bnavActive:     { color: '#333333' },
 });

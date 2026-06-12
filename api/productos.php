@@ -30,6 +30,7 @@ switch ($metodo) {
             (float) $body['precio'],
             trim($body['talla']  ?? ''),
             trim($body['color']  ?? ''),
+            trim($body['imagen'] ?? ''),
             trim($body['estado'] ?? 'Disponible')
         );
 
@@ -59,6 +60,7 @@ switch ($metodo) {
             (float) $body['precio'],
             trim(   $body['talla']  ?? ''),
             trim(   $body['color']  ?? ''),
+            trim(   $body['imagen'] ?? ''),
             trim(   $body['estado'] ?? 'Disponible')
         );
 
