@@ -1,109 +1,92 @@
 <?php
 require_once 'config.php';
-require_once BASE_PATH . '/models/inventario.php';
+require_once BASE_PATH . '/models/Inventario.php';
 
 $metodo = $_SERVER['REQUEST_METHOD'];
 
 switch ($metodo) {
 
-    // ── GET: obtener stock, alertas, resumen, historial, búsqueda ─────────────
     case 'GET':
-        $accion = $_GET['accion'] ?? '';
-
-        switch ($accion) {
-
-            case 'resumen':
-                responder(200, Inventario::obtenerResumen());
-                break;
-
-            case 'alertas':
-                responder(200, Inventario::obtenerAlertas());
-                break;
-
-            case 'listas':
-                responder(200, Inventario::obtenerListas());
-                break;
-
-            case 'stock':
-                responder(200, Inventario::obtenerStock());
-                break;
-
-            case 'buscar':
-                $q = trim($_GET['q'] ?? '');
-                if (strlen($q) < 2) responder(400, ['error' => 'Ingresa al menos 2 caracteres.']);
-                responder(200, Inventario::buscarProducto($q));
-                break;
-
-            case 'buscarCodigo':
-                $q = trim($_GET['q'] ?? '');
-                responder(200, Inventario::buscarPorCodigo($q));
-                break;
-
-            case 'historial':
-                $desde = $_GET['fechaDesde'] ?? '';
-                $hasta = $_GET['fechaHasta'] ?? '';
-                $tipo  = $_GET['tipo']       ?? '';
-                if (!$desde || !$hasta) responder(400, ['error' => 'Las fechas son obligatorias.']);
-                responder(200, Inventario::obtenerHistorial($desde, $hasta, $tipo));
-                break;
-
-            case 'validarIntegridad':
-                responder(200, Inventario::validarIntegridad());
-                break;
-
-            default:
-                responder(400, ['error' => 'Acción no reconocida: ' . $accion]);
+        if (isset($_GET['id'])) {
+            $inventario = Inventario::obtenerPorId((int) $_GET['id']);
+            if ($inventario) {
+                responder(200, $inventario);
+            } else {
+                responder(404, ['error' => 'Inventario no encontrado']);
+            }
+        } else {
+            responder(200, Inventario::listarTodos());
         }
         break;
 
-    // ── POST: registrar producto ──────────────────────────────────────────────
     case 'POST':
-        $body  = json_decode(file_get_contents('php://input'), true);
-        $accion = $body['accion'] ?? '';
+        $body = json_decode(file_get_contents('php://input'), true);
 
-        switch ($accion) {
+        $error = validarCampos($body);
+        if ($error) responder(400, ['error' => $error]);
 
-            case 'registrarProducto':
-                $error = validarProducto($body);
-                if ($error) responder(400, ['error' => $error]);
+        if (!Inventario::productoExiste((int) $body['id_producto_fk'])) {
+            responder(404, ['error' => 'Producto no encontrado']);
+        }
 
-                $resultado = Inventario::registrarProducto(
-                    strtoupper(trim($body['codigo'])),
-                    trim($body['nombre']),
-                    trim($body['unidad']  ?? 'Unidad'),
-                    trim($body['grupo']   ?? 'General'),
-                    (float)($body['precio']   ?? 0),
-                    (int)($body['stockMin']   ?? 0)
-                );
+        $resultado = Inventario::crear(
+            (int) $body['id_producto_fk'],
+            (int) $body['cantidad_actual'],
+            (int) $body['stock_minimo']
+        );
 
-                if ($resultado['ok']) {
-                    responder(201, ['mensaje' => $resultado['mensaje']]);
-                } else {
-                    responder(409, ['error' => $resultado['mensaje']]);
-                }
-                break;
+        if ($resultado === 'exist') {
+            responder(409, ['error' => 'Ese producto ya tiene inventario registrado']);
+        } elseif ($resultado) {
+            responder(201, ['mensaje' => 'Inventario creado correctamente']);
+        } else {
+            responder(500, ['error' => 'No se pudo crear el inventario']);
+        }
+        break;
 
-            case 'registrarMovimiento':
-                $error = validarMovimiento($body);
-                if ($error) responder(400, ['error' => $error]);
+    case 'PUT':
+        $body = json_decode(file_get_contents('php://input'), true);
 
-                $resultado = Inventario::registrarMovimiento(
-                    strtoupper(trim($body['codigo'])),
-                    trim($body['fecha']),
-                    trim($body['tipo']),
-                    (float)($body['cantidad']),
-                    trim($body['observaciones'] ?? '')
-                );
+        if (empty($body['id_inventario'])) responder(400, ['error' => 'El campo id_inventario es obligatorio']);
 
-                if ($resultado['ok']) {
-                    responder(201, ['mensaje' => $resultado['mensaje']]);
-                } else {
-                    responder(400, ['error' => $resultado['mensaje']]);
-                }
-                break;
+        $error = validarCampos($body);
+        if ($error) responder(400, ['error' => $error]);
 
-            default:
-                responder(400, ['error' => 'Acción no reconocida: ' . $accion]);
+        $inventario = Inventario::obtenerPorId((int) $body['id_inventario']);
+        if (!$inventario) responder(404, ['error' => 'Inventario no encontrado']);
+
+        if (!Inventario::productoExiste((int) $body['id_producto_fk'])) {
+            responder(404, ['error' => 'Producto no encontrado']);
+        }
+
+        $resultado = Inventario::actualizar(
+            (int) $body['id_inventario'],
+            (int) $body['id_producto_fk'],
+            (int) $body['cantidad_actual'],
+            (int) $body['stock_minimo']
+        );
+
+        if ($resultado === 'exist') {
+            responder(409, ['error' => 'Ese producto ya tiene inventario registrado']);
+        } elseif ($resultado) {
+            responder(200, ['mensaje' => 'Inventario actualizado correctamente']);
+        } else {
+            responder(500, ['error' => 'No se pudo actualizar el inventario']);
+        }
+        break;
+
+    case 'DELETE':
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        if ($id <= 0) responder(400, ['error' => 'ID inválido o no proporcionado']);
+
+        $inventario = Inventario::obtenerPorId($id);
+        if (!$inventario) responder(404, ['error' => 'Inventario no encontrado']);
+
+        if (Inventario::eliminar($id)) {
+            responder(200, ['mensaje' => 'Inventario eliminado correctamente']);
+        } else {
+            responder(500, ['error' => 'No se pudo eliminar el inventario']);
         }
         break;
 
@@ -111,40 +94,29 @@ switch ($metodo) {
         responder(405, ['error' => 'Método no permitido']);
 }
 
-// ── Validaciones ──────────────────────────────────────────────────────────────
+function validarCampos(?array $body): ?string {
+    if (empty($body)) return 'El cuerpo de la petición está vacío';
 
-function validarProducto(?array $body): ?string {
-    if (empty($body)) return 'El cuerpo de la petición está vacío.';
+    foreach (['id_producto_fk', 'cantidad_actual', 'stock_minimo'] as $campo) {
+        if (!isset($body[$campo]) || trim((string)$body[$campo]) === '') {
+            return "El campo '$campo' es obligatorio";
+        }
 
-    foreach (['codigo', 'nombre', 'precio'] as $campo) {
-        if (empty($body[$campo]) || trim((string)$body[$campo]) === '') {
-            return "El campo '$campo' es obligatorio.";
+        if (!is_numeric($body[$campo])) {
+            return "El campo '$campo' debe ser numérico";
         }
     }
 
-    if (!is_numeric($body['precio']) || (float)$body['precio'] <= 0) {
-        return 'El precio debe ser un número mayor a 0.';
+    if ((int) $body['id_producto_fk'] <= 0) {
+        return 'El producto debe ser válido';
     }
 
-    return null;
-}
-
-function validarMovimiento(?array $body): ?string {
-    if (empty($body)) return 'El cuerpo de la petición está vacío.';
-
-    foreach (['codigo', 'fecha', 'tipo', 'cantidad'] as $campo) {
-        if (empty($body[$campo]) || trim((string)$body[$campo]) === '') {
-            return "El campo '$campo' es obligatorio.";
-        }
+    if ((int) $body['cantidad_actual'] < 0) {
+        return 'La cantidad actual no puede ser negativa';
     }
 
-    $tiposValidos = ['INGRESO', 'SALIDA', 'AJUSTE_POSITIVO', 'AJUSTE_NEGATIVO'];
-    if (!in_array($body['tipo'], $tiposValidos)) {
-        return 'Tipo de movimiento no válido.';
-    }
-
-    if (!is_numeric($body['cantidad']) || (float)$body['cantidad'] <= 0) {
-        return 'La cantidad debe ser mayor a 0.';
+    if ((int) $body['stock_minimo'] < 0) {
+        return 'El stock mínimo no puede ser negativo';
     }
 
     return null;
@@ -155,4 +127,3 @@ function responder(int $codigo, array $datos): never {
     echo json_encode($datos, JSON_UNESCAPED_UNICODE);
     exit;
 }
-?>
