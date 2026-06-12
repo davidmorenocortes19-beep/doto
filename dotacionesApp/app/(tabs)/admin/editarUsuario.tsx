@@ -6,7 +6,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const BASE = 'http://192.168.40.8/dota/api';
+const BASE = 'http://172.30.3.242/doto/api';
 
 type Rol = { id_rol: number; nombre_rol: string };
 
@@ -25,6 +25,13 @@ export default function EditarUsuarioScreen() {
   const [guardando, setGuardando] = useState(false);
   const [errorMsg,  setErrorMsg]  = useState('');
   const [exitoMsg,  setExitoMsg]  = useState('');
+
+  // ✅ Errores por campo
+  const [errNombre,   setErrNombre]   = useState('');
+  const [errCorreo,   setErrCorreo]   = useState('');
+  const [errTelefono, setErrTelefono] = useState('');
+  const [errDireccion,setErrDireccion]= useState('');
+  const [errRol,      setErrRol]      = useState('');
 
   useEffect(() => { if (id) cargarDatos(); }, [id]);
 
@@ -55,11 +62,65 @@ export default function EditarUsuarioScreen() {
     }
   };
 
-  const guardar = async () => {
-    if (!nombre || !correo || !telefono || !direccion || !idRol) {
-      Alert.alert('Campos incompletos', 'Por favor completa todos los campos');
-      return;
+  // ✅ Validaciones por campo
+  const validar = (): boolean => {
+    let valido = true;
+
+    if (!nombre.trim()) {
+      setErrNombre('El nombre es obligatorio');
+      valido = false;
+    } else if (nombre.trim().length < 3) {
+      setErrNombre('El nombre debe tener al menos 3 caracteres');
+      valido = false;
+    } else {
+      setErrNombre('');
     }
+
+    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!correo.trim()) {
+      setErrCorreo('El correo es obligatorio');
+      valido = false;
+    } else if (!regexCorreo.test(correo.trim())) {
+      setErrCorreo('Ingresa un correo válido (ejemplo@correo.com)');
+      valido = false;
+    } else {
+      setErrCorreo('');
+    }
+
+    const regexTel = /^[0-9]{7,15}$/;
+    if (!telefono.trim()) {
+      setErrTelefono('El teléfono es obligatorio');
+      valido = false;
+    } else if (!regexTel.test(telefono.trim())) {
+      setErrTelefono('El teléfono debe tener entre 7 y 15 dígitos');
+      valido = false;
+    } else {
+      setErrTelefono('');
+    }
+
+    if (!direccion.trim()) {
+      setErrDireccion('La dirección es obligatoria');
+      valido = false;
+    } else if (direccion.trim().length < 5) {
+      setErrDireccion('La dirección debe tener al menos 5 caracteres');
+      valido = false;
+    } else {
+      setErrDireccion('');
+    }
+
+    if (!idRol) {
+      setErrRol('Debes seleccionar un rol');
+      valido = false;
+    } else {
+      setErrRol('');
+    }
+
+    return valido;
+  };
+
+  const guardar = async () => {
+    if (!validar()) return;
+
     try {
       setGuardando(true);
 
@@ -142,9 +203,16 @@ export default function EditarUsuarioScreen() {
         contentContainerStyle={styles.form}
         keyboardShouldPersistTaps="handled"
       >
+
         <Text style={styles.label}>Nombre completo</Text>
-        <TextInput style={styles.input} value={nombre} onChangeText={setNombre}
-          placeholderTextColor="#999" placeholder="Nombre completo" />
+        <TextInput
+          style={[styles.input, errNombre ? styles.inputError : null]}
+          value={nombre}
+          onChangeText={(t) => { setNombre(t); setErrNombre(''); }}
+          placeholderTextColor="#999"
+          placeholder="Nombre completo"
+        />
+        {errNombre ? <Text style={styles.textoError}>{errNombre}</Text> : null}
 
         <Text style={styles.label}>Documento</Text>
         <TextInput
@@ -158,17 +226,37 @@ export default function EditarUsuarioScreen() {
         <Text style={styles.nota}>* El documento no puede ser modificado</Text>
 
         <Text style={styles.label}>Correo electrónico</Text>
-        <TextInput style={styles.input} value={correo} onChangeText={setCorreo}
-          placeholderTextColor="#999" placeholder="correo@ejemplo.com"
-          keyboardType="email-address" autoCapitalize="none" />
+        <TextInput
+          style={[styles.input, errCorreo ? styles.inputError : null]}
+          value={correo}
+          onChangeText={(t) => { setCorreo(t); setErrCorreo(''); }}
+          placeholderTextColor="#999"
+          placeholder="correo@ejemplo.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        {errCorreo ? <Text style={styles.textoError}>{errCorreo}</Text> : null}
 
         <Text style={styles.label}>Teléfono</Text>
-        <TextInput style={styles.input} value={telefono} onChangeText={setTelefono}
-          placeholderTextColor="#999" placeholder="Número de teléfono" keyboardType="phone-pad" />
+        <TextInput
+          style={[styles.input, errTelefono ? styles.inputError : null]}
+          value={telefono}
+          onChangeText={(t) => { setTelefono(t); setErrTelefono(''); }}
+          placeholderTextColor="#999"
+          placeholder="Número de teléfono"
+          keyboardType="phone-pad"
+        />
+        {errTelefono ? <Text style={styles.textoError}>{errTelefono}</Text> : null}
 
         <Text style={styles.label}>Dirección</Text>
-        <TextInput style={styles.input} value={direccion} onChangeText={setDireccion}
-          placeholderTextColor="#999" placeholder="Dirección" />
+        <TextInput
+          style={[styles.input, errDireccion ? styles.inputError : null]}
+          value={direccion}
+          onChangeText={(t) => { setDireccion(t); setErrDireccion(''); }}
+          placeholderTextColor="#999"
+          placeholder="Dirección"
+        />
+        {errDireccion ? <Text style={styles.textoError}>{errDireccion}</Text> : null}
 
         <Text style={styles.label}>Rol</Text>
         <View style={styles.rolesContenedor}>
@@ -176,7 +264,7 @@ export default function EditarUsuarioScreen() {
             <TouchableOpacity
               key={r.id_rol}
               style={[styles.rolBtn, idRol === r.id_rol && styles.rolBtnActivo]}
-              onPress={() => setIdRol(r.id_rol)}
+              onPress={() => { setIdRol(r.id_rol); setErrRol(''); }}
             >
               <Text style={[styles.rolBtnTexto, idRol === r.id_rol && styles.rolBtnTextoActivo]}>
                 {r.nombre_rol}
@@ -184,6 +272,8 @@ export default function EditarUsuarioScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        {errRol ? <Text style={styles.textoError}>{errRol}</Text> : null}
+
       </ScrollView>
 
       <View style={styles.footerBtn}>
@@ -217,8 +307,10 @@ const styles = StyleSheet.create({
   form:               { padding: 20, paddingBottom: 40 },
   label:              { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
   input:              { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  inputError:         { borderColor: '#e74c3c' },
   inputDeshabilitado: { backgroundColor: '#111', color: '#666', borderColor: '#444' },
   nota:               { color: '#666', fontSize: 11, marginTop: 4, fontStyle: 'italic' },
+  textoError:         { color: '#e74c3c', fontSize: 11, marginTop: 4 },
   rolesContenedor:    { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
   rolBtn:             { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#B7975B' },
   rolBtnActivo:       { backgroundColor: '#B7975B' },

@@ -6,7 +6,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const BASE = 'http://172.30.2.10/dota/api';
+const BASE = 'http://172.30.3.24/dottoapi';
 
 export default function EditarProductoScreen() {
   const params     = useLocalSearchParams();

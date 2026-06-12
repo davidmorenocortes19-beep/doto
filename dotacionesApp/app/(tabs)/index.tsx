@@ -7,7 +7,7 @@ import {
 import axios, { isAxiosError } from 'axios';
 import { sesion } from '../../constants/sesion';
 
-const API_URL = 'http://172.30.2.10/dota/api/login.php';
+const API_URL = 'http://172.30.3.242/doto/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
