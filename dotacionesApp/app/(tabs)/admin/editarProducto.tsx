@@ -6,11 +6,11 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const BASE = 'http://172.30.3.24/dottoapi';
+const BASE = 'http://172.30.3.242/doto/api';
 
 export default function EditarProductoScreen() {
-  const params     = useLocalSearchParams();
-  const id         = Array.isArray(params.id) ? params.id[0] : params.id;
+  const params = useLocalSearchParams();
+  const id     = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [nombre,    setNombre]    = useState('');
   const [precio,    setPrecio]    = useState('');
@@ -22,6 +22,12 @@ export default function EditarProductoScreen() {
   const [errorMsg,  setErrorMsg]  = useState('');
   const [exitoMsg,  setExitoMsg]  = useState('');
 
+  // ── Errores por campo ──────────────────────────────────────
+  const [nombreError, setNombreError] = useState('');
+  const [precioError, setPrecioError] = useState('');
+  const [tallaError,  setTallaError]  = useState('');
+  const [colorError,  setColorError]  = useState('');
+
   useEffect(() => { if (id) cargarProducto(); }, [id]);
 
   const cargarProducto = async () => {
@@ -30,18 +36,12 @@ export default function EditarProductoScreen() {
       setErrorMsg('');
       const res = await axios.get(`${BASE}/productos.php?id=${id}`, { timeout: 8000 });
       const p   = res.data;
-
-      if (!p || p.error) {
-        setErrorMsg('No se encontró el producto');
-        return;
-      }
-
+      if (!p || p.error) { setErrorMsg('No se encontró el producto'); return; }
       setNombre(p.nombre         ?? '');
       setPrecio(String(p.precio) ?? '');
       setTalla(p.talla           ?? '');
       setColor(p.color           ?? '');
       setEstado(p.estado         ?? 'Disponible');
-
     } catch (e: any) {
       setErrorMsg(`Error al cargar: ${e?.message ?? 'desconocido'}`);
     } finally {
@@ -49,16 +49,64 @@ export default function EditarProductoScreen() {
     }
   };
 
-  const guardar = async () => {
-    if (!nombre || !precio) {
-      Alert.alert('Campos incompletos', 'Nombre y precio son obligatorios');
-      return;
-    }
+  // ── Handlers con validación en tiempo real ─────────────────
 
-    if (isNaN(parseFloat(precio)) || parseFloat(precio) <= 0) {
-      Alert.alert('Precio inválido', 'Ingresa un precio válido mayor a 0');
-      return;
+  const handleNombre = (text: string) => {
+    setNombre(text);
+    if (text.trim().length > 0 && text.trim().length < 3) {
+      setNombreError('⚠ Mínimo 3 caracteres');
+    } else {
+      setNombreError('');
     }
+  };
+
+  const handlePrecio = (text: string) => {
+    // Solo números y un punto decimal
+    const limpio = text.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    setPrecio(limpio);
+    if (text !== limpio) {
+      setPrecioError('⚠ Solo se permiten números');
+    } else if (limpio !== '' && (isNaN(parseFloat(limpio)) || parseFloat(limpio) <= 0)) {
+      setPrecioError('⚠ El precio debe ser mayor a 0');
+    } else {
+      setPrecioError('');
+    }
+  };
+
+  const handleTalla = (text: string) => {
+    // Solo letras y números
+    const limpio = text.replace(/[^a-zA-Z0-9]/g, '');
+    setTalla(limpio);
+    if (text !== limpio) {
+      setTallaError('⚠ Solo letras y números');
+    } else {
+      setTallaError('');
+    }
+  };
+
+  const handleColor = (text: string) => {
+    // Solo letras y espacios
+    const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    setColor(limpio);
+    if (text !== limpio) {
+      setColorError('⚠ Solo se permiten letras');
+    } else {
+      setColorError('');
+    }
+  };
+
+  const guardar = async () => {
+    let valido = true;
+
+    if (!nombre.trim() || nombre.trim().length < 3) {
+      setNombreError('⚠ Nombre obligatorio, mínimo 3 caracteres');
+      valido = false;
+    }
+    if (!precio || isNaN(parseFloat(precio)) || parseFloat(precio) <= 0) {
+      setPrecioError('⚠ Ingresa un precio válido mayor a 0');
+      valido = false;
+    }
+    if (!valido) return;
 
     try {
       setGuardando(true);
@@ -73,25 +121,17 @@ export default function EditarProductoScreen() {
 
       if (res.data.mensaje) {
         setExitoMsg('✅ Producto actualizado correctamente');
-        setTimeout(() => {
-          setExitoMsg('');
-          router.push('/admin/Productos');
-        }, 2000);
+        setTimeout(() => { setExitoMsg(''); router.push('/admin/Productos'); }, 2000);
       } else {
         Alert.alert('Error', res.data.error || 'No se pudo actualizar');
       }
     } catch (e: any) {
-      const status  = e?.response?.status;
       const data    = e?.response?.data;
+      const status  = e?.response?.status;
       const mensaje = e?.message;
-
-      if (data?.error) {
-        Alert.alert(`Error ${status}`, data.error);
-      } else if (mensaje) {
-        Alert.alert('Error de conexión', mensaje);
-      } else {
-        Alert.alert('Error', 'No se pudo conectar con el servidor');
-      }
+      if (data?.error)  Alert.alert(`Error ${status}`, data.error);
+      else if (mensaje) Alert.alert('Error de conexión', mensaje);
+      else              Alert.alert('Error', 'No se pudo conectar con el servidor');
     } finally {
       setGuardando(false);
     }
@@ -136,48 +176,63 @@ export default function EditarProductoScreen() {
         </View>
       ) : null}
 
-      <ScrollView
-        contentContainerStyle={styles.form}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text style={styles.label}>Nombre *</Text>
-        <TextInput
-          style={styles.input}
-          value={nombre}
-          onChangeText={setNombre}
-          placeholderTextColor="#999"
-          placeholder="Nombre del producto"
-        />
+      <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
 
-        <Text style={styles.label}>Precio *</Text>
+        {/* NOMBRE */}
         <TextInput
-          style={styles.input}
-          value={precio}
-          onChangeText={setPrecio}
+          placeholder="Nombre del producto"
           placeholderTextColor="#999"
-          placeholder="0.00"
+          style={[styles.input, nombreError ? styles.inputError : null]}
+          value={nombre}
+          onChangeText={handleNombre}
+        />
+        {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+        {nombre.trim().length >= 3 && nombreError === '' && (
+          <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+        )}
+
+        {/* PRECIO */}
+        <TextInput
+          placeholder="Precio (ej: 25000)"
+          placeholderTextColor="#999"
+          style={[styles.input, precioError ? styles.inputError : null]}
+          value={precio}
+          onChangeText={handlePrecio}
           keyboardType="decimal-pad"
         />
+        {precioError !== '' && <Text style={styles.fieldHint}>{precioError}</Text>}
+        {precio !== '' && !precioError && parseFloat(precio) > 0 && (
+          <Text style={styles.fieldOk}>✅ Precio válido</Text>
+        )}
 
-        <Text style={styles.label}>Talla</Text>
+        {/* TALLA */}
         <TextInput
-          style={styles.input}
-          value={talla}
-          onChangeText={setTalla}
+          placeholder="Talla (ej: M, XL, 42...)"
           placeholderTextColor="#999"
-          placeholder="XS, S, M, L, XL..."
+          style={[styles.input, tallaError ? styles.inputError : null]}
+          value={talla}
+          onChangeText={handleTalla}
           autoCapitalize="characters"
         />
+        {tallaError !== '' && <Text style={styles.fieldHint}>{tallaError}</Text>}
+        {talla !== '' && tallaError === '' && (
+          <Text style={styles.fieldOk}>✅ Talla válida</Text>
+        )}
 
-        <Text style={styles.label}>Color</Text>
+        {/* COLOR */}
         <TextInput
-          style={styles.input}
-          value={color}
-          onChangeText={setColor}
-          placeholderTextColor="#999"
           placeholder="Color del producto"
+          placeholderTextColor="#999"
+          style={[styles.input, colorError ? styles.inputError : null]}
+          value={color}
+          onChangeText={handleColor}
         />
+        {colorError !== '' && <Text style={styles.fieldHint}>{colorError}</Text>}
+        {color !== '' && colorError === '' && (
+          <Text style={styles.fieldOk}>✅ Color válido</Text>
+        )}
 
+        {/* ESTADO */}
         <Text style={styles.label}>Estado</Text>
         <View style={styles.estadoContenedor}>
           {(['Disponible', 'Agotado'] as const).map(e => (
@@ -195,6 +250,7 @@ export default function EditarProductoScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
       </ScrollView>
 
       <View style={styles.footerBtn}>
@@ -209,7 +265,7 @@ export default function EditarProductoScreen() {
         >
           {guardando
             ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.btnGuardarTexto}>💾 Guardar cambios</Text>
+            : <Text style={styles.btnGuardarTexto}>💾 GUARDAR CAMBIOS</Text>
           }
         </Pressable>
       </View>
@@ -225,18 +281,21 @@ const styles = StyleSheet.create({
   titulo:               { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver:            { padding: 8 },
   btnVolverTexto:       { color: '#B7975B', fontSize: 14 },
-  form:                 { padding: 20, paddingBottom: 40 },
-  label:                { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
-  input:                { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  form:                 { padding: 20, paddingBottom: 20 },
+  input:                { backgroundColor: '#1a1a2e', color: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#B7975B', fontSize: 15 },
+  inputError:           { borderColor: '#e74c3c', borderWidth: 2, marginBottom: 0 },
+  fieldHint:            { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:              { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  label:                { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 8 },
   estadoContenedor:     { flexDirection: 'row', gap: 10, marginTop: 4 },
   estadoBtn:            { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', alignItems: 'center' },
   estadoBtnDisponible:  { backgroundColor: '#2ecc71', borderColor: '#2ecc71' },
   estadoBtnAgotado:     { backgroundColor: '#e74c3c', borderColor: '#e74c3c' },
   estadoBtnTexto:       { color: '#B7975B', fontWeight: 'bold', fontSize: 14 },
   estadoBtnTextoActivo: { color: '#fff' },
-  btnGuardar:           { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center' },
-  btnGuardarTexto:      { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  footerBtn:            { padding: 10, paddingTop: 10, backgroundColor: '#09080D' },
+  btnGuardar:           { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
+  btnGuardarTexto:      { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  footerBtn:            { padding: 20, paddingTop: 10, backgroundColor: '#09080D' },
   exitoContenedor:      { backgroundColor: '#1a4a1a', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#4CAF50' },
   exitoTexto:           { color: '#4CAF50', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

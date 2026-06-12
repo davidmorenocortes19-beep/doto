@@ -21,6 +21,7 @@ FOREIGN KEY(id_rol_fk) REFERENCES rol(id_rol)
 
 CREATE TABLE producto (
 id_producto INT AUTO_INCREMENT PRIMARY KEY,
+imagen 
 nombre VARCHAR(100) NOT NULL,
 precio DECIMAL(10,2) NOT NULL,
 talla VARCHAR(10),

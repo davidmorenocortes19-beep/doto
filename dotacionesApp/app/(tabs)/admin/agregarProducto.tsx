@@ -16,11 +16,64 @@ export default function AgregarProductoScreen() {
   const [estado, setEstado] = useState<'Disponible' | 'Agotado'>('Disponible');
   const [guardando, setGuardando] = useState(false);
 
-  const guardar = async () => {
-    if (!nombre || !precio) {
-      Alert.alert('Campos incompletos', 'Nombre y precio son obligatorios');
-      return;
+  const [nombreError, setNombreError] = useState('');
+  const [precioError, setPrecioError] = useState('');
+  const [tallaError, setTallaError] = useState('');
+  const [colorError, setColorError] = useState('');
+
+  const handleNombre = (text: string) => {
+    setNombre(text);
+    if (text.trim().length > 0 && text.trim().length < 3) {
+      setNombreError('⚠ Mínimo 3 caracteres');
+    } else {
+      setNombreError('');
     }
+  };
+
+  const handlePrecio = (text: string) => {
+    const limpio = text.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+    setPrecio(limpio);
+    if (text !== limpio) {
+      setPrecioError('⚠ Solo se permiten números');
+    } else if (limpio !== '' && (isNaN(parseFloat(limpio)) || parseFloat(limpio) <= 0)) {
+      setPrecioError('⚠ El precio debe ser mayor a 0');
+    } else {
+      setPrecioError('');
+    }
+  };
+
+  const handleTalla = (text: string) => {
+    const limpio = text.replace(/[^a-zA-Z0-9]/g, '');
+    setTalla(limpio);
+    if (text !== limpio) {
+      setTallaError('⚠ Solo letras y números');
+    } else {
+      setTallaError('');
+    }
+  };
+
+  const handleColor = (text: string) => {
+    const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    setColor(limpio);
+    if (text !== limpio) {
+      setColorError('⚠ Solo se permiten letras');
+    } else {
+      setColorError('');
+    }
+  };
+
+  const guardar = async () => {
+    let valido = true;
+
+    if (!nombre.trim() || nombre.trim().length < 3) {
+      setNombreError('⚠ Nombre obligatorio, mínimo 3 caracteres');
+      valido = false;
+    }
+    if (!precio || isNaN(parseFloat(precio)) || parseFloat(precio) <= 0) {
+      setPrecioError('⚠ Ingresa un precio válido mayor a 0');
+      valido = false;
+    }
+    if (!valido) return;
 
     try {
       setGuardando(true);
@@ -49,7 +102,6 @@ export default function AgregarProductoScreen() {
   return (
     <View style={styles.container}>
 
-      {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('/admin/Productos')} style={styles.btnVolver}>
           <Text style={styles.btnVolverTexto}>← Volver</Text>
@@ -58,45 +110,61 @@ export default function AgregarProductoScreen() {
         <View style={{ width: 70 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.form}>
+      <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
 
         <Text style={styles.label}>Nombre *</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, nombreError ? styles.inputError : null]}
           value={nombre}
-          onChangeText={setNombre}
+          onChangeText={handleNombre}
           placeholderTextColor="#999"
           placeholder="Nombre del producto"
         />
+        {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+        {nombre.trim().length >= 3 && nombreError === '' && (
+          <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+        )}
 
         <Text style={styles.label}>Precio *</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, precioError ? styles.inputError : null]}
           value={precio}
-          onChangeText={setPrecio}
+          onChangeText={handlePrecio}
           placeholderTextColor="#999"
           placeholder="0.00"
           keyboardType="decimal-pad"
         />
+        {precioError !== '' && <Text style={styles.fieldHint}>{precioError}</Text>}
+        {precio !== '' && !precioError && parseFloat(precio) > 0 && (
+          <Text style={styles.fieldOk}>✅ Precio válido</Text>
+        )}
 
         <Text style={styles.label}>Talla</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, tallaError ? styles.inputError : null]}
           value={talla}
-          onChangeText={setTalla}
+          onChangeText={handleTalla}
           placeholderTextColor="#999"
           placeholder="XS, S, M, L, XL..."
           autoCapitalize="characters"
         />
+        {tallaError !== '' && <Text style={styles.fieldHint}>{tallaError}</Text>}
+        {talla !== '' && tallaError === '' && (
+          <Text style={styles.fieldOk}>✅ Talla válida</Text>
+        )}
 
         <Text style={styles.label}>Color</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, colorError ? styles.inputError : null]}
           value={color}
-          onChangeText={setColor}
+          onChangeText={handleColor}
           placeholderTextColor="#999"
           placeholder="Color del producto"
         />
+        {colorError !== '' && <Text style={styles.fieldHint}>{colorError}</Text>}
+        {color !== '' && colorError === '' && (
+          <Text style={styles.fieldOk}>✅ Color válido</Text>
+        )}
 
         <Text style={styles.label}>Estado</Text>
         <View style={styles.estadoContenedor}>
@@ -138,6 +206,9 @@ const styles = StyleSheet.create({
   form: { padding: 20, paddingBottom: 40 },
   label: { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
   input: { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
+  inputError: { borderColor: '#e74c3c', borderWidth: 2 },
+  fieldHint: { color: '#e74c3c', fontSize: 12, marginTop: 4, marginLeft: 4 },
+  fieldOk: { color: '#2ecc71', fontSize: 12, marginTop: 4, marginLeft: 4 },
   estadoContenedor: { flexDirection: 'row', gap: 10, marginTop: 4 },
   estadoBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', alignItems: 'center' },
   estadoBtnDisponible: { backgroundColor: '#2ecc71', borderColor: '#2ecc71' },

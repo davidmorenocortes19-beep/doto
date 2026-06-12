@@ -191,9 +191,6 @@ export default function PerfilVendedor() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.btnSalir} onPress={cerrarSesion}>
-              <Text style={styles.btnSalirText}>Cerrar Sesión</Text>
-            </TouchableOpacity>
 
           </ScrollView>
 

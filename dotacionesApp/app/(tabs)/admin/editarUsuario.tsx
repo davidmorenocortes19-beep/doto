@@ -10,6 +10,12 @@ const BASE = 'http://172.30.3.242/doto/api';
 
 type Rol = { id_rol: number; nombre_rol: string };
 
+const validarCorreo = (correo: string): string | null => {
+  if (!correo.trim()) return '⚠ El correo es obligatorio';
+  if (!correo.includes('@') || !correo.includes('.')) return '⚠ Ingresa un correo válido';
+  return null;
+};
+
 export default function EditarUsuarioScreen() {
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -26,12 +32,12 @@ export default function EditarUsuarioScreen() {
   const [errorMsg,  setErrorMsg]  = useState('');
   const [exitoMsg,  setExitoMsg]  = useState('');
 
-  // ✅ Errores por campo
-  const [errNombre,   setErrNombre]   = useState('');
-  const [errCorreo,   setErrCorreo]   = useState('');
-  const [errTelefono, setErrTelefono] = useState('');
-  const [errDireccion,setErrDireccion]= useState('');
-  const [errRol,      setErrRol]      = useState('');
+  // ── Errores por campo ──────────────────────────────────────
+  const [nombreError,   setNombreError]   = useState('');
+  const [correoError,   setCorreoError]   = useState('');
+  const [telError,      setTelError]      = useState('');
+  const [dirError,      setDirError]      = useState('');
+  const [rolError,      setRolError]      = useState('');
 
   useEffect(() => { if (id) cargarDatos(); }, [id]);
 
@@ -39,22 +45,17 @@ export default function EditarUsuarioScreen() {
     try {
       setCargando(true);
       setErrorMsg('');
-
       const resUsuario = await axios.get(`${BASE}/usuarios.php?id=${id}`, { timeout: 8000 });
       const resRoles   = await axios.get(`${BASE}/roles.php`,             { timeout: 8000 });
-
       const u = resUsuario.data;
       if (!u || u.error) { setErrorMsg('No se encontró el usuario'); return; }
-
       setNombre(u.nombre       ?? '');
       setDocumento(u.documento ?? '');
       setCorreo(u.correo       ?? '');
       setTelefono(u.telefono   ?? '');
       setDireccion(u.direccion ?? '');
       setIdRol(Number(u.id_rol_fk) ?? 0);
-
       if (Array.isArray(resRoles.data)) setRoles(resRoles.data);
-
     } catch (e: any) {
       setErrorMsg(`Error al cargar: ${e?.message ?? 'desconocido'}`);
     } finally {
@@ -62,68 +63,72 @@ export default function EditarUsuarioScreen() {
     }
   };
 
-  // ✅ Validaciones por campo
-  const validar = (): boolean => {
-    let valido = true;
-
-    if (!nombre.trim()) {
-      setErrNombre('El nombre es obligatorio');
-      valido = false;
-    } else if (nombre.trim().length < 3) {
-      setErrNombre('El nombre debe tener al menos 3 caracteres');
-      valido = false;
+  // ── Handlers con validación en tiempo real ─────────────────
+  const handleNombre = (text: string) => {
+    const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    setNombre(limpio);
+    if (text !== limpio) {
+      setNombreError('⚠ Solo se permiten letras y espacios');
+    } else if (limpio.trim().length > 0 && limpio.trim().length < 3) {
+      setNombreError('⚠ Mínimo 3 caracteres');
     } else {
-      setErrNombre('');
+      setNombreError('');
     }
+  };
 
-    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!correo.trim()) {
-      setErrCorreo('El correo es obligatorio');
-      valido = false;
-    } else if (!regexCorreo.test(correo.trim())) {
-      setErrCorreo('Ingresa un correo válido (ejemplo@correo.com)');
-      valido = false;
+  const handleCorreo = (text: string) => {
+    setCorreo(text);
+    setCorreoError(validarCorreo(text) ?? '');
+  };
+
+  const handleTelefono = (text: string) => {
+    const limpio = text.replace(/[^0-9]/g, '');
+    setTelefono(limpio);
+    if (text !== limpio) {
+      setTelError('⚠ Solo se permiten números');
+    } else if (limpio.length > 0 && limpio.length < 7) {
+      setTelError('⚠ Mínimo 7 dígitos');
+    } else if (limpio.length >= 7) {
+      setTelError('');
     } else {
-      setErrCorreo('');
+      setTelError('');
     }
+  };
 
-    const regexTel = /^[0-9]{7,15}$/;
-    if (!telefono.trim()) {
-      setErrTelefono('El teléfono es obligatorio');
-      valido = false;
-    } else if (!regexTel.test(telefono.trim())) {
-      setErrTelefono('El teléfono debe tener entre 7 y 15 dígitos');
-      valido = false;
+  const handleDireccion = (text: string) => {
+    setDireccion(text);
+    if (text.trim().length > 0 && text.trim().length < 5) {
+      setDirError('⚠ Mínimo 5 caracteres');
     } else {
-      setErrTelefono('');
+      setDirError('');
     }
-
-    if (!direccion.trim()) {
-      setErrDireccion('La dirección es obligatoria');
-      valido = false;
-    } else if (direccion.trim().length < 5) {
-      setErrDireccion('La dirección debe tener al menos 5 caracteres');
-      valido = false;
-    } else {
-      setErrDireccion('');
-    }
-
-    if (!idRol) {
-      setErrRol('Debes seleccionar un rol');
-      valido = false;
-    } else {
-      setErrRol('');
-    }
-
-    return valido;
   };
 
   const guardar = async () => {
-    if (!validar()) return;
+    // Validar todo antes de enviar
+    let valido = true;
+
+    if (!nombre.trim() || nombre.trim().length < 3) {
+      setNombreError('⚠ Nombre obligatorio, mínimo 3 caracteres');
+      valido = false;
+    }
+    const errCorreo = validarCorreo(correo);
+    if (errCorreo) { setCorreoError(errCorreo); valido = false; }
+
+    if (!telefono.trim() || telefono.length < 7) {
+      setTelError('⚠ Teléfono obligatorio, mínimo 7 dígitos');
+      valido = false;
+    }
+    if (!direccion.trim() || direccion.trim().length < 5) {
+      setDirError('⚠ Dirección obligatoria, mínimo 5 caracteres');
+      valido = false;
+    }
+    if (!idRol) { setRolError('⚠ Debes seleccionar un rol'); valido = false; }
+
+    if (!valido) return;
 
     try {
       setGuardando(true);
-
       const res = await axios.post(`${BASE}/editarAdmin.php`, {
         id_usuario: Number(id),
         nombre,
@@ -136,25 +141,17 @@ export default function EditarUsuarioScreen() {
 
       if (res.data.mensaje) {
         setExitoMsg('✅ Los datos del usuario fueron actualizados correctamente');
-        setTimeout(() => {
-          setExitoMsg('');
-          router.push('/admin/Usuarios');
-        }, 2000);
+        setTimeout(() => { setExitoMsg(''); router.push('/admin/Usuarios'); }, 2000);
       } else {
         Alert.alert('Error', res.data.error || 'Respuesta inesperada del servidor');
       }
     } catch (e: any) {
-      const status  = e?.response?.status;
       const data    = e?.response?.data;
+      const status  = e?.response?.status;
       const mensaje = e?.message;
-
-      if (data?.error) {
-        Alert.alert(`Error ${status}`, data.error);
-      } else if (mensaje) {
-        Alert.alert('Error de conexión', mensaje);
-      } else {
-        Alert.alert('Error', 'No se pudo conectar con el servidor');
-      }
+      if (data?.error)  Alert.alert(`Error ${status}`, data.error);
+      else if (mensaje) Alert.alert('Error de conexión', mensaje);
+      else              Alert.alert('Error', 'No se pudo conectar con el servidor');
     } finally {
       setGuardando(false);
     }
@@ -199,87 +196,99 @@ export default function EditarUsuarioScreen() {
         </View>
       ) : null}
 
-      <ScrollView
-        contentContainerStyle={styles.form}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
 
-        <Text style={styles.label}>Nombre completo</Text>
+        {/* NOMBRE */}
         <TextInput
-          style={[styles.input, errNombre ? styles.inputError : null]}
-          value={nombre}
-          onChangeText={(t) => { setNombre(t); setErrNombre(''); }}
-          placeholderTextColor="#999"
           placeholder="Nombre completo"
+          placeholderTextColor="#999"
+          style={[styles.input, nombreError ? styles.inputError : null]}
+          onChangeText={handleNombre}
+          value={nombre}
+          autoCorrect={false}
         />
-        {errNombre ? <Text style={styles.textoError}>{errNombre}</Text> : null}
+        {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+        {nombre.trim().length >= 3 && nombreError === '' && (
+          <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+        )}
 
-        <Text style={styles.label}>Documento</Text>
+        {/* DOCUMENTO — solo lectura */}
         <TextInput
+          placeholder="Documento"
+          placeholderTextColor="#999"
           style={[styles.input, styles.inputDeshabilitado]}
           value={documento}
           editable={false}
-          placeholderTextColor="#999"
-          placeholder="Número de documento"
           keyboardType="numeric"
         />
         <Text style={styles.nota}>* El documento no puede ser modificado</Text>
 
-        <Text style={styles.label}>Correo electrónico</Text>
+        {/* CORREO */}
         <TextInput
-          style={[styles.input, errCorreo ? styles.inputError : null]}
-          value={correo}
-          onChangeText={(t) => { setCorreo(t); setErrCorreo(''); }}
+          placeholder="Correo electrónico"
           placeholderTextColor="#999"
-          placeholder="correo@ejemplo.com"
+          style={[styles.input, correoError ? styles.inputError : null]}
           keyboardType="email-address"
           autoCapitalize="none"
+          onChangeText={handleCorreo}
+          value={correo}
         />
-        {errCorreo ? <Text style={styles.textoError}>{errCorreo}</Text> : null}
+        {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
+        {correo !== '' && correoError === '' && (
+          <Text style={styles.fieldOk}>✅ Correo válido</Text>
+        )}
 
-        <Text style={styles.label}>Teléfono</Text>
+        {/* TELÉFONO */}
         <TextInput
-          style={[styles.input, errTelefono ? styles.inputError : null]}
-          value={telefono}
-          onChangeText={(t) => { setTelefono(t); setErrTelefono(''); }}
+          placeholder="Teléfono"
           placeholderTextColor="#999"
-          placeholder="Número de teléfono"
+          style={[styles.input, telError ? styles.inputError : null]}
           keyboardType="phone-pad"
+          onChangeText={handleTelefono}
+          value={telefono}
+          maxLength={15}
         />
-        {errTelefono ? <Text style={styles.textoError}>{errTelefono}</Text> : null}
+        {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
+        {telefono.length >= 7 && telError === '' && (
+          <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
+        )}
 
-        <Text style={styles.label}>Dirección</Text>
+        {/* DIRECCIÓN */}
         <TextInput
-          style={[styles.input, errDireccion ? styles.inputError : null]}
-          value={direccion}
-          onChangeText={(t) => { setDireccion(t); setErrDireccion(''); }}
-          placeholderTextColor="#999"
           placeholder="Dirección"
+          placeholderTextColor="#999"
+          style={[styles.input, dirError ? styles.inputError : null]}
+          onChangeText={handleDireccion}
+          value={direccion}
         />
-        {errDireccion ? <Text style={styles.textoError}>{errDireccion}</Text> : null}
+        {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
+        {direccion.trim().length >= 5 && dirError === '' && (
+          <Text style={styles.fieldOk}>✅ Dirección válida</Text>
+        )}
 
-        <Text style={styles.label}>Rol</Text>
-        <View style={styles.rolesContenedor}>
+        {/* ROL */}
+        <Text style={styles.label}>Selecciona el rol:</Text>
+        <View style={styles.rolContainer}>
           {roles.map(r => (
             <TouchableOpacity
               key={r.id_rol}
-              style={[styles.rolBtn, idRol === r.id_rol && styles.rolBtnActivo]}
-              onPress={() => { setIdRol(r.id_rol); setErrRol(''); }}
+              style={[styles.rolBtn, idRol === r.id_rol && styles.rolActivo]}
+              onPress={() => { setIdRol(r.id_rol); setRolError(''); }}
             >
-              <Text style={[styles.rolBtnTexto, idRol === r.id_rol && styles.rolBtnTextoActivo]}>
+              <Text style={idRol === r.id_rol ? styles.rolTextoActivo : styles.rolTexto}>
                 {r.nombre_rol}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-        {errRol ? <Text style={styles.textoError}>{errRol}</Text> : null}
+        {rolError !== '' && <Text style={styles.fieldHint}>{rolError}</Text>}
 
       </ScrollView>
 
       <View style={styles.footerBtn}>
         <Pressable
           style={({ pressed }) => [
-            styles.btnGuardar,
+            styles.button,
             guardando && { opacity: 0.6 },
             pressed && { opacity: 0.8 }
           ]}
@@ -288,7 +297,7 @@ export default function EditarUsuarioScreen() {
         >
           {guardando
             ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.btnGuardarTexto}>💾 Guardar cambios</Text>
+            : <Text style={styles.buttonText}>💾 GUARDAR CAMBIOS</Text>
           }
         </Pressable>
       </View>
@@ -304,21 +313,22 @@ const styles = StyleSheet.create({
   titulo:             { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver:          { padding: 8 },
   btnVolverTexto:     { color: '#B7975B', fontSize: 14 },
-  form:               { padding: 20, paddingBottom: 40 },
-  label:              { color: '#B7975B', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
-  input:              { backgroundColor: '#1a1a2e', color: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#B7975B', fontSize: 14 },
-  inputError:         { borderColor: '#e74c3c' },
+  form:               { padding: 20, paddingBottom: 20 },
+  input:              { backgroundColor: '#1a1a2e', color: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#B7975B', fontSize: 15 },
+  inputError:         { borderColor: '#e74c3c', borderWidth: 2, marginBottom: 0 },
   inputDeshabilitado: { backgroundColor: '#111', color: '#666', borderColor: '#444' },
-  nota:               { color: '#666', fontSize: 11, marginTop: 4, fontStyle: 'italic' },
-  textoError:         { color: '#e74c3c', fontSize: 11, marginTop: 4 },
-  rolesContenedor:    { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
-  rolBtn:             { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: '#B7975B' },
-  rolBtnActivo:       { backgroundColor: '#B7975B' },
-  rolBtnTexto:        { color: '#B7975B', fontSize: 13, fontWeight: 'bold' },
-  rolBtnTextoActivo:  { color: '#000' },
-  btnGuardar:         { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center' },
-  btnGuardarTexto:    { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  footerBtn:          { padding: 10, paddingTop: 10, backgroundColor: '#09080D' },
+  nota:               { color: '#666', fontSize: 11, marginBottom: 8, marginLeft: 4, fontStyle: 'italic' },
+  fieldHint:          { color: '#e74c3c', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:            { color: '#2ecc71', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  label:              { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#B7975B' },
+  rolContainer:       { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
+  rolBtn:             { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#1a1a2e', alignItems: 'center', borderWidth: 1, borderColor: '#B7975B' },
+  rolActivo:          { backgroundColor: '#B7975B' },
+  rolTexto:           { fontWeight: 'bold', color: '#B7975B', fontSize: 13 },
+  rolTextoActivo:     { fontWeight: 'bold', color: '#fff', fontSize: 13 },
+  button:             { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
+  buttonText:         { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  footerBtn:          { padding: 20, paddingTop: 10, backgroundColor: '#09080D' },
   exitoContenedor:    { backgroundColor: '#1a4a1a', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#4CAF50' },
   exitoTexto:         { color: '#4CAF50', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });
