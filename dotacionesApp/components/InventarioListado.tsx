@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  StyleSheet, ActivityIndicator, Alert
+  StyleSheet, ActivityIndicator, Alert, Linking
 } from 'react-native';
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.3.242/doto/api/inventario.php';
+const API_URL = 'http://192.168.1.19/doto/api/inventario.php';
+const API_BASE = 'http://192.168.1.19/doto/api';
 
 type InventarioItem = {
   id_inventario: number;
@@ -121,6 +122,25 @@ export default function InventarioListado({ volverA, formularioRuta }: Inventari
     );
   };
 
+  // ✅ Abrir reportes generados por el backend
+  const exportarPDF = async () => {
+    const url = `${API_BASE}/reporteInventarioPDF.php`;
+    try {
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert('Error', 'No se pudo abrir el reporte PDF');
+    }
+  };
+
+  const exportarExcel = async () => {
+    const url = `${API_BASE}/reporteInventarioExcel.php`;
+    try {
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert('Error', 'No se pudo abrir el reporte Excel');
+    }
+  };
+
   const renderInventario = ({ item }: { item: InventarioItem }) => {
     const estado = estadoStock(item);
 
@@ -164,6 +184,16 @@ export default function InventarioListado({ volverA, formularioRuta }: Inventari
           onPress={() => router.push(formularioRuta as any)}
         >
           <Text style={styles.btnAgregarTexto}>Registrar</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* ✅ Botones de exportación */}
+      <View style={styles.exportarContenedor}>
+        <TouchableOpacity style={styles.btnPDF} onPress={exportarPDF}>
+          <Text style={styles.btnExportarTexto}>📄 Exportar PDF</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btnExcel} onPress={exportarExcel}>
+          <Text style={styles.btnExportarTexto}>📊 Exportar Excel</Text>
         </TouchableOpacity>
       </View>
 
@@ -220,6 +250,10 @@ const styles = StyleSheet.create({
   btnVolverTexto: { color: '#333333', fontSize: 14 },
   btnAgregar: { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
   btnAgregarTexto: { color: '#333333', fontWeight: 'bold', fontSize: 13 },
+  exportarContenedor: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 4 },
+  btnPDF: { flex: 1, backgroundColor: '#c0392b', paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
+  btnExcel: { flex: 1, backgroundColor: '#27ae60', paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
+  btnExportarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
   resumenContenedor: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
   resumenCard: { flex: 1, backgroundColor: '#F8F9FA', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#333333' },
   resumenValor: { color: '#333333', fontSize: 24, fontWeight: 'bold' },

@@ -7,7 +7,7 @@ import {
 import axios, { isAxiosError } from 'axios';
 import { sesion } from '../../constants/sesion';
 
-const API_URL = 'http://172.30.3.242/doto/api/login.php';
+const API_URL = 'http://192.168.1.19/doto/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -34,7 +34,7 @@ export default function LoginScreen() {
 
         const { nombre, rol, correo, id } = res.data.usuario;
 
-        // ? id guardado como número
+        // ? id guardado como nï¿½mero
         sesion.nombre = nombre;
         sesion.rol    = rol;
         sesion.correo = correo;
@@ -51,7 +51,7 @@ export default function LoginScreen() {
       }
     } catch (error) {
       if (isAxiosError(error) && error.request) {
-        setMensaje('? No hay conexión con el servidor');
+        setMensaje('? No hay conexiï¿½n con el servidor');
       } else {
         setMensaje('? Error inesperado');
       }
@@ -71,10 +71,10 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <Text style={styles.title}>Dotaciones Toronto</Text>
-        <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+        <Text style={styles.subtitle}>Inicia sesiï¿½n para continuar</Text>
 
         <TextInput
-          placeholder="Correo electrónico"
+          placeholder="Correo electrï¿½nico"
           placeholderTextColor="#333333"
           style={styles.input}
           onChangeText={setUsername}
@@ -82,7 +82,7 @@ export default function LoginScreen() {
           autoCapitalize="none"
         />
         <TextInput
-          placeholder="Contraseña"
+          placeholder="Contraseï¿½a"
           placeholderTextColor="#333333"
           secureTextEntry
           style={styles.input}
@@ -101,7 +101,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.replace('/registro')}>
-          <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
+          <Text style={styles.link}>ï¿½No tienes cuenta? Regï¿½strate</Text>
         </TouchableOpacity>
 
         {mensaje !== '' && <Text style={styles.mensaje}>{mensaje}</Text>}

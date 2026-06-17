@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'; 
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  StyleSheet, ActivityIndicator, Alert
+  StyleSheet, ActivityIndicator, Alert, Linking
 } from 'react-native';
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.3.242/doto/api/usuarios.php';
+const API_URL  = 'http://192.168.1.19/doto/api/usuarios.php';
+const API_BASE = 'http://192.168.1.19/doto/api';
 
 type Usuario = {
   id_usuario:  number;
@@ -31,8 +32,6 @@ export default function UsuariosScreen() {
       setCargando(true);
       setError('');
       const res = await axios.get(API_URL, { timeout: 5000 });
-
-      // La API devuelve un array directo
       const data: Usuario[] = Array.isArray(res.data) ? res.data : [];
       setUsuarios(data);
       setFiltrados(data);
@@ -62,6 +61,23 @@ export default function UsuariosScreen() {
         u.nombre_rol.toLowerCase().includes(t)
       )
     );
+  };
+
+  // ✅ Exportar reportes
+  const exportarPDF = async () => {
+    try {
+      await Linking.openURL(`${API_BASE}/reporteUsuariosPDF.php`);
+    } catch {
+      Alert.alert('Error', 'No se pudo abrir el reporte PDF');
+    }
+  };
+
+  const exportarExcel = async () => {
+    try {
+      await Linking.openURL(`${API_BASE}/reporteUsuariosExcel.php`);
+    } catch {
+      Alert.alert('Error', 'No se pudo abrir el reporte Excel');
+    }
   };
 
   const renderUsuario = ({ item }: { item: Usuario }) => (
@@ -111,6 +127,16 @@ export default function UsuariosScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* ✅ Botones de exportación */}
+      <View style={styles.exportarContenedor}>
+        <TouchableOpacity style={styles.btnPDF} onPress={exportarPDF}>
+          <Text style={styles.btnExportarTexto}>📄 Exportar PDF</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btnExcel} onPress={exportarExcel}>
+          <Text style={styles.btnExportarTexto}>📊 Exportar Excel</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* BUSCADOR */}
       <View style={styles.buscadorContenedor}>
         <TextInput
@@ -153,6 +179,10 @@ const styles = StyleSheet.create({
   btnVolverTexto:     { color: '#333333', fontSize: 14 },
   btnAgregar:         { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
   btnAgregarTexto:    { color: '#333333', fontWeight: 'bold', fontSize: 13 },
+  exportarContenedor: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 4 },
+  btnPDF:             { flex: 1, backgroundColor: '#c0392b', paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
+  btnExcel:           { flex: 1, backgroundColor: '#27ae60', paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
+  btnExportarTexto:   { color: '#fff', fontWeight: 'bold', fontSize: 13 },
   buscadorContenedor: { padding: 12 },
   buscador:           { backgroundColor: '#F8F9FA', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333333', fontSize: 14 },
   lista:              { paddingHorizontal: 12, paddingBottom: 20 },

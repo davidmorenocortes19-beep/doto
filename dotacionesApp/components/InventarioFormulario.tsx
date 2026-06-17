@@ -6,8 +6,8 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.3.242/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://172.30.3.242/doto/api/productos.php';
+const API_URL = 'http://192.168.1.19/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://192.168.1.19/doto/api/productos.php';
 
 type InventarioItem = {
   id_inventario: number;

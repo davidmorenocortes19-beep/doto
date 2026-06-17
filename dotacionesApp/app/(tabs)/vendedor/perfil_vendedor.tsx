@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://172.30.3.242/doto/api/perfil.php';
+const API_URL = 'http://192.168.1.19/doto/api/perfil.php';
 
 type Vendedor = {
   id?: number;
@@ -39,7 +39,7 @@ export default function PerfilVendedor() {
       const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 5000 });
       if (res.data.success) setVendedor(res.data.data);
     } catch {
-      // sin servidor: dejar vacío
+      // sin servidor: dejar vacï¿½o
     } finally {
       setCargando(false);
     }
@@ -75,16 +75,16 @@ export default function PerfilVendedor() {
         setMensaje('? ' + res.data.mensaje);
       }
     } catch {
-      setMensaje('? Error de conexión con el servidor');
+      setMensaje('? Error de conexiï¿½n con el servidor');
     } finally {
       setCargando(false);
     }
   };
 
   const cerrarSesion = () => {
-    Alert.alert('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', [
+    Alert.alert('Cerrar sesiï¿½n', 'ï¿½Estï¿½s seguro de que deseas cerrar sesiï¿½n?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesión', style: 'destructive', onPress: () => router.replace('/') },
+      { text: 'Cerrar sesiï¿½n', style: 'destructive', onPress: () => router.replace('/') },
     ]);
   };
 
@@ -131,26 +131,26 @@ export default function PerfilVendedor() {
               </View>
             </View>
 
-            {/* Información actual */}
+            {/* Informaciï¿½n actual */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Información Personal</Text>
+              <Text style={styles.seccionTitulo}>Informaciï¿½n Personal</Text>
               {[
                 { label: 'Nombre',    valor: vendedor?.nombre },
                 { label: 'Documento', valor: vendedor?.documento },
                 { label: 'Correo',    valor: vendedor?.correo },
-                { label: 'Teléfono',  valor: vendedor?.telefono },
-                { label: 'Dirección', valor: vendedor?.direccion },
+                { label: 'Telï¿½fono',  valor: vendedor?.telefono },
+                { label: 'Direcciï¿½n', valor: vendedor?.direccion },
               ].map(item => (
                 <View key={item.label} style={styles.infoRow}>
                   <Text style={styles.infoLabel}>{item.label}</Text>
-                  <Text style={styles.infoValor}>{item.valor ?? '—'}</Text>
+                  <Text style={styles.infoValor}>{item.valor ?? 'ï¿½'}</Text>
                 </View>
               ))}
             </View>
 
-            {/* Formulario de actualización */}
+            {/* Formulario de actualizaciï¿½n */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Actualizar Información</Text>
+              <Text style={styles.seccionTitulo}>Actualizar Informaciï¿½n</Text>
               <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
               <TextInput style={styles.input} placeholder="Nuevo nombre"
@@ -162,15 +162,15 @@ export default function PerfilVendedor() {
                 onChangeText={setNuevoCorreo} keyboardType="email-address"
                 autoCapitalize="none" />
 
-              <TextInput style={styles.input} placeholder="Nuevo teléfono"
+              <TextInput style={styles.input} placeholder="Nuevo telï¿½fono"
                 placeholderTextColor="#333333" value={nuevoTelefono}
                 onChangeText={setNuevoTelefono} keyboardType="phone-pad" />
 
-              <TextInput style={styles.input} placeholder="Nueva dirección"
+              <TextInput style={styles.input} placeholder="Nueva direcciï¿½n"
                 placeholderTextColor="#333333" value={nuevaDireccion}
                 onChangeText={setNuevaDireccion} />
 
-              <TextInput style={styles.input} placeholder="Nueva contraseña"
+              <TextInput style={styles.input} placeholder="Nueva contraseï¿½a"
                 placeholderTextColor="#333333" value={nuevoPassword}
                 onChangeText={setNuevoPassword} secureTextEntry />
 
