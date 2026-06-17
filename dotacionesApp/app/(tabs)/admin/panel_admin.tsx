@@ -1,20 +1,25 @@
-import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
+﻿import React from 'react';
+import { Text, TouchableOpacity, StyleSheet, ScrollView, View, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
 const opciones = [
-  { icon: '🏠', label: 'Inicio',       ruta: '/admin/panel_admin' },
-  { icon: '👥', label: 'Usuarios',     ruta: '/admin/Usuarios' },
-  { icon: '👕', label: 'Productos',    ruta: '/admin/Productos' },
-  { icon: '📋', label: 'Ver Pedidos',  ruta: '/admin/pedidos' },
-  { icon: '📦', label: 'Inventario',   ruta: '/admin/inventario' },
-  { icon: '↩️', label: 'Devoluciones', ruta: '/admin/devoluciones' },
+  { icon: '\u{1F3E0}', label: 'Inicio',       ruta: '/admin/panel_admin' },
+  { icon: '\u{1F465}', label: 'Usuarios',     ruta: '/admin/Usuarios' },
+  { icon: '\u{1F455}', label: 'Productos',    ruta: '/admin/Productos' },
+  { icon: '\u{1F4CB}', label: 'Ver Pedidos',  ruta: '/admin/pedidos' },
+  { icon: '\u{1F4E6}', label: 'Inventario',   ruta: '/admin/inventario' },
+  { icon: '\u{21A9}\u{FE0F}', label: 'Devoluciones', ruta: '/admin/devoluciones' },
 ];
 
 export default function PanelAdmin() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ImageBackground
+      source={require('../../../assets/images/camiseta.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
         Bienvenido {sesion.rol}, {sesion.nombre}
       </Text>
@@ -34,20 +39,22 @@ export default function PanelAdmin() {
       </View>
 
       <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
-        <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
+        <Text style={styles.btnSalirText}>{'\u{1F6AA}'} Cerrar Sesion</Text>
       </TouchableOpacity>
     </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container:    { flexGrow: 1, padding: 24, backgroundColor: '#F8F9FA' },
-  title:        { fontSize: 24, fontWeight: 'bold', color: '#333333', textAlign: 'center', marginTop: 40, marginBottom: 6 },
-  subtitle:     { fontSize: 14, color: '#333333', textAlign: 'center', marginBottom: 32 },
+  background: { flex: 1 },
+  container:    { flexGrow: 1, padding: 24, backgroundColor: 'rgba(9,8,13,0.75)' },
+  title:        { fontSize: 24, fontWeight: 'bold', color: '#B7975B', textAlign: 'center', marginTop: 40, marginBottom: 6 },
+  subtitle:     { fontSize: 14, color: '#ccc', textAlign: 'center', marginBottom: 32 },
   grid:         { flexDirection: 'row', flexWrap: 'wrap', gap: 16, justifyContent: 'center' },
-  card:         { width: '44%', backgroundColor: '#F8F9FA', borderRadius: 12, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: '#333333' },
+  card:         { width: '44%', backgroundColor: '#fff', borderRadius: 12, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: '#ccc' },
   cardIcon:     { fontSize: 32, marginBottom: 8 },
   cardText:     { color: '#333333', fontWeight: 'bold', fontSize: 14 },
   btnSalir:     { marginTop: 40, backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
-  btnSalirText: { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+  btnSalirText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
 });

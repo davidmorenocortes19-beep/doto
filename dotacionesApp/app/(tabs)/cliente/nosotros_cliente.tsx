@@ -81,12 +81,12 @@ export default function NosotrosCliente() {
             </Text>
 
             <TextInput style={styles.input} placeholder="Nombre"
-              placeholderTextColor="#333333" value={nombre} onChangeText={setNombre} />
+              placeholderTextColor="#999" value={nombre} onChangeText={setNombre} />
             <TextInput style={styles.input} placeholder="Correo"
-              placeholderTextColor="#333333" value={correo} onChangeText={setCorreo}
+              placeholderTextColor="#999" value={correo} onChangeText={setCorreo}
               keyboardType="email-address" autoCapitalize="none" />
             <TextInput style={[styles.input, styles.textArea]} placeholder="Mensaje"
-              placeholderTextColor="#333333" value={mensaje} onChangeText={setMensaje}
+              placeholderTextColor="#999" value={mensaje} onChangeText={setMensaje}
               multiline numberOfLines={4} />
 
             <TouchableOpacity style={styles.btnEnviar} onPress={enviarContacto}>
@@ -140,46 +140,46 @@ export default function NosotrosCliente() {
 
 const styles = StyleSheet.create({
   background:    { flex: 1 },
-  safeArea:      { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
+  safeArea:      { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
 
-  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
-  backBtn:       { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
+  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
+  backBtn:       { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
   logoArea:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:    { width: 32, height: 32, borderRadius: 16, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
   logoInitials:  { color: '#333333', fontWeight: 'bold', fontSize: 11 },
-  brand:         { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  brand:         { color: '#B7975B', fontWeight: 'bold', fontSize: 14 },
 
   scroll:        { paddingBottom: 24 },
 
-  hero:          { alignItems: 'center', padding: 28, borderBottomWidth: 1, borderBottomColor: '#333333' },
-  heroBadge:     { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#333333', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4, marginBottom: 12 },
+  hero:          { alignItems: 'center', padding: 28, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
+  heroBadge:     { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4, marginBottom: 12 },
   heroBadgeText: { color: '#333333', fontSize: 12 },
-  heroTitle:     { color: '#333333', fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
+  heroTitle:     { color: '#B7975B', fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
   heroDesc:      { color: '#333333', fontSize: 13, textAlign: 'center', lineHeight: 21, paddingHorizontal: 4 },
 
-  visionBox:     { margin: 16, backgroundColor: 'rgba(183,151,91,0.08)', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 16 },
-  visionTitle:   { color: '#333333', fontWeight: 'bold', fontSize: 18, marginBottom: 10 },
+  visionBox:     { margin: 16, backgroundColor: 'rgba(183,151,91,0.08)', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16 },
+  visionTitle:   { color: '#B7975B', fontWeight: 'bold', fontSize: 18, marginBottom: 10 },
   visionText:    { color: '#333333', fontSize: 13, lineHeight: 21 },
 
-  seccion:       { marginHorizontal: 16, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo: { color: '#333333', fontWeight: 'bold', fontSize: 16, marginBottom: 6 },
+  seccion:       { marginHorizontal: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
+  seccionTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 16, marginBottom: 6 },
   contactoSub:   { color: '#333333', fontSize: 12, marginBottom: 12, lineHeight: 18 },
-  input:         { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+  input:         { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
   textArea:      { height: 90, textAlignVertical: 'top' },
   btnEnviar:     { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnEnviarText: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  btnEnviarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
 
-  footer:        { marginHorizontal: 16, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 16, marginBottom: 8, alignItems: 'center' },
+  footer:        { marginHorizontal: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, marginBottom: 8, alignItems: 'center' },
   footerTel:     { color: '#333333', fontWeight: 'bold', fontSize: 16, marginBottom: 6 },
   footerInfo:    { color: '#333333', fontSize: 12, marginBottom: 4, textAlign: 'center' },
   horario:       { marginTop: 12, alignItems: 'center' },
-  horarioTitulo: { color: '#333333', fontWeight: 'bold', fontSize: 13, marginBottom: 6 },
+  horarioTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 13, marginBottom: 6 },
   horarioText:   { color: '#333333', fontSize: 12, marginBottom: 3 },
   footerCopy:    { color: '#333333', fontSize: 11, marginTop: 14 },
 
-  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
+  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
   bnav:          { alignItems: 'center', gap: 2 },
   bnavIcon:      { fontSize: 18 },
-  bnavLabel:     { fontSize: 9, color: '#333333' },
+  bnavLabel:     { fontSize: 9, color: '#eee' },
   bnavActive:    { color: '#333333' },
 });

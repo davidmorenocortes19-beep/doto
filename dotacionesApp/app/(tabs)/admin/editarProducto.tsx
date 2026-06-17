@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert, ScrollView, Pressable
-} from 'react-native';
+  StyleSheet, ActivityIndicator, Alert, ScrollView, Pressable, ImageBackground } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
@@ -146,7 +145,7 @@ export default function EditarProductoScreen() {
         <ActivityIndicator size="large" color="#B7975B" />
         <Text style={{ color: '#333333', marginTop: 10 }}>Cargando producto...</Text>
       </View>
-    );
+  );
   }
 
   if (errorMsg) {
@@ -159,11 +158,16 @@ export default function EditarProductoScreen() {
           <Text style={{ color: '#333333' }}>🔄 Reintentar</Text>
         </TouchableOpacity>
       </View>
-    );
+  );
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../../assets/images/camiseta.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('/admin/Productos')} style={styles.btnVolver}>
@@ -184,7 +188,7 @@ export default function EditarProductoScreen() {
         {/* NOMBRE */}
         <TextInput
           placeholder="Nombre del producto"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, nombreError ? styles.inputError : null]}
           value={nombre}
           onChangeText={handleNombre}
@@ -197,7 +201,7 @@ export default function EditarProductoScreen() {
         {/* PRECIO */}
         <TextInput
           placeholder="Precio (ej: 25000)"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, precioError ? styles.inputError : null]}
           value={precio}
           onChangeText={handlePrecio}
@@ -211,7 +215,7 @@ export default function EditarProductoScreen() {
         {/* TALLA */}
         <TextInput
           placeholder="Talla (ej: M, XL, 42...)"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, tallaError ? styles.inputError : null]}
           value={talla}
           onChangeText={handleTalla}
@@ -225,7 +229,7 @@ export default function EditarProductoScreen() {
         {/* COLOR */}
         <TextInput
           placeholder="Color del producto"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, colorError ? styles.inputError : null]}
           value={color}
           onChangeText={handleColor}
@@ -238,7 +242,7 @@ export default function EditarProductoScreen() {
         {/* IMAGEN */}
         <TextInput
           placeholder="URL o ruta de imagen"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={styles.input}
           value={imagen}
           onChangeText={setImagen}
@@ -277,38 +281,40 @@ export default function EditarProductoScreen() {
           disabled={guardando}
         >
           {guardando
-            ? <ActivityIndicator color="#333333" />
+            ? <ActivityIndicator color="#fff" />
             : <Text style={styles.btnGuardarTexto}>💾 GUARDAR CAMBIOS</Text>
           }
         </Pressable>
       </View>
 
     </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container:            { flex: 1, backgroundColor: '#F8F9FA' },
-  centrado:             { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA' },
-  header:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
-  titulo:               { fontSize: 20, fontWeight: 'bold', color: '#333333' },
+  background: { flex: 1 },
+  container: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  centrado:             { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  header:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#fff' },
+  titulo:               { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver:            { padding: 8 },
-  btnVolverTexto:       { color: '#333333', fontSize: 14 },
+  btnVolverTexto: { color: '#fff', fontSize: 14 },
   form:                 { padding: 20, paddingBottom: 20 },
-  input:                { backgroundColor: '#F8F9FA', color: '#333333', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#333333', fontSize: 15 },
-  inputError:           { borderColor: '#333333', borderWidth: 2, marginBottom: 0 },
+  input:                { backgroundColor: '#fff', color: '#333333', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#ccc', fontSize: 15 },
+  inputError:           { borderColor: '#ccc', borderWidth: 2, marginBottom: 0 },
   fieldHint:            { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
   fieldOk:              { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  label:                { color: '#333333', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 8 },
+  label:                { color: '#eee', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 8 },
   estadoContenedor:     { flexDirection: 'row', gap: 10, marginTop: 4 },
-  estadoBtn:            { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#333333', alignItems: 'center' },
-  estadoBtnDisponible:  { backgroundColor: '#B7975B', borderColor: '#333333' },
-  estadoBtnAgotado:     { backgroundColor: '#B7975B', borderColor: '#333333' },
-  estadoBtnTexto:       { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  estadoBtn:            { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#ccc', alignItems: 'center' },
+  estadoBtnDisponible:  { backgroundColor: '#B7975B', borderColor: '#ccc' },
+  estadoBtnAgotado:     { backgroundColor: '#B7975B', borderColor: '#ccc' },
+  estadoBtnTexto: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   estadoBtnTextoActivo: { color: '#333333' },
   btnGuardar:           { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
-  btnGuardarTexto:      { color: '#333333', fontWeight: 'bold', fontSize: 15 },
-  footerBtn:            { padding: 20, paddingTop: 10, backgroundColor: '#F8F9FA' },
-  exitoContenedor:      { backgroundColor: '#F8F9FA', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#333333' },
+  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  footerBtn:            { padding: 20, paddingTop: 10, backgroundColor: '#fff' },
+  exitoContenedor:      { backgroundColor: '#fff', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#ccc' },
   exitoTexto:           { color: '#333333', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

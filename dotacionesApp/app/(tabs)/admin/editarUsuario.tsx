@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert, ScrollView, Pressable
-} from 'react-native';
+  StyleSheet, ActivityIndicator, Alert, ScrollView, Pressable, ImageBackground } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
@@ -163,7 +162,7 @@ export default function EditarUsuarioScreen() {
         <ActivityIndicator size="large" color="#B7975B" />
         <Text style={{ color: '#333333', marginTop: 10 }}>Cargando usuario...</Text>
       </View>
-    );
+  );
   }
 
   if (errorMsg) {
@@ -176,11 +175,16 @@ export default function EditarUsuarioScreen() {
           <Text style={{ color: '#333333' }}>🔄 Reintentar</Text>
         </TouchableOpacity>
       </View>
-    );
+  );
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../../assets/images/camiseta.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('/admin/Usuarios')} style={styles.btnVolver}>
@@ -201,7 +205,7 @@ export default function EditarUsuarioScreen() {
         {/* NOMBRE */}
         <TextInput
           placeholder="Nombre completo"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, nombreError ? styles.inputError : null]}
           onChangeText={handleNombre}
           value={nombre}
@@ -215,7 +219,7 @@ export default function EditarUsuarioScreen() {
         {/* DOCUMENTO — solo lectura */}
         <TextInput
           placeholder="Documento"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, styles.inputDeshabilitado]}
           value={documento}
           editable={false}
@@ -226,7 +230,7 @@ export default function EditarUsuarioScreen() {
         {/* CORREO */}
         <TextInput
           placeholder="Correo electrónico"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, correoError ? styles.inputError : null]}
           keyboardType="email-address"
           autoCapitalize="none"
@@ -241,7 +245,7 @@ export default function EditarUsuarioScreen() {
         {/* TELÉFONO */}
         <TextInput
           placeholder="Teléfono"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, telError ? styles.inputError : null]}
           keyboardType="phone-pad"
           onChangeText={handleTelefono}
@@ -256,7 +260,7 @@ export default function EditarUsuarioScreen() {
         {/* DIRECCIÓN */}
         <TextInput
           placeholder="Dirección"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           style={[styles.input, dirError ? styles.inputError : null]}
           onChangeText={handleDireccion}
           value={direccion}
@@ -296,39 +300,41 @@ export default function EditarUsuarioScreen() {
           disabled={guardando}
         >
           {guardando
-            ? <ActivityIndicator color="#333333" />
+            ? <ActivityIndicator color="#fff" />
             : <Text style={styles.buttonText}>💾 GUARDAR CAMBIOS</Text>
           }
         </Pressable>
       </View>
 
     </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container:          { flex: 1, backgroundColor: '#F8F9FA' },
-  centrado:           { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA' },
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
-  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#333333' },
+  background: { flex: 1 },
+  container: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  centrado:           { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#fff' },
+  titulo:             { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver:          { padding: 8 },
-  btnVolverTexto:     { color: '#333333', fontSize: 14 },
+  btnVolverTexto: { color: '#fff', fontSize: 14 },
   form:               { padding: 20, paddingBottom: 20 },
-  input:              { backgroundColor: '#F8F9FA', color: '#333333', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#333333', fontSize: 15 },
-  inputError:         { borderColor: '#333333', borderWidth: 2, marginBottom: 0 },
-  inputDeshabilitado: { backgroundColor: '#F8F9FA', color: '#333333', borderColor: '#333333' },
+  input:              { backgroundColor: '#fff', color: '#333333', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#ccc', fontSize: 15 },
+  inputError:         { borderColor: '#ccc', borderWidth: 2, marginBottom: 0 },
+  inputDeshabilitado: { backgroundColor: '#fff', color: '#333333', borderColor: '#ccc' },
   nota:               { color: '#333333', fontSize: 11, marginBottom: 8, marginLeft: 4, fontStyle: 'italic' },
   fieldHint:          { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
   fieldOk:            { color: '#333333', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  label:              { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#333333' },
+  label:              { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#eee' },
   rolContainer:       { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  rolBtn:             { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#F8F9FA', alignItems: 'center', borderWidth: 1, borderColor: '#333333' },
+  rolBtn:             { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', borderWidth: 1, borderColor: '#ccc' },
   rolActivo:          { backgroundColor: '#B7975B' },
   rolTexto:           { fontWeight: 'bold', color: '#333333', fontSize: 13 },
   rolTextoActivo:     { fontWeight: 'bold', color: '#333333', fontSize: 13 },
   button:             { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
-  buttonText:         { color: '#333333', fontWeight: 'bold', fontSize: 15 },
-  footerBtn:          { padding: 20, paddingTop: 10, backgroundColor: '#F8F9FA' },
-  exitoContenedor:    { backgroundColor: '#F8F9FA', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#333333' },
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  footerBtn:          { padding: 20, paddingTop: 10, backgroundColor: '#fff' },
+  exitoContenedor:    { backgroundColor: '#fff', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#ccc' },
   exitoTexto:         { color: '#333333', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

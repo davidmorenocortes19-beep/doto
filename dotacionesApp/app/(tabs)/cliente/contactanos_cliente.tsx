@@ -50,12 +50,12 @@ export default function ContactanosCliente() {
                         </Text>
 
                         <TextInput style={styles.input} placeholder="Nombre"
-                            placeholderTextColor="#333333" value={nombre} onChangeText={setNombre} />
+                            placeholderTextColor="#999" value={nombre} onChangeText={setNombre} />
                         <TextInput style={styles.input} placeholder="Correo"
-                            placeholderTextColor="#333333" value={correo} onChangeText={setCorreo}
+                            placeholderTextColor="#999" value={correo} onChangeText={setCorreo}
                             keyboardType="email-address" autoCapitalize="none" />
                         <TextInput style={[styles.input, styles.textArea]} placeholder="Mensaje"
-                            placeholderTextColor="#333333" value={mensaje} onChangeText={setMensaje}
+                            placeholderTextColor="#999" value={mensaje} onChangeText={setMensaje}
                             multiline numberOfLines={5} />
 
                         <TouchableOpacity style={styles.btnEnviar} onPress={enviar}>
@@ -109,36 +109,36 @@ export default function ContactanosCliente() {
 
 const styles = StyleSheet.create({
     background: { flex: 1 },
-    safeArea: { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
+    safeArea: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
 
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
-    backBtn: { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
+    backBtn: { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
     logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
     logoInitials: { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-    brand: { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+    brand: { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
 
     scroll: { padding: 16, paddingBottom: 24 },
 
-    seccion: { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 16, marginBottom: 14 },
-    seccionTitulo: { color: '#333333', fontWeight: 'bold', fontSize: 18, marginBottom: 6 },
+    seccion: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, marginBottom: 14 },
+    seccionTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 18, marginBottom: 6 },
     seccionSub: { color: '#333333', fontSize: 12, lineHeight: 18, marginBottom: 16 },
-    input: { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+    input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
     textArea: { height: 100, textAlignVertical: 'top' },
     btnEnviar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-    btnEnviarText: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+    btnEnviarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
 
-    infoBox: { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 16, alignItems: 'center' },
+    infoBox: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, alignItems: 'center' },
     infoTel: { color: '#333333', fontWeight: 'bold', fontSize: 17, marginBottom: 8 },
     infoText: { color: '#333333', fontSize: 12, marginBottom: 4, textAlign: 'center' },
     horario: { marginTop: 14, alignItems: 'center' },
-    horarioTitulo: { color: '#333333', fontWeight: 'bold', fontSize: 13, marginBottom: 8 },
+    horarioTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 13, marginBottom: 8 },
     horarioText: { color: '#333333', fontSize: 12, marginBottom: 4 },
     copy: { color: '#333333', fontSize: 11, marginTop: 16 },
 
-    bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
+    bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
     bnav: { alignItems: 'center', gap: 2 },
     bnavIcon: { fontSize: 18 },
-    bnavLabel: { fontSize: 9, color: '#333333' },
+    bnavLabel: { fontSize: 9, color: '#eee' },
     bnavActive: { color: '#333333' },
 });

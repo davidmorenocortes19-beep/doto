@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, ScrollView
+  StyleSheet, ActivityIndicator, ScrollView, ImageBackground
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
@@ -188,43 +188,60 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
 
   if (cargando) {
     return (
-      <View style={styles.centrado}>
-        <ActivityIndicator size="large" color="#B7975B" />
-        <Text style={styles.cargandoTexto}>Cargando inventario...</Text>
-      </View>
+      <ImageBackground
+        source={require('../assets/images/camiseta.png')}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.centrado}>
+          <ActivityIndicator size="large" color="#B7975B" />
+          <Text style={styles.cargandoTexto}>Cargando inventario...</Text>
+        </View>
+      </ImageBackground>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centrado}>
-        <Text style={styles.error}>{error}</Text>
-        <TouchableOpacity onPress={cargarDatos} style={styles.btnReintentar}>
-          <Text style={styles.btnReintentarTexto}>Reintentar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push(listadoRuta as any)} style={styles.btnCancelar}>
-          <Text style={styles.btnCancelarTexto}>Volver</Text>
-        </TouchableOpacity>
-      </View>
+      <ImageBackground
+        source={require('../assets/images/camiseta.png')}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.centrado}>
+          <Text style={styles.error}>{error}</Text>
+          <TouchableOpacity onPress={cargarDatos} style={styles.btnReintentar}>
+            <Text style={styles.btnReintentarTexto}>Reintentar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push(listadoRuta as any)} style={styles.btnCancelar}>
+            <Text style={styles.btnCancelarTexto}>Volver</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push(listadoRuta as any)} style={styles.btnVolver}>
-          <Text style={styles.btnVolverTexto}>Volver</Text>
-        </TouchableOpacity>
-        <Text style={styles.titulo}>{esEdicion ? 'Editar inventario' : 'Registrar inventario'}</Text>
-        <View style={{ width: 70 }} />
-      </View>
+    <ImageBackground
+      source={require('../assets/images/camiseta.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.push(listadoRuta as any)} style={styles.btnVolver}>
+            <Text style={styles.btnVolverTexto}>Volver</Text>
+          </TouchableOpacity>
+          <Text style={styles.titulo}>{esEdicion ? 'Editar inventario' : 'Registrar inventario'}</Text>
+          <View style={{ width: 70 }} />
+        </View>
 
       <ScrollView contentContainerStyle={styles.formulario} keyboardShouldPersistTaps="handled">
         <Text style={styles.label}>Producto</Text>
         <TextInput
           style={styles.input}
           placeholder="Buscar producto por nombre, talla, color o ID..."
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           value={productoBusqueda}
           onChangeText={(text) => {
             setProductoBusqueda(text);
@@ -268,7 +285,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
         <TextInput
           style={styles.input}
           placeholder="Cantidad actual"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           keyboardType="numeric"
           value={cantidadActual}
           onChangeText={(text) => setCantidadActual(text.replace(/[^0-9]/g, ''))}
@@ -278,7 +295,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
         <TextInput
           style={styles.input}
           placeholder="Stock minimo"
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           keyboardType="numeric"
           value={stockMinimo}
           onChangeText={(text) => setStockMinimo(text.replace(/[^0-9]/g, ''))}
@@ -292,7 +309,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
           disabled={guardando}
         >
           {guardando
-            ? <ActivityIndicator color="#333333" />
+            ? <ActivityIndicator color="#fff" />
             : <Text style={styles.btnGuardarTexto}>{esEdicion ? 'Actualizar' : 'Registrar'}</Text>}
         </TouchableOpacity>
 
@@ -300,36 +317,38 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
           <Text style={styles.btnCancelarTexto}>Cancelar</Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
-  centrado: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA', padding: 20 },
-  cargandoTexto: { color: '#333333', marginTop: 10 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
-  titulo: { fontSize: 20, fontWeight: 'bold', color: '#333333' },
+  background: { flex: 1 },
+  container: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  centrado: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(9,8,13,0.75)', padding: 20 },
+  cargandoTexto: { color: '#eee', marginTop: 10 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: 'rgba(9,8,13,0.88)' },
+  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver: { padding: 8 },
-  btnVolverTexto: { color: '#333333', fontSize: 14 },
+  btnVolverTexto: { color: '#B7975B', fontSize: 14 },
   formulario: { padding: 16, paddingBottom: 40 },
-  label: { color: '#333333', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 12 },
-  input: { backgroundColor: '#F8F9FA', color: '#333333', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#333333', fontSize: 14 },
+  label: { color: '#eee', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 12 },
+  input: { backgroundColor: '#fff', color: '#333333', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
   productosSelector: { marginBottom: 8, gap: 6 },
-  productoOpcion: { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 8, padding: 10 },
-  productoOpcionActiva: { backgroundColor: '#B7975B', borderColor: '#333333' },
+  productoOpcion: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10 },
+  productoOpcionActiva: { backgroundColor: '#B7975B', borderColor: '#ccc' },
   productoNombre: { color: '#333333', fontWeight: 'bold', fontSize: 13 },
-  productoNombreActivo: { color: '#333333' },
+  productoNombreActivo: { color: '#fff' },
   productoDetalle: { color: '#333333', fontSize: 11, marginTop: 2 },
-  productoDetalleActivo: { color: '#333333' },
-  productoSeleccionado: { color: '#333333', fontSize: 12, marginBottom: 8 },
-  sinProductos: { color: '#333333', fontSize: 12, textAlign: 'center', marginBottom: 8 },
+  productoDetalleActivo: { color: '#fff' },
+  productoSeleccionado: { color: '#B7975B', fontSize: 12, marginBottom: 8 },
+  sinProductos: { color: '#eee', fontSize: 12, textAlign: 'center', marginBottom: 8 },
   btnGuardar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 18 },
-  btnGuardarTexto: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   btnCancelar: { padding: 12, alignItems: 'center' },
-  btnCancelarTexto: { color: '#333333', textDecorationLine: 'underline', fontSize: 13 },
+  btnCancelarTexto: { color: '#B7975B', textDecorationLine: 'underline', fontSize: 13 },
   btnReintentar: { backgroundColor: '#B7975B', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8, marginTop: 16 },
-  btnReintentarTexto: { color: '#333333', fontWeight: 'bold' },
-  mensaje: { color: '#333333', textAlign: 'center', marginTop: 8, fontSize: 13 },
-  error: { color: '#333333', textAlign: 'center', fontSize: 14 },
+  btnReintentarTexto: { color: '#fff', fontWeight: 'bold' },
+  mensaje: { color: '#eee', textAlign: 'center', marginTop: 8, fontSize: 13 },
+  error: { color: '#eee', textAlign: 'center', fontSize: 14 },
 });

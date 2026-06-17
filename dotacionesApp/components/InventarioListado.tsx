@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
-  StyleSheet, ActivityIndicator, Alert, Linking
+  StyleSheet, ActivityIndicator, Alert, Linking, ImageBackground
 } from 'react-native';
 import { router } from 'expo-router';
 import axios from 'axios';
@@ -173,7 +173,12 @@ export default function InventarioListado({ volverA, formularioRuta }: Inventari
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../assets/images/camiseta.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.replace(volverA as any)} style={styles.btnVolver}>
           <Text style={styles.btnVolverTexto}>Volver</Text>
@@ -216,7 +221,7 @@ export default function InventarioListado({ volverA, formularioRuta }: Inventari
         <TextInput
           style={styles.buscador}
           placeholder="Buscar por producto, ID, talla, color o estado..."
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           value={busqueda}
           onChangeText={buscar}
         />
@@ -238,30 +243,32 @@ export default function InventarioListado({ volverA, formularioRuta }: Inventari
         onRefresh={cargarInventario}
         refreshing={cargando}
       />
-    </View>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA' },
-  titulo: { fontSize: 20, fontWeight: 'bold', color: '#333333' },
+  background: { flex: 1 },
+  container: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: 'rgba(9,8,13,0.88)' },
+  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver: { padding: 8 },
-  btnVolverTexto: { color: '#333333', fontSize: 14 },
+  btnVolverTexto: { color: '#B7975B', fontSize: 14 },
   btnAgregar: { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
-  btnAgregarTexto: { color: '#333333', fontWeight: 'bold', fontSize: 13 },
+  btnAgregarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
   exportarContenedor: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 4 },
   btnPDF: { flex: 1, backgroundColor: '#c0392b', paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
   btnExcel: { flex: 1, backgroundColor: '#27ae60', paddingVertical: 10, borderRadius: 8, alignItems: 'center' },
   btnExportarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
   resumenContenedor: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
-  resumenCard: { flex: 1, backgroundColor: '#F8F9FA', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#333333' },
+  resumenCard: { flex: 1, backgroundColor: '#fff', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#ccc' },
   resumenValor: { color: '#333333', fontSize: 24, fontWeight: 'bold' },
   resumenLabel: { color: '#333333', fontSize: 11, marginTop: 2, textAlign: 'center' },
   buscadorContenedor: { padding: 12 },
-  buscador: { backgroundColor: '#F8F9FA', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333333', fontSize: 14 },
+  buscador: { backgroundColor: '#fff', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
   lista: { paddingHorizontal: 12, paddingBottom: 20 },
-  fila: { backgroundColor: '#F8F9FA', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#333333' },
+  fila: { backgroundColor: '#fff', borderRadius: 10, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ccc' },
   infoBloque: { marginBottom: 12 },
   nombre: { fontSize: 16, fontWeight: 'bold', color: '#333333', marginBottom: 4 },
   detalle: { color: '#333333', fontSize: 13, marginBottom: 2 },
@@ -270,7 +277,7 @@ const styles = StyleSheet.create({
   acciones: { flexDirection: 'row', gap: 10 },
   btnEditar: { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnEliminar: { flex: 1, backgroundColor: '#B7975B', padding: 10, borderRadius: 8, alignItems: 'center' },
-  btnTexto: { color: '#333333', fontWeight: 'bold', fontSize: 13 },
-  error: { color: '#333333', textAlign: 'center', marginTop: 20, fontSize: 14 },
-  sinResultados: { color: '#333333', textAlign: 'center', marginTop: 30, fontSize: 14 },
+  btnTexto: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  error: { color: '#eee', textAlign: 'center', marginTop: 20, fontSize: 14 },
+  sinResultados: { color: '#eee', textAlign: 'center', marginTop: 30, fontSize: 14 },
 });

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert, ScrollView
-} from 'react-native';
+  StyleSheet, ActivityIndicator, Alert, ScrollView, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import axios from 'axios';
 
@@ -102,7 +101,12 @@ export default function AgregarProductoScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../../assets/images/camiseta.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
 
       {/* HEADER */}
       <View style={styles.header}>
@@ -127,7 +131,7 @@ export default function AgregarProductoScreen() {
           style={[styles.input, nombreError ? styles.inputError : null]}
           value={nombre}
           onChangeText={handleNombre}
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           placeholder="Nombre del producto"
         />
         {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
@@ -141,7 +145,7 @@ export default function AgregarProductoScreen() {
           style={[styles.input, precioError ? styles.inputError : null]}
           value={precio}
           onChangeText={handlePrecio}
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           placeholder="0.00"
           keyboardType="decimal-pad"
         />
@@ -156,7 +160,7 @@ export default function AgregarProductoScreen() {
           style={[styles.input, tallaError ? styles.inputError : null]}
           value={talla}
           onChangeText={handleTalla}
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           placeholder="XS, S, M, L, XL..."
           autoCapitalize="characters"
         />
@@ -171,7 +175,7 @@ export default function AgregarProductoScreen() {
           style={[styles.input, colorError ? styles.inputError : null]}
           value={color}
           onChangeText={handleColor}
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           placeholder="Color del producto"
         />
         {colorError !== '' && <Text style={styles.fieldHint}>{colorError}</Text>}
@@ -185,7 +189,7 @@ export default function AgregarProductoScreen() {
           style={styles.input}
           value={imagen}
           onChangeText={setImagen}
-          placeholderTextColor="#333333"
+          placeholderTextColor="#999"
           placeholder="URL o ruta: assets/imagenes/camiseta.png"
           autoCapitalize="none"
         />
@@ -212,36 +216,38 @@ export default function AgregarProductoScreen() {
           disabled={guardando}
         >
           {guardando
-            ? <ActivityIndicator color="#333333" />
+            ? <ActivityIndicator color="#fff" />
             : <Text style={styles.btnGuardarTexto}>💾 Guardar producto</Text>
           }
         </TouchableOpacity>
 
       </ScrollView>
     </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#F8F9FA', borderBottomWidth: 1, borderBottomColor: '#333333' },
-  titulo: { fontSize: 20, fontWeight: 'bold', color: '#333333' },
+  background: { flex: 1 },
+  container: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#B7975B' },
+  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
   btnVolver: { padding: 8 },
-  btnVolverTexto: { color: '#333333', fontSize: 14 },
+  btnVolverTexto: { color: '#fff', fontSize: 14 },
   form: { padding: 20, paddingBottom: 40 },
-  label: { color: '#333333', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
-  input: { backgroundColor: '#F8F9FA', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#333333', fontSize: 14 },
-  inputError: { borderColor: '#333333', borderWidth: 2 },
+  label: { color: '#eee', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 14 },
+  input: { backgroundColor: '#fff', color: '#333333', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
+  inputError: { borderColor: '#ccc', borderWidth: 2 },
   fieldHint: { color: '#333333', fontSize: 12, marginTop: 4, marginLeft: 4 },
   fieldOk: { color: '#333333', fontSize: 12, marginTop: 4, marginLeft: 4 },
   estadoContenedor: { flexDirection: 'row', gap: 10, marginTop: 4 },
-  estadoBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#333333', alignItems: 'center' },
-  estadoBtnDisponible: { backgroundColor: '#B7975B', borderColor: '#333333' },
-  estadoBtnAgotado: { backgroundColor: '#B7975B', borderColor: '#333333' },
-  estadoBtnTexto: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
+  estadoBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#ccc', alignItems: 'center' },
+  estadoBtnDisponible: { backgroundColor: '#B7975B', borderColor: '#ccc' },
+  estadoBtnAgotado: { backgroundColor: '#B7975B', borderColor: '#ccc' },
+  estadoBtnTexto: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   estadoBtnTextoActivo: { color: '#333333' },
   btnGuardar: { backgroundColor: '#B7975B', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 30 },
-  btnGuardarTexto: { color: '#333333', fontWeight: 'bold', fontSize: 16 },
-  exitoContenedor: { backgroundColor: '#F8F9FA', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#333333' },
+  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  exitoContenedor: { backgroundColor: '#fff', padding: 14, margin: 16, borderRadius: 10, borderWidth: 1, borderColor: '#ccc' },
   exitoTexto: { color: '#333333', fontWeight: 'bold', textAlign: 'center', fontSize: 14 },
 });

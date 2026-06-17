@@ -39,7 +39,7 @@ export default function PerfilVendedor() {
       const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 5000 });
       if (res.data.success) setVendedor(res.data.data);
     } catch {
-      // sin servidor: dejar vac�o
+      // sin servidor: dejar vacío
     } finally {
       setCargando(false);
     }
@@ -47,7 +47,7 @@ export default function PerfilVendedor() {
 
   const guardarCambios = async () => {
     if (!nuevoNombre && !nuevoCorreo && !nuevoTelefono && !nuevaDireccion && !nuevoPassword) {
-      setMensaje('? Ingresa al menos un campo para actualizar');
+      setMensaje('⚠ Ingresa al menos un campo para actualizar');
       return;
     }
 
@@ -62,7 +62,7 @@ export default function PerfilVendedor() {
       setCargando(true);
       const res = await axios.put(API_URL, payload, { timeout: 5000 });
       if (res.data.success) {
-        setMensaje('? Perfil actualizado correctamente');
+        setMensaje('✅ Perfil actualizado correctamente');
         setVendedor(prev => prev ? { ...prev, ...payload } : prev);
         if (nuevoNombre) sesion.nombre = nuevoNombre;
         if (nuevoCorreo) sesion.correo = nuevoCorreo;
@@ -72,19 +72,19 @@ export default function PerfilVendedor() {
         setNuevaDireccion('');
         setNuevoPassword('');
       } else {
-        setMensaje('? ' + res.data.mensaje);
+        setMensaje('❌ ' + res.data.mensaje);
       }
     } catch {
-      setMensaje('? Error de conexi�n con el servidor');
+      setMensaje('⚠ Error de conexión con el servidor');
     } finally {
       setCargando(false);
     }
   };
 
   const cerrarSesion = () => {
-    Alert.alert('Cerrar sesi�n', '�Est�s seguro de que deseas cerrar sesi�n?', [
+    Alert.alert('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesi�n', style: 'destructive', onPress: () => router.replace('/') },
+      { text: 'Cerrar sesión', style: 'destructive', onPress: () => router.replace('/') },
     ]);
   };
 
@@ -131,47 +131,47 @@ export default function PerfilVendedor() {
               </View>
             </View>
 
-            {/* Informaci�n actual */}
+            {/* Información actual */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Informaci�n Personal</Text>
+              <Text style={styles.seccionTitulo}>Información Personal</Text>
               {[
                 { label: 'Nombre',    valor: vendedor?.nombre },
                 { label: 'Documento', valor: vendedor?.documento },
                 { label: 'Correo',    valor: vendedor?.correo },
-                { label: 'Tel�fono',  valor: vendedor?.telefono },
-                { label: 'Direcci�n', valor: vendedor?.direccion },
+                { label: 'Teléfono',  valor: vendedor?.telefono },
+                { label: 'Dirección', valor: vendedor?.direccion },
               ].map(item => (
                 <View key={item.label} style={styles.infoRow}>
                   <Text style={styles.infoLabel}>{item.label}</Text>
-                  <Text style={styles.infoValor}>{item.valor ?? '�'}</Text>
+                  <Text style={styles.infoValor}>{item.valor ?? '-'}</Text>
                 </View>
               ))}
             </View>
 
-            {/* Formulario de actualizaci�n */}
+            {/* Formulario de actualización */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Actualizar Informaci�n</Text>
+              <Text style={styles.seccionTitulo}>Actualizar Información</Text>
               <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
               <TextInput style={styles.input} placeholder="Nuevo nombre"
-                placeholderTextColor="#333333" value={nuevoNombre}
+                placeholderTextColor="#999" value={nuevoNombre}
                 onChangeText={setNuevoNombre} autoCorrect={false} />
 
               <TextInput style={styles.input} placeholder="Nuevo correo"
-                placeholderTextColor="#333333" value={nuevoCorreo}
+                placeholderTextColor="#999" value={nuevoCorreo}
                 onChangeText={setNuevoCorreo} keyboardType="email-address"
                 autoCapitalize="none" />
 
-              <TextInput style={styles.input} placeholder="Nuevo tel�fono"
-                placeholderTextColor="#333333" value={nuevoTelefono}
+              <TextInput style={styles.input} placeholder="Nuevo teléfono"
+                placeholderTextColor="#999" value={nuevoTelefono}
                 onChangeText={setNuevoTelefono} keyboardType="phone-pad" />
 
-              <TextInput style={styles.input} placeholder="Nueva direcci�n"
-                placeholderTextColor="#333333" value={nuevaDireccion}
+              <TextInput style={styles.input} placeholder="Nueva dirección"
+                placeholderTextColor="#999" value={nuevaDireccion}
                 onChangeText={setNuevaDireccion} />
 
-              <TextInput style={styles.input} placeholder="Nueva contrase�a"
-                placeholderTextColor="#333333" value={nuevoPassword}
+              <TextInput style={styles.input} placeholder="Nueva contraseña"
+                placeholderTextColor="#999" value={nuevoPassword}
                 onChangeText={setNuevoPassword} secureTextEntry />
 
               {mensaje !== '' && (
@@ -224,37 +224,37 @@ export default function PerfilVendedor() {
 
 const styles = StyleSheet.create({
   background:     { flex: 1 },
-  safeArea:       { flex: 1, backgroundColor: 'rgba(248,249,250,0.96)' },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#333333', backgroundColor: 'rgba(248,249,250,0.97)' },
-  backBtn:        { color: '#333333', fontSize: 22, paddingHorizontal: 4 },
+  safeArea:       { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
+  backBtn:        { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
   logoArea:       { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:     { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
   logoInitials:   { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:    { color: '#333333', fontWeight: 'bold', fontSize: 15 },
+  headerTitle:    { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
   scroll:         { padding: 16, paddingBottom: 24 },
   avatarWrap:     { alignItems: 'center', marginBottom: 20 },
   avatar:         { width: 72, height: 72, borderRadius: 36, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   avatarText:     { color: '#333333', fontSize: 30, fontWeight: 'bold' },
   avatarName:     { color: '#333333', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
-  rolBadge:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#333333', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
+  rolBadge:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
   rolText:        { color: '#333333', fontSize: 12, fontWeight: 'bold' },
-  seccion:        { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo:  { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
+  seccion:        { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
+  seccionTitulo:  { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
   seccionSub:     { color: '#333333', fontSize: 11, marginBottom: 12 },
-  infoRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#333333' },
-  infoLabel:      { color: '#333333', fontSize: 13 },
+  infoRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
+  infoLabel:      { color: '#eee', fontSize: 13 },
   infoValor:      { color: '#333333', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
-  input:          { backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#333333', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+  input:          { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
   mensaje:        { fontSize: 12, marginBottom: 10, textAlign: 'center' },
   mensajeOk:      { color: '#333333' },
   mensajeError:   { color: '#333333' },
   btnGuardar:     { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnGuardarText: { color: '#333333', fontWeight: 'bold', fontSize: 14 },
-  btnSalir:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#333333', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
-  btnSalirText:   { color: '#333333', fontWeight: 'bold', fontSize: 14 },
-  bottomNav:      { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#333333', backgroundColor: 'rgba(248,249,250,0.98)' },
+  btnGuardarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnSalir:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
+  btnSalirText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  bottomNav:      { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
   bnav:           { alignItems: 'center', gap: 2 },
   bnavIcon:       { fontSize: 18 },
-  bnavLabel:      { fontSize: 9, color: '#333333' },
+  bnavLabel:      { fontSize: 9, color: '#eee' },
   bnavActive:     { color: '#333333' },
 });
