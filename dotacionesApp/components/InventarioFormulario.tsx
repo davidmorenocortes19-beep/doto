@@ -6,8 +6,8 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.19/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://192.168.1.19/doto/api/productos.php';
+const API_URL = 'http://192.168.137.9/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://192.168.137.9/doto/api/productos.php';
 
 type InventarioItem = {
   id_inventario: number;
@@ -85,9 +85,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
     }
   }, [idInventario]);
 
-  useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
+  useEffect(() => { cargarDatos(); }, [cargarDatos]);
 
   const productosRegistradosIds = useMemo(() => new Set(
     inventario
@@ -102,9 +100,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
 
   const productosFiltrados = useMemo(() => {
     const t = productoBusqueda.trim().toLowerCase();
-
     if (!t) return productosDisponibles.slice(0, 8);
-
     return productosDisponibles
       .filter(p =>
         p.nombre.toLowerCase().includes(t) ||
@@ -118,15 +114,10 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
   useEffect(() => {
     const t = productoBusqueda.trim().toLowerCase();
     if (!t || idProducto) return;
-
     const productoExacto = productosDisponibles.find(p =>
-      p.nombre.toLowerCase() === t ||
-      String(p.id_producto) === t
+      p.nombre.toLowerCase() === t || String(p.id_producto) === t
     );
-
-    if (productoExacto) {
-      setIdProducto(String(productoExacto.id_producto));
-    }
+    if (productoExacto) setIdProducto(String(productoExacto.id_producto));
   }, [idProducto, productoBusqueda, productosDisponibles]);
 
   const validarFormulario = () => {
@@ -141,10 +132,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
 
   const guardarInventario = async () => {
     const errorFormulario = validarFormulario();
-    if (errorFormulario) {
-      setMensaje(errorFormulario);
-      return;
-    }
+    if (errorFormulario) { setMensaje(errorFormulario); return; }
 
     const payload = {
       id_inventario: idInventario,
@@ -159,16 +147,10 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
       setError('');
 
       if (idInventario) {
-        await axios.put(API_URL, payload, {
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 5000,
-        });
+        await axios.put(API_URL, payload, { headers: { 'Content-Type': 'application/json' }, timeout: 5000 });
         setMensaje('Inventario actualizado correctamente');
       } else {
-        await axios.post(API_URL, payload, {
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 5000,
-        });
+        await axios.post(API_URL, payload, { headers: { 'Content-Type': 'application/json' }, timeout: 5000 });
         setMensaje('Inventario registrado correctamente');
       }
 
@@ -193,8 +175,9 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
         style={styles.background}
         resizeMode="cover"
       >
+        <View style={styles.overlay} />
         <View style={styles.centrado}>
-          <ActivityIndicator size="large" color="#B7975B" />
+          <ActivityIndicator size="large" color="#1E293B" />
           <Text style={styles.cargandoTexto}>Cargando inventario...</Text>
         </View>
       </ImageBackground>
@@ -208,6 +191,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
         style={styles.background}
         resizeMode="cover"
       >
+        <View style={styles.overlay} />
         <View style={styles.centrado}>
           <Text style={styles.error}>{error}</Text>
           <TouchableOpacity onPress={cargarDatos} style={styles.btnReintentar}>
@@ -227,96 +211,99 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.overlay} />
+
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.push(listadoRuta as any)} style={styles.btnVolver}>
-            <Text style={styles.btnVolverTexto}>Volver</Text>
+            <Text style={styles.btnVolverTexto}>← Volver</Text>
           </TouchableOpacity>
           <Text style={styles.titulo}>{esEdicion ? 'Editar inventario' : 'Registrar inventario'}</Text>
           <View style={{ width: 70 }} />
         </View>
 
-      <ScrollView contentContainerStyle={styles.formulario} keyboardShouldPersistTaps="handled">
-        <Text style={styles.label}>Producto</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar producto por nombre, talla, color o ID..."
-          placeholderTextColor="#999"
-          value={productoBusqueda}
-          onChangeText={(text) => {
-            setProductoBusqueda(text);
-            setIdProducto('');
-          }}
-        />
+        <ScrollView contentContainerStyle={styles.formulario} keyboardShouldPersistTaps="handled">
 
-        {productosFiltrados.length > 0 ? (
-          <View style={styles.productosSelector}>
-            {productosFiltrados.map((producto) => {
-              const activo = idProducto === String(producto.id_producto);
+          <Text style={styles.label}>Producto</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Buscar producto por nombre, talla, color o ID..."
+            placeholderTextColor="#94A3B8"
+            value={productoBusqueda}
+            onChangeText={(text) => {
+              setProductoBusqueda(text);
+              setIdProducto('');
+            }}
+          />
 
-              return (
-                <TouchableOpacity
-                  key={producto.id_producto}
-                  style={[styles.productoOpcion, activo && styles.productoOpcionActiva]}
-                  onPress={() => {
-                    setIdProducto(String(producto.id_producto));
-                    setProductoBusqueda(producto.nombre);
-                  }}
-                >
-                  <Text style={[styles.productoNombre, activo && styles.productoNombreActivo]}>
-                    {producto.nombre}
-                  </Text>
-                  <Text style={[styles.productoDetalle, activo && styles.productoDetalleActivo]}>
-                    ID {producto.id_producto} | Talla {producto.talla || 'N/A'} | Color {producto.color || 'N/A'}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        ) : (
-          <Text style={styles.sinProductos}>No hay productos disponibles para registrar</Text>
-        )}
+          {productosFiltrados.length > 0 ? (
+            <View style={styles.productosSelector}>
+              {productosFiltrados.map((producto) => {
+                const activo = idProducto === String(producto.id_producto);
+                return (
+                  <TouchableOpacity
+                    key={producto.id_producto}
+                    style={[styles.productoOpcion, activo && styles.productoOpcionActiva]}
+                    onPress={() => {
+                      setIdProducto(String(producto.id_producto));
+                      setProductoBusqueda(producto.nombre);
+                    }}
+                  >
+                    <Text style={[styles.productoNombre, activo && styles.productoNombreActivo]}>
+                      {producto.nombre}
+                    </Text>
+                    <Text style={[styles.productoDetalle, activo && styles.productoDetalleActivo]}>
+                      ID {producto.id_producto} | Talla {producto.talla || 'N/A'} | Color {producto.color || 'N/A'}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <Text style={styles.sinProductos}>No hay productos disponibles para registrar</Text>
+          )}
 
-        {idProducto !== '' && (
-          <Text style={styles.productoSeleccionado}>Producto seleccionado: ID {idProducto}</Text>
-        )}
+          {idProducto !== '' && (
+            <Text style={styles.productoSeleccionado}>✅ Producto seleccionado: ID {idProducto}</Text>
+          )}
 
-        <Text style={styles.label}>Cantidad actual</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Cantidad actual"
-          placeholderTextColor="#999"
-          keyboardType="numeric"
-          value={cantidadActual}
-          onChangeText={(text) => setCantidadActual(text.replace(/[^0-9]/g, ''))}
-        />
+          <Text style={styles.label}>Cantidad actual</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Cantidad actual"
+            placeholderTextColor="#94A3B8"
+            keyboardType="numeric"
+            value={cantidadActual}
+            onChangeText={(text) => setCantidadActual(text.replace(/[^0-9]/g, ''))}
+          />
 
-        <Text style={styles.label}>Stock minimo</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Stock minimo"
-          placeholderTextColor="#999"
-          keyboardType="numeric"
-          value={stockMinimo}
-          onChangeText={(text) => setStockMinimo(text.replace(/[^0-9]/g, ''))}
-        />
+          <Text style={styles.label}>Stock mínimo</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Stock mínimo"
+            placeholderTextColor="#94A3B8"
+            keyboardType="numeric"
+            value={stockMinimo}
+            onChangeText={(text) => setStockMinimo(text.replace(/[^0-9]/g, ''))}
+          />
 
-        {mensaje !== '' && <Text style={styles.mensaje}>{mensaje}</Text>}
+          {mensaje !== '' && <Text style={styles.mensaje}>{mensaje}</Text>}
 
-        <TouchableOpacity
-          style={[styles.btnGuardar, guardando && { opacity: 0.7 }]}
-          onPress={guardarInventario}
-          disabled={guardando}
-        >
-          {guardando
-            ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.btnGuardarTexto}>{esEdicion ? 'Actualizar' : 'Registrar'}</Text>}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.btnGuardar, guardando && { opacity: 0.7 }]}
+            onPress={guardarInventario}
+            disabled={guardando}
+          >
+            {guardando
+              ? <ActivityIndicator color="#F8FAFC" />
+              : <Text style={styles.btnGuardarTexto}>{esEdicion ? 'Actualizar' : 'Registrar'}</Text>}
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnCancelar} onPress={() => router.push(listadoRuta as any)}>
-          <Text style={styles.btnCancelarTexto}>Cancelar</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          <TouchableOpacity style={styles.btnCancelar} onPress={() => router.push(listadoRuta as any)}>
+            <Text style={styles.btnCancelarTexto}>Cancelar</Text>
+          </TouchableOpacity>
+
+        </ScrollView>
       </View>
     </ImageBackground>
   );
@@ -324,31 +311,70 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  container: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
-  centrado: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(9,8,13,0.75)', padding: 20 },
-  cargandoTexto: { color: '#eee', marginTop: 10 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: 'rgba(9,8,13,0.88)' },
-  titulo: { fontSize: 20, fontWeight: 'bold', color: '#B7975B' },
-  btnVolver: { padding: 8 },
-  btnVolverTexto: { color: '#B7975B', fontSize: 14 },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  container: { flex: 1 },
+  centrado: {
+    flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20,
+  },
+  cargandoTexto: { color: '#0F172A', marginTop: 10, fontSize: 14 },
+
+  // Header
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    padding: 16, paddingTop: 50,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+  },
+  titulo:         { fontSize: 18, fontWeight: '600', color: '#0F172A' },
+  btnVolver:      { padding: 8, backgroundColor: '#1E293B', borderRadius: 8, width: 70, alignItems: 'center' },
+  btnVolverTexto: { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
+
+  // Formulario
   formulario: { padding: 16, paddingBottom: 40 },
-  label: { color: '#eee', fontSize: 13, fontWeight: 'bold', marginBottom: 6, marginTop: 12 },
-  input: { backgroundColor: '#fff', color: '#333333', padding: 12, borderRadius: 8, marginBottom: 8, borderWidth: 1, borderColor: '#ccc', fontSize: 14 },
+  label: {
+    color: '#0F172A', fontSize: 13, fontWeight: '600',
+    marginBottom: 6, marginTop: 12,
+  },
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    color: '#0F172A', padding: 12, borderRadius: 10,
+    marginBottom: 8, borderWidth: 1.5, borderColor: '#1E293B', fontSize: 14,
+  },
+
+  // Selector de productos
   productosSelector: { marginBottom: 8, gap: 6 },
-  productoOpcion: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10 },
-  productoOpcionActiva: { backgroundColor: '#B7975B', borderColor: '#ccc' },
-  productoNombre: { color: '#333333', fontWeight: 'bold', fontSize: 13 },
-  productoNombreActivo: { color: '#fff' },
-  productoDetalle: { color: '#333333', fontSize: 11, marginTop: 2 },
-  productoDetalleActivo: { color: '#fff' },
-  productoSeleccionado: { color: '#B7975B', fontSize: 12, marginBottom: 8 },
-  sinProductos: { color: '#eee', fontSize: 12, textAlign: 'center', marginBottom: 8 },
-  btnGuardar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 18 },
-  btnGuardarTexto: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  btnCancelar: { padding: 12, alignItems: 'center' },
-  btnCancelarTexto: { color: '#B7975B', textDecorationLine: 'underline', fontSize: 13 },
-  btnReintentar: { backgroundColor: '#B7975B', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8, marginTop: 16 },
-  btnReintentarTexto: { color: '#fff', fontWeight: 'bold' },
-  mensaje: { color: '#eee', textAlign: 'center', marginTop: 8, fontSize: 13 },
-  error: { color: '#eee', textAlign: 'center', fontSize: 14 },
+  productoOpcion: {
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B',
+    borderRadius: 10, padding: 10,
+  },
+  productoOpcionActiva: { backgroundColor: '#1E293B', borderColor: '#1E293B' },
+  productoNombre:       { color: '#0F172A', fontWeight: '600', fontSize: 13 },
+  productoNombreActivo: { color: '#F8FAFC' },
+  productoDetalle:      { color: '#64748B', fontSize: 11, marginTop: 2 },
+  productoDetalleActivo:{ color: '#CBD5E1' },
+  productoSeleccionado: { color: '#16A34A', fontSize: 12, marginBottom: 8, fontWeight: '600' },
+  sinProductos:         { color: '#64748B', fontSize: 12, textAlign: 'center', marginBottom: 8 },
+
+  // Botones
+  btnGuardar: {
+    backgroundColor: '#1E293B', padding: 14,
+    borderRadius: 10, alignItems: 'center', marginTop: 18,
+  },
+  btnGuardarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
+  btnCancelar:     { padding: 12, alignItems: 'center', marginTop: 4 },
+  btnCancelarTexto:{ color: '#64748B', textDecorationLine: 'underline', fontSize: 13 },
+  btnReintentar:   {
+    backgroundColor: '#1E293B', paddingHorizontal: 16,
+    paddingVertical: 10, borderRadius: 8, marginTop: 16,
+  },
+  btnReintentarTexto: { color: '#F8FAFC', fontWeight: '600' },
+
+  // Feedback
+  mensaje: { color: '#0F172A', textAlign: 'center', marginTop: 8, fontSize: 13, fontWeight: '500' },
+  error:   { color: '#DC2626', textAlign: 'center', fontSize: 14, paddingHorizontal: 20 },
 });

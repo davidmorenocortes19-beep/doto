@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://192.168.1.19/doto/api/perfil.php';
+const API_URL = 'http://192.168.137.9/doto/api/perfil.php';
 
 type Vendedor = {
   id?: number;
@@ -223,38 +223,48 @@ export default function PerfilVendedor() {
 }
 
 const styles = StyleSheet.create({
-  background:     { flex: 1 },
-  safeArea:       { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
-  backBtn:        { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-  logoArea:       { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:     { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:   { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:    { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
-  scroll:         { padding: 16, paddingBottom: 24 },
-  avatarWrap:     { alignItems: 'center', marginBottom: 20 },
-  avatar:         { width: 72, height: 72, borderRadius: 36, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  avatarText:     { color: '#333333', fontSize: 30, fontWeight: 'bold' },
-  avatarName:     { color: '#333333', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
-  rolBadge:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
-  rolText:        { color: '#333333', fontSize: 12, fontWeight: 'bold' },
-  seccion:        { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo:  { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
-  seccionSub:     { color: '#333333', fontSize: 11, marginBottom: 12 },
-  infoRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
-  infoLabel:      { color: '#eee', fontSize: 13 },
-  infoValor:      { color: '#333333', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
-  input:          { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
-  mensaje:        { fontSize: 12, marginBottom: 10, textAlign: 'center' },
-  mensajeOk:      { color: '#333333' },
-  mensajeError:   { color: '#333333' },
-  btnGuardar:     { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnGuardarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  btnSalir:       { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
-  btnSalirText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  bottomNav:      { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
-  bnav:           { alignItems: 'center', gap: 2 },
-  bnavIcon:       { fontSize: 18 },
-  bnavLabel:      { fontSize: 9, color: '#eee' },
-  bnavActive:     { color: '#333333' },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  safeArea: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: 'rgba(100, 116, 139, 0.2)', backgroundColor: 'rgba(255, 255, 255, 1.0)' },
+  backBtn: { color: '#1E293B', fontSize: 22, paddingHorizontal: 4 },
+  logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' },
+  logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
+  headerTitle: { color: '#0F172A', fontWeight: '600', fontSize: 15 },
+  scroll: { padding: 16, paddingBottom: 24 },
+  avatarWrap: { alignItems: 'center', marginBottom: 20 },
+  avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  avatarText: { color: '#F8FAFC', fontSize: 30, fontWeight: 'bold' },
+  avatarName: { color: '#0F172A', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
+  rolBadge: { backgroundColor: '#1E293B', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
+  rolText: { color: '#F8FAFC', fontSize: 12, fontWeight: 'bold' },
+  seccion: { backgroundColor: '#fff', borderWidth: 3.0, borderColor: '#1E293B', borderRadius: 16, padding: 14, marginBottom: 14 },
+  seccionTitulo: { color: '#0F172A', fontWeight: '600', fontSize: 15, marginBottom: 4 },
+  seccionSub: { color: '#64748B', fontSize: 11, marginBottom: 12 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: 'rgba(100, 116, 139, 0.2)' },
+  infoLabel: { color: '#64748B', fontSize: 13 },
+  infoValor: { color: '#0F172A', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
+  input: { backgroundColor: '#fff', borderWidth: 0.5, borderColor: 'rgba(100, 116, 139, 0.25)', color: '#0F172A', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+  mensaje: { fontSize: 12, marginBottom: 10, textAlign: 'center' },
+  mensajeOk: { color: '#15803D' },
+  mensajeError: { color: '#B91C1C' },
+  btnGuardar: { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+  btnGuardarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
+  btnSalir: { marginTop: 28, backgroundColor: '#1E293B', paddingVertical: 14, borderRadius: 10, alignItems: 'center' },
+  btnSalirText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
+  bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 0.5, borderTopColor: 'rgba(100, 116, 139, 0.2)', backgroundColor: 'rgba(255, 255, 255, 1.0)' },
+  bnav: { alignItems: 'center', gap: 2 },
+  bnavIcon: { fontSize: 18 },
+  bnavLabel: { fontSize: 9, color: '#64748B' },
+  bnavActive: { color: '#1E293B', fontWeight: '600' },
 });

@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://192.168.1.19/doto/api/perfil.php';
+const API_URL = 'http://192.168.137.9/doto/api/perfil.php';
 
 type Vendedor = {
   id?: number;

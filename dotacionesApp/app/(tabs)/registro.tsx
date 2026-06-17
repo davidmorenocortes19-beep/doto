@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://172.30.7.12/doto/api/registro.php';
+const API_URL = 'http://192.168.137.9/doto/api/registro.php';
 
 const validarPassword = (pass: string): string | null => {
   if (pass.length < 8) return '⚠ Mínimo 8 caracteres';
@@ -18,19 +18,19 @@ const validarPassword = (pass: string): string | null => {
 };
 
 export default function RegistroScreen() {
-  const [nombre,       setNombre]       = useState('');
-  const [nombreError,  setNombreError]  = useState('');
-  const [documento,    setDocumento]    = useState('');
-  const [docError,     setDocError]     = useState('');
-  const [correo,       setCorreo]       = useState('');
-  const [telefono,     setTelefono]     = useState('');
-  const [telError,     setTelError]     = useState('');
-  const [direccion,    setDireccion]    = useState('');
-  const [password,     setPassword]     = useState('');
-  const [passError,    setPassError]    = useState('');
-  const [rol,          setRol]          = useState('Cliente');
-  const [mensaje,      setMensaje]      = useState('');
-  const [cargando,     setCargando]     = useState(false);
+  const [nombre,      setNombre]      = useState('');
+  const [nombreError, setNombreError] = useState('');
+  const [documento,   setDocumento]   = useState('');
+  const [docError,    setDocError]    = useState('');
+  const [correo,      setCorreo]      = useState('');
+  const [telefono,    setTelefono]    = useState('');
+  const [telError,    setTelError]    = useState('');
+  const [direccion,   setDireccion]   = useState('');
+  const [password,    setPassword]    = useState('');
+  const [passError,   setPassError]   = useState('');
+  const [rol,         setRol]         = useState('Cliente');
+  const [mensaje,     setMensaje]     = useState('');
+  const [cargando,    setCargando]    = useState(false);
 
   const roles = ['Administrador', 'Cliente', 'Vendedor', 'Bodeguero'];
 
@@ -41,8 +41,6 @@ export default function RegistroScreen() {
       setNombreError('⚠ Solo se permiten letras y espacios');
     } else if (limpio.trim().length > 0 && limpio.trim().length < 3) {
       setNombreError('⚠ Mínimo 3 caracteres');
-    } else if (limpio.trim().length >= 3) {
-      setNombreError('');
     } else {
       setNombreError('');
     }
@@ -55,8 +53,6 @@ export default function RegistroScreen() {
       setDocError('⚠ Solo se permiten números');
     } else if (limpio.length > 0 && limpio.length < 5) {
       setDocError('⚠ Mínimo 5 dígitos');
-    } else if (limpio.length >= 5) {
-      setDocError('');
     } else {
       setDocError('');
     }
@@ -69,8 +65,6 @@ export default function RegistroScreen() {
       setTelError('⚠ Solo se permiten números');
     } else if (limpio.length > 0 && limpio.length < 7) {
       setTelError('⚠ Mínimo 7 dígitos');
-    } else if (limpio.length >= 7) {
-      setTelError('');
     } else {
       setTelError('');
     }
@@ -113,7 +107,7 @@ export default function RegistroScreen() {
       }
     } catch (error: any) {
       if (error.code === 'ECONNABORTED') {
-        setMensaje('⚠ Tiempo de espera agotado (timeout). Verifica que el servidor esté activo');
+        setMensaje('⚠ Tiempo de espera agotado. Verifica que el servidor esté activo');
       } else if (error.response) {
         setMensaje('❌ Error del servidor: ' + error.response.status + ' - ' + (error.response.data?.mensaje ?? 'Sin detalle'));
       } else if (error.request) {
@@ -121,7 +115,6 @@ export default function RegistroScreen() {
       } else {
         setMensaje('⚠ Error inesperado: ' + error.message);
       }
-      console.log('🔴 ERROR COMPLETO:', JSON.stringify(error, null, 2));
     } finally {
       setCargando(false);
     }
@@ -133,66 +126,75 @@ export default function RegistroScreen() {
       style={styles.background}
       resizeMode="cover"
     >
+      {/* Overlay blanco semitransparente */}
+      <View style={styles.overlay} />
+
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.container}>
           <Text style={styles.title}>Dotaciones Toronto</Text>
-          <Text style={styles.subtitle}>Crea tu cuenta Aqui!</Text>
+          <Text style={styles.subtitle}>Crea tu cuenta aquí</Text>
 
-          <TextInput placeholder="Nombre completo" placeholderTextColor="#999"
+          {/* NOMBRE */}
+          <TextInput
+            placeholder="Nombre completo" placeholderTextColor="#94A3B8"
             style={[styles.input, nombreError ? styles.inputError : null]}
-            onChangeText={handleNombre}
-            value={nombre}
-            autoCorrect={false}
+            onChangeText={handleNombre} value={nombre} autoCorrect={false}
           />
           {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
           {nombre.trim().length >= 3 && nombreError === '' && (
             <Text style={styles.fieldOk}>✅ Nombre válido</Text>
           )}
 
-          <TextInput placeholder="Documento" placeholderTextColor="#999"
+          {/* DOCUMENTO */}
+          <TextInput
+            placeholder="Documento" placeholderTextColor="#94A3B8"
             style={[styles.input, docError ? styles.inputError : null]}
-            keyboardType="numeric"
-            onChangeText={handleDocumento}
-            value={documento}
-            maxLength={15}
+            keyboardType="numeric" onChangeText={handleDocumento}
+            value={documento} maxLength={15}
           />
           {docError !== '' && <Text style={styles.fieldHint}>{docError}</Text>}
           {documento.length >= 5 && docError === '' && (
             <Text style={styles.fieldOk}>✅ Documento válido</Text>
           )}
 
-          <TextInput placeholder="Correo electrónico" placeholderTextColor="#999"
+          {/* CORREO */}
+          <TextInput
+            placeholder="Correo electrónico" placeholderTextColor="#94A3B8"
             style={styles.input} keyboardType="email-address"
-            autoCapitalize="none" onChangeText={setCorreo} value={correo} />
+            autoCapitalize="none" onChangeText={setCorreo} value={correo}
+          />
 
-          <TextInput placeholder="Teléfono" placeholderTextColor="#999"
+          {/* TELÉFONO */}
+          <TextInput
+            placeholder="Teléfono" placeholderTextColor="#94A3B8"
             style={[styles.input, telError ? styles.inputError : null]}
-            keyboardType="phone-pad"
-            onChangeText={handleTelefono}
-            value={telefono}
-            maxLength={10}
+            keyboardType="phone-pad" onChangeText={handleTelefono}
+            value={telefono} maxLength={10}
           />
           {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
           {telefono.length >= 7 && telError === '' && (
             <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
           )}
 
-          <TextInput placeholder="Dirección" placeholderTextColor="#999"
-            style={styles.input} onChangeText={setDireccion} value={direccion} />
-
+          {/* DIRECCIÓN */}
           <TextInput
-            placeholder="Contraseña"
-            placeholderTextColor="#999"
+            placeholder="Dirección" placeholderTextColor="#94A3B8"
+            style={styles.input} onChangeText={setDireccion} value={direccion}
+          />
+
+          {/* CONTRASEÑA */}
+          <TextInput
+            placeholder="Contraseña" placeholderTextColor="#94A3B8"
             secureTextEntry
             style={[styles.input, passError ? styles.inputError : null]}
-            onChangeText={handlePassword}
-            value={password}
+            onChangeText={handlePassword} value={password}
           />
           {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
           {password !== '' && passError === '' && (
             <Text style={styles.fieldOk}>✅ Contraseña segura</Text>
           )}
 
+          {/* ROL */}
           <Text style={styles.label}>Selecciona tu rol:</Text>
           <View style={styles.rolContainer}>
             {roles.map((r) => (
@@ -212,7 +214,7 @@ export default function RegistroScreen() {
             disabled={cargando}
           >
             {cargando
-              ? <ActivityIndicator color="#fff" />
+              ? <ActivityIndicator color="#F8FAFC" />
               : <Text style={styles.buttonText}>REGISTRAR</Text>}
           </TouchableOpacity>
 
@@ -228,25 +230,45 @@ export default function RegistroScreen() {
 }
 
 const styles = StyleSheet.create({
-  background:     { flex: 1 },
-  scroll:         { flexGrow: 1 },
-  container:      { flex: 1, justifyContent: 'center', padding: 30, backgroundColor: 'rgba(9,8,13,0.75)' },
-  title:          { fontSize: 26, textAlign: 'center', marginBottom: 4, fontWeight: 'bold', color: '#B7975B' },
-  subtitle:       { fontSize: 15, textAlign: 'center', color: '#ccc', marginBottom: 24 },
-  input:          { backgroundColor: '#fff', padding: 14, borderRadius: 8, marginBottom: 4, borderWidth: 1, borderColor: '#ccc', fontSize: 15 },
-  inputError:     { borderColor: '#B7975B', marginBottom: 0 },
-  fieldHint:      { color: '#eee', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk:        { color: '#B7975B', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  passHint:       { color: '#eee', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  passOk:         { color: '#B7975B', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  label:          { marginTop: 8, marginBottom: 8, fontWeight: 'bold', color: '#eee' },
-  rolContainer:   { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
-  rolBtn:         { flex: 1, minWidth: '45%', padding: 10, borderRadius: 8, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', alignItems: 'center' },
-  rolActivo:      { backgroundColor: '#B7975B' },
-  rolTexto:       { fontWeight: 'bold', color: '#333333', fontSize: 13 },
-  rolTextoActivo: { fontWeight: 'bold', color: '#fff', fontSize: 13 },
-  button:         { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 6 },
-  buttonText:     { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  mensaje:        { marginTop: 14, textAlign: 'center', color: '#eee', fontSize: 13 },
-  linkLogin:      { marginTop: 20, textAlign: 'center', color: '#B7975B', textDecorationLine: 'underline', fontSize: 14 },
+  background: { flex: 1 },
+  overlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  scroll:    { flexGrow: 1 },
+  container: {
+    flex: 1, justifyContent: 'center', padding: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0)',
+    margin: 16, borderRadius: 16,
+    borderWidth: 1.5, borderColor: '#1E293B',
+    marginTop: 50, marginBottom: 30,
+  },
+  title:    { fontSize: 24, textAlign: 'center', marginBottom: 4, fontWeight: '700', color: '#0F172A',},
+  subtitle: { fontSize: 14, textAlign: 'center', color: '#64748B', marginBottom: 24 },
+
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    padding: 14, borderRadius: 10, marginBottom: 4,
+    borderWidth: 1.5, borderColor: '#1E293B', fontSize: 15, color: '#0F172A',
+  },
+  inputError: { borderColor: '#DC2626', marginBottom: 0 },
+  fieldHint:  { color: '#DC2626', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk:    { color: '#16A34A', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+
+  label: { marginTop: 8, marginBottom: 8, fontWeight: '600', color: '#0F172A', fontSize: 13 },
+  rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
+  rolBtn: {
+    flex: 1, minWidth: '45%', padding: 10, borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B', alignItems: 'center',
+  },
+  rolActivo:      { backgroundColor: '#1E293B' },
+  rolTexto:       { fontWeight: '600', color: '#0F172A', fontSize: 13 },
+  rolTextoActivo: { fontWeight: '600', color: '#F8FAFC', fontSize: 13 },
+
+  button:     { backgroundColor: '#1E293B', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 6 },
+  buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 15 },
+
+  mensaje:   { marginTop: 14, textAlign: 'center', color: '#0F172A', fontSize: 13 },
+  linkLogin: { marginTop: 20, textAlign: 'center', color: '#102646', textDecorationLine: 'underline', fontSize: 14, fontWeight: '600' },
 });

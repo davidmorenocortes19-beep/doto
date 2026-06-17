@@ -7,8 +7,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.19/doto/api/productos.php';
-const API_BASE = 'http://192.168.1.19/doto/';
+const API_URL = 'http://192.168.137.9/doto/api/productos.php';
+const API_BASE = 'http://192.168.137.9/doto/';
 
 type Producto = {
   id_producto: number;

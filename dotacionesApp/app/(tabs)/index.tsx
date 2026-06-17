@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { router } from 'expo-router';
 import {
   TextInput, TouchableOpacity, Text, StyleSheet,
@@ -7,7 +7,7 @@ import {
 import axios, { isAxiosError } from 'axios';
 import { sesion } from '../../constants/sesion';
 
-const API_URL = 'http://172.30.7.12/doto/api/login.php';
+const API_URL = 'http://192.168.137.9/doto/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -111,13 +111,93 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: 'rgba(9,8,13,0.75)' },
-  title: { fontSize: 26, marginBottom: 4, textAlign: 'center', fontWeight: 'bold', color: '#B7975B' },
-  subtitle: { fontSize: 14, textAlign: 'center', color: '#ccc', marginBottom: 28 },
-  input: { backgroundColor: '#fff', padding: 14, borderRadius: 8, marginBottom: 15, borderWidth: 1, borderColor: '#ccc', fontSize: 16 },
-  button: { backgroundColor: '#B7975B', padding: 15, borderRadius: 8, marginTop: 10, alignItems: 'center' },
-  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  link: { marginTop: 20, textAlign: 'center', color: '#B7975B', fontSize: 14, textDecorationLine: 'underline' },
-  mensaje: { marginTop: 20, textAlign: 'center', fontSize: 14, color: '#eee' },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+  card: {
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderRadius: 16,
+    borderWidth: 3.0,
+    borderColor: '#1E293B',
+    padding: 24,
+    alignItems: 'center',
+  },
+  badge: {
+    backgroundColor: '#1E293B',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    marginBottom: 14,
+  },
+  badgeText: {
+    color: '#F8FAFC',
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFFFFFC4',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  input: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 14,
+    borderWidth: 0.5,
+    borderColor: 'rgba(100, 116, 139, 0.25)',
+    color: '#0F172A',
+    fontSize: 15,
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#1E293B',
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 6,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#F8FAFC',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  link: {
+    marginTop: 18,
+    textAlign: 'center',
+    color: '#647791',
+    fontSize: 13,
+    textDecorationLine: 'underline',
+  },
+  mensaje: {
+    marginTop: 16,
+    textAlign: 'center',
+    fontSize: 13,
+    color: '#0F172A',
+  },
+  
 });
+

@@ -1,12 +1,12 @@
 <?php
 require_once 'config.php';
-require_once BASE_PATH . '/models/Usuario.php';
+require_once BASE_PATH . '/models/Productos.php';
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-$datos = Usuario::listarTodos();
+$datos = Producto::listarTodos();
 
 // ── Construir el HTML del reporte ────────────────────────────
 $html = '
@@ -25,25 +25,23 @@ $html = '
   </style>
 </head>
 <body>
-  
-  <h1>Reporte de Usuarios</h1>
+  <h1>Reporte de Productos</h1>
   <p>Generado el: ' . date('d/m/Y H:i') . '</p>
   <table>
     <tr>
-      <th>ID</th><th>Nombre</th><th>Documento</th><th>Correo</th>
-      <th>Teléfono</th><th>Dirección</th><th>Rol</th>
+      <th>ID</th><th>Nombre</th><th>Precio</th><th>Talla</th>
+      <th>Color</th><th>Estado</th>
     </tr>';
 
 foreach ($datos as $item) {
     $html .= '
     <tr>
-      <td>' . $item['id_usuario'] . '</td>
+      <td>' . $item['id_producto'] . '</td>
       <td>' . htmlspecialchars($item['nombre']) . '</td>
-      <td>' . htmlspecialchars($item['documento']) . '</td>
-      <td>' . htmlspecialchars($item['correo']) . '</td>
-      <td>' . htmlspecialchars($item['telefono']) . '</td>
-      <td>' . htmlspecialchars($item['direccion']) . '</td>
-      <td>' . htmlspecialchars($item['nombre_rol']) . '</td>
+      <td>$' . number_format($item['precio'], 0, ',', '.') . '</td>
+      <td>' . htmlspecialchars($item['talla']) . '</td>
+      <td>' . htmlspecialchars($item['color']) . '</td>
+      <td>' . htmlspecialchars($item['estado']) . '</td>
     </tr>';
 }
 
@@ -63,6 +61,6 @@ $dompdf->setPaper('A4', 'landscape');
 $dompdf->render();
 
 // ── Forzar descarga directa del PDF ──────────────────────────
-$nombreArchivo = 'reporte_usuarios_' . date('Y-m-d') . '.pdf';
+$nombreArchivo = 'reporte_productos_' . date('Y-m-d') . '.pdf';
 $dompdf->stream($nombreArchivo, ['Attachment' => true]);
 exit;

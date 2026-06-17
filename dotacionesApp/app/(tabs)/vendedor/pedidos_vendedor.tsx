@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
   View, Text, TouchableOpacity, FlatList,
@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.19/doto/api/pedidos.php';
+const API_URL = 'http://192.168.137.9/doto/api/pedidos.php';
 
 type Producto = {
   nombre: string;
@@ -224,52 +224,62 @@ export default function PedidosCliente() {
 }
 
 const styles = StyleSheet.create({
-  background:        { flex: 1 },
-  safeArea:          { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  safeArea: { flex: 1 },
 
-  header:            { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
-  backBtn:           { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-  logoArea:          { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:        { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:      { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-  headerTitle:       { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: 'rgba(100, 116, 139, 0.2)', backgroundColor: 'rgba(255, 255, 255, 1.0)' },
+  backBtn: { color: '#1E293B', fontSize: 22, paddingHorizontal: 4 },
+  logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' },
+  logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
+  headerTitle: { color: '#0F172A', fontWeight: '600', fontSize: 15 },
 
-  listContent:       { padding: 14, paddingBottom: 24 },
-  empty:             { color: '#333333', textAlign: 'center', marginTop: 60, fontSize: 14 },
+  listContent: { padding: 14, paddingBottom: 24 },
+  empty: { color: '#64748B', textAlign: 'center', marginTop: 60, fontSize: 14 },
 
-  card:              { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
-  cardHeader:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  cardTitle:         { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
-  estadoBadge:       { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
-  estadoPorPagar:    { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc' },
-  estadoPagado:      { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc' },
-  estadoText:        { fontSize: 11, fontWeight: 'bold' },
-  estadoPorPagarText:{ color: '#333333' },
-  estadoPagadoText:  { color: '#333333' },
+  card: { backgroundColor: '#fff', borderWidth: 3.0, borderColor: '#1E293B', borderRadius: 16, padding: 14, marginBottom: 14 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  cardTitle: { color: '#0F172A', fontWeight: '600', fontSize: 15 },
+  estadoBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
+  estadoPorPagar: { backgroundColor: '#1E293B' },
+  estadoPagado: { backgroundColor: '#1E293B' },
+  estadoText: { fontSize: 11, fontWeight: 'bold' },
+  estadoPorPagarText: { color: '#F8FAFC' },
+  estadoPagadoText: { color: '#F8FAFC' },
 
-  fecha:             { color: '#333333', fontSize: 11, marginBottom: 10 },
+  fecha: { color: '#64748B', fontSize: 11, marginBottom: 10 },
 
-  productoItem:      { backgroundColor: '#fff', borderRadius: 8, padding: 10, marginBottom: 6 },
-  productoNombre:    { color: '#333333', fontSize: 13, fontWeight: '500', marginBottom: 4 },
-  productoDetalle:   { flexDirection: 'row', justifyContent: 'space-between' },
-  productoInfo:      { color: '#333333', fontSize: 11 },
+  productoItem: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginBottom: 6 },
+  productoNombre: { color: '#0F172A', fontSize: 13, fontWeight: '500', marginBottom: 4 },
+  productoDetalle: { flexDirection: 'row', justifyContent: 'space-between' },
+  productoInfo: { color: '#64748B', fontSize: 11 },
 
-  totalRow:          { flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, borderTopColor: '#B7975B', marginTop: 10, paddingTop: 10 },
-  totalLabel:        { color: '#eee', fontWeight: 'bold', fontSize: 14 },
-  totalValor:        { color: '#333333', fontWeight: 'bold', fontSize: 16 },
+  totalRow: { flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 0.5, borderTopColor: 'rgba(100, 116, 139, 0.2)', marginTop: 10, paddingTop: 10 },
+  totalLabel: { color: '#64748B', fontWeight: 'bold', fontSize: 14 },
+  totalValor: { color: '#0F172A', fontWeight: 'bold', fontSize: 16 },
 
-  acciones:          { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
-  btnPagar:          { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnPagarText: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
-  btnEliminar:       { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnFactura:        { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnCancelar:       { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnDevolucion:     { backgroundColor: '#B7975B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnAccionText: { color: '#fff', fontSize: 12 },
+  acciones: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
+  btnPagar: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnPagarText: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 12 },
+  btnEliminar: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnFactura: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnCancelar: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnDevolucion: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
+  btnAccionText: { color: '#F8FAFC', fontSize: 12 },
 
-  bottomNav:         { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
-  bnav:              { alignItems: 'center', gap: 2 },
-  bnavIcon:          { fontSize: 18 },
-  bnavLabel:         { fontSize: 9, color: '#eee' },
-  bnavActive:        { color: '#333333' },
+  bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 0.5, borderTopColor: 'rgba(100, 116, 139, 0.2)', backgroundColor: 'rgba(255, 255, 255, 1.0)' },
+  bnav: { alignItems: 'center', gap: 2 },
+  bnavIcon: { fontSize: 18 },
+  bnavLabel: { fontSize: 9, color: '#64748B' },
+  bnavActive: { color: '#1E293B', fontWeight: '600' },
 });

@@ -46,14 +46,107 @@ export default function PanelVendedor() {
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  container:    { flexGrow: 1, padding: 24, backgroundColor: 'rgba(9,8,13,0.75)' },
-  title:        { fontSize: 24, fontWeight: 'bold', color: '#B7975B', textAlign: 'center', marginTop: 40, marginBottom: 4 },
-  subtitle:     { fontSize: 14, color: '#ccc', textAlign: 'center', marginBottom: 32 },
-  grid:         { flexDirection: 'row', flexWrap: 'wrap', gap: 16, justifyContent: 'center' },
-  card:         { width: '44%', backgroundColor: '#fff', borderRadius: 12, padding: 24, alignItems: 'center', borderWidth: 1, borderColor: '#ccc' },
-  cardIcon:     { fontSize: 32, marginBottom: 8 },
-  cardText:     { color: '#333333', fontWeight: 'bold', fontSize: 14 },
-  btnSalir:     { marginTop: 40, backgroundColor: '#B7975B', padding: 15, borderRadius: 8, alignItems: 'center' },
-  btnSalirText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+
+  // Header
+  header: {
+    alignItems: 'center',
+    paddingTop: 28,
+    paddingBottom: 28,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'rgba(100, 116, 139, 0.2)',
+    marginBottom: 16,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+  },
+  badge: {
+    backgroundColor: '#1E293B',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    marginBottom: 14,
+  },
+  badgeText: {
+    color: '#F8FAFC',
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#0F172A',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#64748B',
+    textAlign: 'center',
+  },
+
+  // Grid
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  card: {
+    width: '46%',
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderRadius: 16,
+    borderWidth: 3.0,
+    borderColor: '#1E293B',
+    padding: 20,
+    alignItems: 'center',
+    gap: 10,
+  },
+  iconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 13,
+    backgroundColor: '#1E293B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardIcon: {
+    fontSize: 24,
+  },
+  cardText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#0F172A',
+  },
+
+  // Botón salir
+  btnSalir: {
+    marginTop: 28,
+    backgroundColor: '#1E293B',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  btnSalirText: {
+    color: '#F8FAFC',
+    fontWeight: '600',
+    fontSize: 14,
+  },
 });
