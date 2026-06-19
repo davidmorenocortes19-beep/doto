@@ -4,11 +4,11 @@ import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
 const opciones = [
-  { icon: '🏠', label: 'Inicio',       router: '/vendedor/panel_vendedor' },
-  { icon: '👤', label: 'Perfil',       router: '/vendedor/perfil_vendedor' },
-  { icon: '📋', label: 'Ver Pedidos',  router: '/vendedor/pedidos_vendedor' },
-  { icon: '💰', label: 'Ver Ventas',   router: '/vendedor/ver_ventas' },
-  { icon: '↩️', label: 'Devoluciones', router: '/vendedor/devoluciones' },
+  { icon: '🏠', label: 'Inicio',       ruta: '/vendedor/panel_vendedor' },
+  { icon: '👤', label: 'Perfil',       ruta: '/vendedor/perfil_vendedor' },
+  { icon: '📋', label: 'Ver Pedidos',  ruta: '/vendedor/pedidos_vendedor' },
+  { icon: '💰', label: 'Ver Ventas',   ruta: '/vendedor/ver_ventas' },
+  { icon: '↩️', label: 'Devoluciones', ruta: '/vendedor/devoluciones' },
 ];
 
 export default function PanelVendedor() {
@@ -18,43 +18,53 @@ export default function PanelVendedor() {
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.overlay} />
+
       <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>
-        Bienvenido {sesion.rol}, {sesion.nombre}
-      </Text>
-      <Text style={styles.subtitle}>Tienes acceso al panel de ventas</Text>
 
-      <View style={styles.grid}>
-        {opciones.map((op) => (
-          <TouchableOpacity
-            key={op.label}
-            style={styles.card}
-            onPress={() => router.push(op.router as any)}
-          >
-            <Text style={styles.cardIcon}>{op.icon}</Text>
-            <Text style={styles.cardText}>{op.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>PANEL VENDEDOR</Text>
+          </View>
+          <Text style={styles.title}>
+            Bienvenido, {sesion.nombre}
+          </Text>
+          <Text style={styles.subtitle}>Tienes acceso al panel de ventas</Text>
+        </View>
 
-      <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
-        <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Grid */}
+        <View style={styles.grid}>
+          {opciones.map((op) => (
+            <TouchableOpacity
+              key={op.label}
+              style={styles.card}
+              onPress={() => router.push(op.ruta as any)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.iconWrap}>
+                <Text style={styles.cardIcon}>{op.icon}</Text>
+              </View>
+              <Text style={styles.cardText}>{op.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Botón cerrar sesión */}
+        <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
+          <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
+        </TouchableOpacity>
+
+      </ScrollView>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
+  background: { flex: 1 },
   overlay: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.10)',
   },
   container: {
@@ -113,7 +123,7 @@ const styles = StyleSheet.create({
     width: '46%',
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderRadius: 16,
-    borderWidth: 3.0,
+    borderWidth: 1.5,
     borderColor: '#1E293B',
     padding: 20,
     alignItems: 'center',
@@ -127,9 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardIcon: {
-    fontSize: 24,
-  },
+  cardIcon: { fontSize: 24 },
   cardText: {
     fontSize: 13,
     fontWeight: '600',
