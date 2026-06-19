@@ -25,12 +25,17 @@ export default function NosotrosCliente() {
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.overlay} />
+
       <SafeAreaView style={styles.safeArea}>
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
-            <Text style={styles.backBtn}>←</Text>
+          <TouchableOpacity
+            onPress={() => router.replace('/cliente/panel_cliente')}
+            style={styles.btnVolver}
+          >
+            <Text style={styles.btnVolverTexto}>←</Text>
           </TouchableOpacity>
           <View style={styles.logoArea}>
             <View style={styles.logoCircle}>
@@ -38,27 +43,25 @@ export default function NosotrosCliente() {
             </View>
             <Text style={styles.brand}>Dotaciones Toronto</Text>
           </View>
-          <View style={{ width: 32 }} />
+          <View style={{ width: 44 }} />
         </View>
 
         <ScrollView contentContainerStyle={styles.scroll}>
 
-          {/* mision */}
+          {/* Misión */}
           <View style={styles.visionBox}>
-            <Text style={styles.visionTitle}>Mision</Text>
+            <Text style={styles.visionTitle}>Misión</Text>
             <Text style={styles.visionText}>
-              Nuestra misión es actuar como un aliado estratégico de las empresas e 
+              Nuestra misión es actuar como un aliado estratégico de las empresas e
               industrias colombianas que buscan proteger a sus trabajadores con productos
-               diseñados para resistir, proteger y facilitar el desempeño diario en entornos de alto riesgo o demanda física.
-                Nos enfocamos en crear dotaciones que no solo cumplan con 
-                los estándares técnicos y normativos de seguridad, sino que 
-                también contribuyan al bienestar físico y emocional del trabajador al brindar comodidad y funcionalidad.
+              diseñados para resistir, proteger y facilitar el desempeño diario en entornos
+              de alto riesgo o demanda física. Nos enfocamos en crear dotaciones que no solo
+              cumplan con los estándares técnicos y normativos de seguridad, sino que también
+              contribuyan al bienestar físico y emocional del trabajador al brindar comodidad
+              y funcionalidad.
             </Text>
           </View>
-          
-          
-          
-          
+
           {/* Visión */}
           <View style={styles.visionBox}>
             <Text style={styles.visionTitle}>Visión</Text>
@@ -80,14 +83,22 @@ export default function NosotrosCliente() {
               Si tienes una duda o reclamo sobre nuestros productos, llena el siguiente formulario.
             </Text>
 
-            <TextInput style={styles.input} placeholder="Nombre"
-              placeholderTextColor="#999" value={nombre} onChangeText={setNombre} />
-            <TextInput style={styles.input} placeholder="Correo"
-              placeholderTextColor="#999" value={correo} onChangeText={setCorreo}
-              keyboardType="email-address" autoCapitalize="none" />
-            <TextInput style={[styles.input, styles.textArea]} placeholder="Mensaje"
-              placeholderTextColor="#999" value={mensaje} onChangeText={setMensaje}
-              multiline numberOfLines={4} />
+            <TextInput
+              style={styles.input} placeholder="Nombre"
+              placeholderTextColor="#94A3B8" value={nombre}
+              onChangeText={setNombre}
+            />
+            <TextInput
+              style={styles.input} placeholder="Correo"
+              placeholderTextColor="#94A3B8" value={correo}
+              onChangeText={setCorreo} keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={[styles.input, styles.textArea]} placeholder="Mensaje"
+              placeholderTextColor="#94A3B8" value={mensaje}
+              onChangeText={setMensaje} multiline numberOfLines={4}
+            />
 
             <TouchableOpacity style={styles.btnEnviar} onPress={enviarContacto}>
               <Text style={styles.btnEnviarText}>Enviar</Text>
@@ -115,8 +126,8 @@ export default function NosotrosCliente() {
         {/* Bottom nav */}
         <View style={styles.bottomNav}>
           {[
-            { label: 'Inicio',    icon: '🏠', route: '/cliente/index_cliente' },
-            { label: 'Productos', icon: '📦', route: '/cliente/productos' },
+            { label: 'Inicio',    icon: '🏠', route: '/cliente/panel_cliente' },
+            { label: 'Productos', icon: '📦', route: '/cliente/productos_cliente' },
             { label: 'Pedidos',   icon: '📋', route: '/cliente/pedidos' },
             { label: 'Nosotros',  icon: 'ℹ️',  active: true },
           ].map(item => (
@@ -139,47 +150,88 @@ export default function NosotrosCliente() {
 }
 
 const styles = StyleSheet.create({
-  background:    { flex: 1 },
-  safeArea:      { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  background: { flex: 1 },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  safeArea: { flex: 1 },
 
-  header:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
-  backBtn:       { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-  logoArea:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:    { width: 32, height: 32, borderRadius: 16, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:  { color: '#333333', fontWeight: 'bold', fontSize: 11 },
-  brand:         { color: '#B7975B', fontWeight: 'bold', fontSize: 14 },
+  // Header
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 16, paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+  },
+  btnVolver: {
+    backgroundColor: '#1E293B', borderRadius: 8,
+    paddingHorizontal: 12, paddingVertical: 4,
+  },
+  btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
+  logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoCircle:  {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+  },
+  logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 11 },
+  brand:        { color: '#0F172A', fontWeight: '700', fontSize: 14 },
 
-  scroll:        { paddingBottom: 24 },
+  scroll: { paddingBottom: 24 },
 
-  hero:          { alignItems: 'center', padding: 28, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
-  heroBadge:     { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4, marginBottom: 12 },
-  heroBadgeText: { color: '#333333', fontSize: 12 },
-  heroTitle:     { color: '#B7975B', fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
-  heroDesc:      { color: '#333333', fontSize: 13, textAlign: 'center', lineHeight: 21, paddingHorizontal: 4 },
+  // Misión / Visión
+  visionBox: {
+    margin: 16,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B',
+    borderRadius: 12, padding: 16,
+  },
+  visionTitle: { color: '#0F172A', fontWeight: '700', fontSize: 18, marginBottom: 10 },
+  visionText:  { color: '#64748B', fontSize: 13, lineHeight: 21 },
 
-  visionBox:     { margin: 16, backgroundColor: 'rgba(183,151,91,0.08)', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16 },
-  visionTitle:   { color: '#B7975B', fontWeight: 'bold', fontSize: 18, marginBottom: 10 },
-  visionText:    { color: '#333333', fontSize: 13, lineHeight: 21 },
-
-  seccion:       { marginHorizontal: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 16, marginBottom: 6 },
-  contactoSub:   { color: '#333333', fontSize: 12, marginBottom: 12, lineHeight: 18 },
-  input:         { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
+  // Contacto
+  seccion: {
+    marginHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B',
+    borderRadius: 12, padding: 14, marginBottom: 14,
+  },
+  seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 16, marginBottom: 6 },
+  contactoSub:   { color: '#64748B', fontSize: 12, marginBottom: 12, lineHeight: 18 },
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B',
+    color: '#0F172A', borderRadius: 8,
+    padding: 11, fontSize: 13, marginBottom: 10,
+  },
   textArea:      { height: 90, textAlignVertical: 'top' },
-  btnEnviar:     { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-  btnEnviarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  btnEnviar:     { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+  btnEnviarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 
-  footer:        { marginHorizontal: 16, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, marginBottom: 8, alignItems: 'center' },
-  footerTel:     { color: '#333333', fontWeight: 'bold', fontSize: 16, marginBottom: 6 },
-  footerInfo:    { color: '#333333', fontSize: 12, marginBottom: 4, textAlign: 'center' },
+  // Footer info
+  footer: {
+    marginHorizontal: 16,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B',
+    borderRadius: 12, padding: 16,
+    marginBottom: 8, alignItems: 'center',
+  },
+  footerTel:     { color: '#1E293B', fontWeight: '700', fontSize: 16, marginBottom: 6 },
+  footerInfo:    { color: '#64748B', fontSize: 12, marginBottom: 4, textAlign: 'center' },
   horario:       { marginTop: 12, alignItems: 'center' },
-  horarioTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 13, marginBottom: 6 },
-  horarioText:   { color: '#333333', fontSize: 12, marginBottom: 3 },
-  footerCopy:    { color: '#333333', fontSize: 11, marginTop: 14 },
+  horarioTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 6 },
+  horarioText:   { color: '#64748B', fontSize: 12, marginBottom: 3 },
+  footerCopy:    { color: '#94A3B8', fontSize: 11, marginTop: 14 },
 
-  bottomNav:     { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
-  bnav:          { alignItems: 'center', gap: 2 },
-  bnavIcon:      { fontSize: 18 },
-  bnavLabel:     { fontSize: 9, color: '#eee' },
-  bnavActive:    { color: '#333333' },
+  // Bottom nav
+  bottomNav: {
+    flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderTopWidth: 1.5, borderTopColor: '#1E293B',
+  },
+  bnav:       { alignItems: 'center', gap: 2 },
+  bnavIcon:   { fontSize: 18 },
+  bnavLabel:  { fontSize: 9, color: '#64748B' },
+  bnavActive: { color: '#0F172A', fontWeight: '700' },
 });

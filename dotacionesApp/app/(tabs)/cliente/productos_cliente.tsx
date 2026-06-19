@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList,
   StyleSheet, ImageBackground, SafeAreaView, Alert,
-  Linking, Modal, Image,
+  Modal, Image,
 } from 'react-native';
 import axios from 'axios';
 
@@ -26,16 +26,12 @@ export default function ProductosCliente() {
   const [productos,      setProductos]      = useState<Producto[]>([]);
   const [carrito,        setCarrito]        = useState<ItemCarrito[]>([]);
   const [carritoVisible, setCarritoVisible] = useState(false);
-  const [nombre,         setNombre]         = useState('');
-  const [correo,         setCorreo]         = useState('');
-  const [mensaje,        setMensaje]        = useState('');
 
   useEffect(() => { cargar(); }, []);
 
   const cargar = async () => {
     try {
       const res = await axios.get(API_URL, { timeout: 5000 });
-      // La API devuelve directamente el array, no un objeto con .success
       const data: Producto[] = Array.isArray(res.data) ? res.data : [];
       setProductos(data);
     } catch {
@@ -69,15 +65,6 @@ export default function ProductosCliente() {
     if (!imagen) return '';
     if (/^https?:\/\//i.test(imagen)) return imagen;
     return `${API_BASE}${imagen.replace(/^\/+/, '')}`;
-  };
-
-  const enviarContacto = () => {
-    if (!nombre || !correo || !mensaje) {
-      Alert.alert('⚠ Todos los campos son obligatorios');
-      return;
-    }
-    Alert.alert('✅ Mensaje enviado');
-    setNombre(''); setCorreo(''); setMensaje('');
   };
 
   const renderProducto = ({ item }: { item: Producto }) => (
@@ -126,12 +113,17 @@ export default function ProductosCliente() {
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.overlay} />
+
       <SafeAreaView style={styles.safeArea}>
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
-            <Text style={styles.backBtn}>←</Text>
+          <TouchableOpacity
+            onPress={() => router.replace('/cliente/panel_cliente')}
+            style={styles.btnVolver}
+          >
+            <Text style={styles.btnVolverTexto}>←</Text>
           </TouchableOpacity>
           <View style={styles.logoArea}>
             <View style={styles.logoCircle}>
@@ -176,10 +168,10 @@ export default function ProductosCliente() {
         {/* Bottom nav */}
         <View style={styles.bottomNav}>
           {[
-            { label: 'Inicio',    icon: '🏠', route: '/cliente/index_cliente' },
+            { label: 'Inicio',    icon: '🏠', route: '/cliente/panel_cliente' },
             { label: 'Productos', icon: '📦', active: true },
             { label: 'Pedidos',   icon: '📋', route: '/cliente/pedidos' },
-            { label: 'Perfil',    icon: '👤', route: '/cliente/perfil' },
+            { label: 'Perfil',    icon: '👤', route: '/cliente/perfil_cliente' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}
@@ -228,10 +220,10 @@ export default function ProductosCliente() {
                   <Text style={styles.carritoTotalLabel}>Total</Text>
                   <Text style={styles.carritoTotalValor}>${totalCarrito.toLocaleString('es-CO')}</Text>
                 </View>
-                <TouchableOpacity style={styles.btnPedir} onPress={() => {
-                  setCarritoVisible(false);
-                  router.push('/cliente/pedidos' as any);
-                }}>
+                <TouchableOpacity
+                  style={styles.btnPedir}
+                  onPress={() => { setCarritoVisible(false); router.push('/cliente/pedidos' as any); }}
+                >
                   <Text style={styles.btnPedirText}>Realizar Pedido</Text>
                 </TouchableOpacity>
               </>
@@ -245,80 +237,131 @@ export default function ProductosCliente() {
 }
 
 const styles = StyleSheet.create({
-  background:         { flex: 1 },
-  safeArea:           { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+  background: { flex: 1 },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  },
+  safeArea: { flex: 1 },
 
-  header:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
-  backBtn:            { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-  logoArea:           { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:         { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials:       { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-  brand:              { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
-  carritoBtn:         { position: 'relative', padding: 4 },
-  carritoIcon:        { fontSize: 22 },
-  carritoBadge:       { position: 'absolute', top: 0, right: 0, backgroundColor: '#B7975B', borderRadius: 8, minWidth: 16, alignItems: 'center' },
-  carritoBadgeText:   { color: '#333333', fontSize: 10, fontWeight: 'bold', paddingHorizontal: 3 },
+  // Header
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 14, paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+  },
+  btnVolver: {
+    backgroundColor: '#1E293B', borderRadius: 8,
+    paddingHorizontal: 12, paddingVertical: 4,
+  },
+  btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
+  logoArea:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoCircle:   {
+    width: 30, height: 30, borderRadius: 15,
+    backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+  },
+  logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
+  brand:        { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+  carritoBtn:   { position: 'relative', padding: 4 },
+  carritoIcon:  { fontSize: 22 },
+  carritoBadge: {
+    position: 'absolute', top: 0, right: 0,
+    backgroundColor: '#1E293B', borderRadius: 8,
+    minWidth: 16, alignItems: 'center',
+  },
+  carritoBadgeText: { color: '#F8FAFC', fontSize: 10, fontWeight: 'bold', paddingHorizontal: 3 },
 
-  hero:               { padding: 20, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
-  heroTitle:          { color: '#B7975B', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
-  heroDesc:           { color: '#333333', fontSize: 12, lineHeight: 19 },
+  // Hero
+  hero: {
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+  },
+  heroTitle: { color: '#0F172A', fontSize: 20, fontWeight: '700', marginBottom: 8 },
+  heroDesc:  { color: '#64748B', fontSize: 12, lineHeight: 19 },
 
-  listContent:        { padding: 10, paddingBottom: 24 },
-  row:                { justifyContent: 'space-between', marginBottom: 10 },
-  empty:              { color: '#333333', textAlign: 'center', marginTop: 40, fontSize: 13 },
+  // Lista
+  listContent: { padding: 10, paddingBottom: 24 },
+  row:         { justifyContent: 'space-between', marginBottom: 10 },
+  empty:       { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
-  card:               { width: '48%', backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 10, padding: 10 },
-  cardImg:            { width: '100%', height: 76, borderRadius: 8, marginBottom: 8, backgroundColor: '#fff' },
-  cardImgPlaceholder: { backgroundColor: '#fff', borderRadius: 8, alignItems: 'center', justifyContent: 'center', height: 70, marginBottom: 8 },
-  cardImgIcon:        { fontSize: 32 },
-  cardNombre:         { color: '#333333', fontWeight: 'bold', fontSize: 13, marginBottom: 4 },
-  cardPrecio:         { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
-  cardInfo:           { marginBottom: 6 },
-  cardInfoText:       { color: '#333333', fontSize: 11 },
-  estadoBadge:        { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 8, borderWidth: 1 },
-  estadoDisponible:   { backgroundColor: '#B7975B22', borderColor: '#ccc' },
-  estadoAgotado:      { backgroundColor: '#B7975B22', borderColor: '#ccc' },
-  estadoText:         { fontSize: 10, fontWeight: 'bold' },
-  estadoDispText:     { color: '#333333' },
-  estadoAgotText:     { color: '#333333' },
-  btnAgregar:         { backgroundColor: '#B7975B', padding: 7, borderRadius: 6, alignItems: 'center' },
-  btnAgregarDisabled: { backgroundColor: '#B7975B' },
-  btnAgregarText: { color: '#fff', fontSize: 11, fontWeight: 'bold' },
+  // Cards de productos
+  card: {
+    width: '48%',
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderWidth: 1.5, borderColor: '#1E293B',
+    borderRadius: 12, padding: 10,
+  },
+  cardImg:            { width: '100%', height: 76, borderRadius: 8, marginBottom: 8 },
+  cardImgPlaceholder: {
+    backgroundColor: '#F1F5F9', borderRadius: 8,
+    alignItems: 'center', justifyContent: 'center',
+    height: 70, marginBottom: 8,
+  },
+  cardImgIcon:  { fontSize: 32 },
+  cardNombre:   { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 4 },
+  cardPrecio:   { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 6 },
+  cardInfo:     { marginBottom: 6 },
+  cardInfoText: { color: '#64748B', fontSize: 11 },
 
-  seccion:            { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
-  seccionTitulo:      { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
-  contactoSub:        { color: '#333333', fontSize: 12, marginBottom: 12 },
-  input:              { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 10, fontSize: 13, marginBottom: 10 },
-  textArea:           { height: 80, textAlignVertical: 'top' },
-  btnEnviar:          { backgroundColor: '#B7975B', padding: 12, borderRadius: 8, alignItems: 'center' },
-  btnEnviarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  // Estado badge
+  estadoBadge:      {
+    borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3,
+    alignSelf: 'flex-start', marginBottom: 8, borderWidth: 1,
+  },
+  estadoDisponible: { backgroundColor: '#DCFCE7', borderColor: '#16A34A' },
+  estadoAgotado:    { backgroundColor: '#FEE2E2', borderColor: '#DC2626' },
+  estadoText:       { fontSize: 10, fontWeight: 'bold' },
+  estadoDispText:   { color: '#16A34A' },
+  estadoAgotText:   { color: '#DC2626' },
 
-  footer:             { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, marginBottom: 8, alignItems: 'center' },
-  footerTel:          { color: '#333333', fontWeight: 'bold', fontSize: 15, marginBottom: 6 },
-  footerInfo:         { color: '#333333', fontSize: 12, marginBottom: 4, textAlign: 'center' },
-  horario:            { marginTop: 10, alignItems: 'center' },
-  horarioTitulo:      { color: '#B7975B', fontWeight: 'bold', fontSize: 13, marginBottom: 6 },
-  horarioText:        { color: '#333333', fontSize: 12, marginBottom: 3 },
-  footerCopy:         { color: '#333333', fontSize: 11, marginTop: 12 },
+  // Botón agregar
+  btnAgregar:         { backgroundColor: '#1E293B', padding: 7, borderRadius: 6, alignItems: 'center' },
+  btnAgregarDisabled: { backgroundColor: '#94A3B8' },
+  btnAgregarText:     { color: '#F8FAFC', fontSize: 11, fontWeight: '600' },
 
-  bottomNav:          { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
-  bnav:               { alignItems: 'center', gap: 2 },
-  bnavIcon:           { fontSize: 18 },
-  bnavLabel:          { fontSize: 9, color: '#eee' },
-  bnavActive:         { color: '#333333' },
+  // Bottom nav
+  bottomNav: {
+    flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10,
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderTopWidth: 1.5, borderTopColor: '#1E293B',
+  },
+  bnav:       { alignItems: 'center', gap: 2 },
+  bnavIcon:   { fontSize: 18 },
+  bnavLabel:  { fontSize: 9, color: '#64748B' },
+  bnavActive: { color: '#0F172A', fontWeight: '700' },
 
-  modalOverlay:       { flex: 1, backgroundColor: 'rgba(51,51,51,0.35)', justifyContent: 'flex-end' },
-  modalBox:           { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '70%' },
-  modalHeader:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  modalTitle:         { color: '#B7975B', fontWeight: 'bold', fontSize: 16 },
-  modalCerrar:        { color: '#333333', fontSize: 18 },
-  carritoItem:        { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
-  carritoNombre:      { color: '#333333', fontSize: 13, fontWeight: '500' },
-  carritoDetalle:     { color: '#333333', fontSize: 12 },
-  carritoQuitar:      { color: '#333333', fontSize: 16, paddingLeft: 10 },
-  carritoTotal:       { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#B7975B', marginTop: 8 },
-  carritoTotalLabel:  { color: '#eee', fontWeight: 'bold', fontSize: 14 },
-  carritoTotalValor:  { color: '#333333', fontWeight: 'bold', fontSize: 16 },
-  btnPedir:           { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
-  btnPedirText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  // Modal carrito
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.4)', justifyContent: 'flex-end' },
+  modalBox: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    padding: 20, maxHeight: '70%',
+    borderTopWidth: 1.5, borderColor: '#1E293B',
+  },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'center', marginBottom: 16,
+  },
+  modalTitle:  { color: '#0F172A', fontWeight: '700', fontSize: 16 },
+  modalCerrar: { color: '#64748B', fontSize: 18 },
+
+  carritoItem: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E2E8F0',
+  },
+  carritoNombre:     { color: '#0F172A', fontSize: 13, fontWeight: '500' },
+  carritoDetalle:    { color: '#64748B', fontSize: 12 },
+  carritoQuitar:     { color: '#DC2626', fontSize: 16, paddingLeft: 10 },
+  carritoTotal: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    paddingVertical: 12, borderTopWidth: 1,
+    borderTopColor: '#E2E8F0', marginTop: 8,
+  },
+  carritoTotalLabel: { color: '#0F172A', fontWeight: 'bold', fontSize: 14 },
+  carritoTotalValor: { color: '#0F172A', fontWeight: 'bold', fontSize: 16 },
+  btnPedir:          { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
+  btnPedirText:      { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 });

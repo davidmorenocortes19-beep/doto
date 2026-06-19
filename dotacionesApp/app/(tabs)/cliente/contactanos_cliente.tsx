@@ -6,8 +6,8 @@ import {
 } from 'react-native';
 
 export default function ContactanosCliente() {
-    const [nombre, setNombre] = useState('');
-    const [correo, setCorreo] = useState('');
+    const [nombre,  setNombre]  = useState('');
+    const [correo,  setCorreo]  = useState('');
     const [mensaje, setMensaje] = useState('');
 
     const enviar = () => {
@@ -25,11 +25,17 @@ export default function ContactanosCliente() {
             style={styles.background}
             resizeMode="cover"
         >
+            <View style={styles.overlay} />
+
             <SafeAreaView style={styles.safeArea}>
 
+                {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => router.replace('/(tabs)/cliente/panel_cliente')}>
-                        <Text style={styles.backBtn}>←</Text>
+                    <TouchableOpacity
+                        onPress={() => router.replace('/cliente/panel_cliente')}
+                        style={styles.btnVolver}
+                    >
+                        <Text style={styles.btnVolverTexto}>←</Text>
                     </TouchableOpacity>
                     <View style={styles.logoArea}>
                         <View style={styles.logoCircle}>
@@ -37,11 +43,12 @@ export default function ContactanosCliente() {
                         </View>
                         <Text style={styles.brand}>Contáctanos</Text>
                     </View>
-                    <View style={{ width: 32 }} />
+                    <View style={{ width: 44 }} />
                 </View>
 
                 <ScrollView contentContainerStyle={styles.scroll}>
 
+                    {/* Formulario */}
                     <View style={styles.seccion}>
                         <Text style={styles.seccionTitulo}>Contáctanos</Text>
                         <Text style={styles.seccionSub}>
@@ -49,20 +56,29 @@ export default function ContactanosCliente() {
                             llena el siguiente formulario con tus datos.
                         </Text>
 
-                        <TextInput style={styles.input} placeholder="Nombre"
-                            placeholderTextColor="#999" value={nombre} onChangeText={setNombre} />
-                        <TextInput style={styles.input} placeholder="Correo"
-                            placeholderTextColor="#999" value={correo} onChangeText={setCorreo}
-                            keyboardType="email-address" autoCapitalize="none" />
-                        <TextInput style={[styles.input, styles.textArea]} placeholder="Mensaje"
-                            placeholderTextColor="#999" value={mensaje} onChangeText={setMensaje}
-                            multiline numberOfLines={5} />
+                        <TextInput
+                            style={styles.input} placeholder="Nombre"
+                            placeholderTextColor="#94A3B8" value={nombre}
+                            onChangeText={setNombre}
+                        />
+                        <TextInput
+                            style={styles.input} placeholder="Correo"
+                            placeholderTextColor="#94A3B8" value={correo}
+                            onChangeText={setCorreo} keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                        <TextInput
+                            style={[styles.input, styles.textArea]} placeholder="Mensaje"
+                            placeholderTextColor="#94A3B8" value={mensaje}
+                            onChangeText={setMensaje} multiline numberOfLines={5}
+                        />
 
                         <TouchableOpacity style={styles.btnEnviar} onPress={enviar}>
                             <Text style={styles.btnEnviarText}>Enviar</Text>
                         </TouchableOpacity>
                     </View>
 
+                    {/* Info de contacto */}
                     <View style={styles.infoBox}>
                         <TouchableOpacity onPress={() => Linking.openURL('tel:+573212099989')}>
                             <Text style={styles.infoTel}>+57 321 209 9989</Text>
@@ -82,11 +98,12 @@ export default function ContactanosCliente() {
 
                 </ScrollView>
 
+                {/* Bottom nav */}
                 <View style={styles.bottomNav}>
                     {[
-                        { label: 'Inicio', icon: '🏠', route: '/cliente/index_cliente' },
-                        { label: 'Productos', icon: '📦', route: '/cliente/productos' },
-                        { label: 'Pedidos', icon: '📋', route: '/cliente/pedidos' },
+                        { label: 'Inicio',      icon: '🏠', route: '/cliente/panel_cliente' },
+                        { label: 'Productos',   icon: '📦', route: '/cliente/productos_cliente' },
+                        { label: 'Pedidos',     icon: '📋', route: '/cliente/pedidos' },
                         { label: 'Contáctanos', icon: '✉️', active: true },
                     ].map(item => (
                         <TouchableOpacity
@@ -109,36 +126,74 @@ export default function ContactanosCliente() {
 
 const styles = StyleSheet.create({
     background: { flex: 1 },
-    safeArea: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
+    overlay: {
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    },
+    safeArea: { flex: 1 },
 
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
-    backBtn: { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-    logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-    logoInitials: { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-    brand: { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+    // Header
+    header: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        paddingHorizontal: 14, paddingVertical: 12,
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    },
+    btnVolver: {
+        backgroundColor: '#1E293B', borderRadius: 8,
+        paddingHorizontal: 12, paddingVertical: 4,
+    },
+    btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
+    logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    logoCircle:  {
+        width: 30, height: 30, borderRadius: 15,
+        backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+    },
+    logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
+    brand:        { color: '#0F172A', fontWeight: '700', fontSize: 15 },
 
     scroll: { padding: 16, paddingBottom: 24 },
 
-    seccion: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, marginBottom: 14 },
-    seccionTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 18, marginBottom: 6 },
-    seccionSub: { color: '#333333', fontSize: 12, lineHeight: 18, marginBottom: 16 },
-    input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
-    textArea: { height: 100, textAlignVertical: 'top' },
-    btnEnviar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-    btnEnviarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+    // Formulario
+    seccion: {
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderWidth: 1.5, borderColor: '#1E293B',
+        borderRadius: 12, padding: 16, marginBottom: 14,
+    },
+    seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 18, marginBottom: 6 },
+    seccionSub:    { color: '#64748B', fontSize: 12, lineHeight: 18, marginBottom: 16 },
+    input: {
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderWidth: 1.5, borderColor: '#1E293B',
+        color: '#0F172A', borderRadius: 8,
+        padding: 11, fontSize: 13, marginBottom: 10,
+    },
+    textArea:      { height: 100, textAlignVertical: 'top' },
+    btnEnviar:     { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+    btnEnviarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 
-    infoBox: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 16, alignItems: 'center' },
-    infoTel: { color: '#333333', fontWeight: 'bold', fontSize: 17, marginBottom: 8 },
-    infoText: { color: '#333333', fontSize: 12, marginBottom: 4, textAlign: 'center' },
-    horario: { marginTop: 14, alignItems: 'center' },
-    horarioTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 13, marginBottom: 8 },
-    horarioText: { color: '#333333', fontSize: 12, marginBottom: 4 },
-    copy: { color: '#333333', fontSize: 11, marginTop: 16 },
+    // Info contacto
+    infoBox: {
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderWidth: 1.5, borderColor: '#1E293B',
+        borderRadius: 12, padding: 16, alignItems: 'center',
+    },
+    infoTel:       { color: '#1E293B', fontWeight: '700', fontSize: 17, marginBottom: 8 },
+    infoText:      { color: '#64748B', fontSize: 12, marginBottom: 4, textAlign: 'center' },
+    horario:       { marginTop: 14, alignItems: 'center' },
+    horarioTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 8 },
+    horarioText:   { color: '#64748B', fontSize: 12, marginBottom: 4 },
+    copy:          { color: '#94A3B8', fontSize: 11, marginTop: 16 },
 
-    bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
-    bnav: { alignItems: 'center', gap: 2 },
-    bnavIcon: { fontSize: 18 },
-    bnavLabel: { fontSize: 9, color: '#eee' },
-    bnavActive: { color: '#333333' },
+    // Bottom nav
+    bottomNav: {
+        flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8,
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderTopWidth: 1.5, borderTopColor: '#1E293B',
+    },
+    bnav:       { alignItems: 'center', gap: 2 },
+    bnavIcon:   { fontSize: 18 },
+    bnavLabel:  { fontSize: 9, color: '#64748B' },
+    bnavActive: { color: '#0F172A', fontWeight: '700' },
 });

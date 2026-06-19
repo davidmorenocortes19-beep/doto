@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
     View, Text, TextInput, TouchableOpacity, ScrollView,
-    StyleSheet, ImageBackground, SafeAreaView, Alert,
+    StyleSheet, ImageBackground, SafeAreaView,
     KeyboardAvoidingView, Platform,
 } from 'react-native';
 import axios from 'axios';
@@ -20,14 +20,14 @@ type Vendedor = {
 };
 
 export default function PerfilVendedor() {
-    const [vendedor, setVendedor] = useState<Vendedor | null>(null);
-    const [nuevoNombre, setNuevoNombre] = useState('');
-    const [nuevoCorreo, setNuevoCorreo] = useState('');
-    const [nuevoTelefono, setNuevoTelefono] = useState('');
+    const [vendedor,       setVendedor]       = useState<Vendedor | null>(null);
+    const [nuevoNombre,    setNuevoNombre]    = useState('');
+    const [nuevoCorreo,    setNuevoCorreo]    = useState('');
+    const [nuevoTelefono,  setNuevoTelefono]  = useState('');
     const [nuevaDireccion, setNuevaDireccion] = useState('');
-    const [nuevoPassword, setNuevoPassword] = useState('');
-    const [cargando, setCargando] = useState(false);
-    const [mensaje, setMensaje] = useState('');
+    const [nuevoPassword,  setNuevoPassword]  = useState('');
+    const [cargando,       setCargando]       = useState(false);
+    const [mensaje,        setMensaje]        = useState('');
 
     useEffect(() => { cargar(); }, []);
 
@@ -39,7 +39,7 @@ export default function PerfilVendedor() {
             const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 5000 });
             if (res.data.success) setVendedor(res.data.data);
         } catch {
-            // sin servidor: dejar vacío
+            // sin servidor
         } finally {
             setCargando(false);
         }
@@ -52,11 +52,11 @@ export default function PerfilVendedor() {
         }
 
         const payload: Partial<Vendedor> & { password?: string } = { id: Number(sesion.id) };
-        if (nuevoNombre) payload.nombre = nuevoNombre;
-        if (nuevoCorreo) payload.correo = nuevoCorreo;
-        if (nuevoTelefono) payload.telefono = nuevoTelefono;
+        if (nuevoNombre)    payload.nombre    = nuevoNombre;
+        if (nuevoCorreo)    payload.correo    = nuevoCorreo;
+        if (nuevoTelefono)  payload.telefono  = nuevoTelefono;
         if (nuevaDireccion) payload.direccion = nuevaDireccion;
-        if (nuevoPassword) payload.password = nuevoPassword;
+        if (nuevoPassword)  payload.password  = nuevoPassword;
 
         try {
             setCargando(true);
@@ -66,10 +66,8 @@ export default function PerfilVendedor() {
                 setVendedor(prev => prev ? { ...prev, ...payload } : prev);
                 if (nuevoNombre) sesion.nombre = nuevoNombre;
                 if (nuevoCorreo) sesion.correo = nuevoCorreo;
-                setNuevoNombre('');
-                setNuevoCorreo('');
-                setNuevoTelefono('');
-                setNuevaDireccion('');
+                setNuevoNombre(''); setNuevoCorreo('');
+                setNuevoTelefono(''); setNuevaDireccion('');
                 setNuevoPassword('');
             } else {
                 setMensaje('❌ ' + res.data.mensaje);
@@ -87,6 +85,8 @@ export default function PerfilVendedor() {
             style={styles.background}
             resizeMode="cover"
         >
+            <View style={styles.overlay} />
+
             <SafeAreaView style={styles.safeArea}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -95,8 +95,11 @@ export default function PerfilVendedor() {
 
                     {/* Header */}
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.replace('/cliente/panel_cliente')}>
-                            <Text style={styles.backBtn}>←</Text>
+                        <TouchableOpacity
+                            onPress={() => router.replace('/cliente/panel_cliente')}
+                            style={styles.btnVolver}
+                        >
+                            <Text style={styles.btnVolverTexto}>←</Text>
                         </TouchableOpacity>
                         <View style={styles.logoArea}>
                             <View style={styles.logoCircle}>
@@ -104,7 +107,7 @@ export default function PerfilVendedor() {
                             </View>
                             <Text style={styles.headerTitle}>Mi Perfil</Text>
                         </View>
-                        <View style={{ width: 32 }} />
+                        <View style={{ width: 44 }} />
                     </View>
 
                     <ScrollView contentContainerStyle={styles.scroll}>
@@ -128,10 +131,10 @@ export default function PerfilVendedor() {
                         <View style={styles.seccion}>
                             <Text style={styles.seccionTitulo}>Información Personal</Text>
                             {[
-                                { label: 'Nombre', valor: vendedor?.nombre },
+                                { label: 'Nombre',    valor: vendedor?.nombre },
                                 { label: 'Documento', valor: vendedor?.documento },
-                                { label: 'Correo', valor: vendedor?.correo },
-                                { label: 'Teléfono', valor: vendedor?.telefono },
+                                { label: 'Correo',    valor: vendedor?.correo },
+                                { label: 'Teléfono',  valor: vendedor?.telefono },
                                 { label: 'Dirección', valor: vendedor?.direccion },
                             ].map(item => (
                                 <View key={item.label} style={styles.infoRow}>
@@ -147,29 +150,29 @@ export default function PerfilVendedor() {
                             <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
                             <TextInput style={styles.input} placeholder="Nuevo nombre"
-                                placeholderTextColor="#999" value={nuevoNombre}
+                                placeholderTextColor="#94A3B8" value={nuevoNombre}
                                 onChangeText={setNuevoNombre} autoCorrect={false} />
 
                             <TextInput style={styles.input} placeholder="Nuevo correo"
-                                placeholderTextColor="#999" value={nuevoCorreo}
+                                placeholderTextColor="#94A3B8" value={nuevoCorreo}
                                 onChangeText={setNuevoCorreo} keyboardType="email-address"
                                 autoCapitalize="none" />
 
                             <TextInput style={styles.input} placeholder="Nuevo teléfono"
-                                placeholderTextColor="#999" value={nuevoTelefono}
+                                placeholderTextColor="#94A3B8" value={nuevoTelefono}
                                 onChangeText={setNuevoTelefono} keyboardType="phone-pad" />
 
                             <TextInput style={styles.input} placeholder="Nueva dirección"
-                                placeholderTextColor="#999" value={nuevaDireccion}
+                                placeholderTextColor="#94A3B8" value={nuevaDireccion}
                                 onChangeText={setNuevaDireccion} />
 
                             <TextInput style={styles.input} placeholder="Nueva contraseña"
-                                placeholderTextColor="#999" value={nuevoPassword}
+                                placeholderTextColor="#94A3B8" value={nuevoPassword}
                                 onChangeText={setNuevoPassword} secureTextEntry />
 
                             {mensaje !== '' && (
                                 <Text style={[styles.mensaje,
-                                mensaje.startsWith('✅') ? styles.mensajeOk : styles.mensajeError
+                                    mensaje.startsWith('✅') ? styles.mensajeOk : styles.mensajeError
                                 ]}>
                                     {mensaje}
                                 </Text>
@@ -180,7 +183,7 @@ export default function PerfilVendedor() {
                                 onPress={guardarCambios}
                                 disabled={cargando}
                             >
-                                <Text style={styles.btnGuardarText}>Guardar Cambios</Text>
+                                <Text style={styles.btnGuardarText}>💾 Guardar Cambios</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -189,12 +192,12 @@ export default function PerfilVendedor() {
                     {/* Bottom nav */}
                     <View style={styles.bottomNav}>
                         {[
-                            { icon: '🏠', label: 'Inicio', route: '/cliente/panel_cliente' },
-                            { icon: '👤', label: 'Perfil', active: true },
-                            { icon: '👕', label: 'Productos', route: '/cliente/productos_cliente' },
-                            { icon: '📋', label: 'Ver Pedidos', route: '/cliente/pedidos' },
-                            { icon: '🏢', label: 'Nosotros', route: '/cliente/nosotros' },
-                            { icon: '📞', label: 'Contactanos', route: '/cliente/contactanos_cliente' },
+                            { icon: '🏠', label: 'Inicio',     route: '/cliente/panel_cliente' },
+                            { icon: '👤', label: 'Perfil',     active: true },
+                            { icon: '👕', label: 'Productos',  route: '/cliente/productos_cliente' },
+                            { icon: '📋', label: 'Pedidos',    route: '/cliente/pedidos' },
+                            { icon: '🏢', label: 'Nosotros',   route: '/cliente/nosotros' },
+                            { icon: '📞', label: 'Contactanos',route: '/cliente/contactanos_cliente' },
                         ].map(item => (
                             <TouchableOpacity
                                 key={item.label}
@@ -217,37 +220,96 @@ export default function PerfilVendedor() {
 
 const styles = StyleSheet.create({
     background: { flex: 1 },
-    safeArea: { flex: 1, backgroundColor: 'rgba(9,8,13,0.75)' },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.88)' },
-    backBtn: { color: '#B7975B', fontSize: 22, paddingHorizontal: 4 },
-    logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center' },
-    logoInitials: { color: '#333333', fontWeight: 'bold', fontSize: 10 },
-    headerTitle: { color: '#B7975B', fontWeight: 'bold', fontSize: 15 },
+    overlay: {
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    },
+    safeArea: { flex: 1 },
+
+    // Header
+    header: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        paddingHorizontal: 14, paddingVertical: 12,
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    },
+    btnVolver: {
+        backgroundColor: '#1E293B', borderRadius: 8,
+        paddingHorizontal: 12, paddingVertical: 4,
+    },
+    btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
+    logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    logoCircle:  {
+        width: 30, height: 30, borderRadius: 15,
+        backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+    },
+    logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
+    headerTitle:  { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+
     scroll: { padding: 16, paddingBottom: 24 },
-    avatarWrap: { alignItems: 'center', marginBottom: 20 },
-    avatar: { width: 72, height: 72, borderRadius: 36, backgroundColor: '#B7975B', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-    avatarText: { color: '#333333', fontSize: 30, fontWeight: 'bold' },
-    avatarName: { color: '#333333', fontSize: 17, fontWeight: 'bold', marginBottom: 6 },
-    rolBadge: { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
-    rolText: { color: '#333333', fontSize: 12, fontWeight: 'bold' },
-    seccion: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 12, padding: 14, marginBottom: 14 },
-    seccionTitulo: { color: '#B7975B', fontWeight: 'bold', fontSize: 15, marginBottom: 4 },
-    seccionSub: { color: '#333333', fontSize: 11, marginBottom: 12 },
-    infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#B7975B' },
-    infoLabel: { color: '#eee', fontSize: 13 },
-    infoValor: { color: '#333333', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
-    input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', color: '#333333', borderRadius: 8, padding: 11, fontSize: 13, marginBottom: 10 },
-    mensaje: { fontSize: 12, marginBottom: 10, textAlign: 'center' },
-    mensajeOk: { color: '#333333' },
-    mensajeError: { color: '#333333' },
-    btnGuardar: { backgroundColor: '#B7975B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
-    btnGuardarText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-    btnSalir: { backgroundColor: '#B7975B22', borderWidth: 1, borderColor: '#ccc', padding: 13, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
-    btnSalirText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-    bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#B7975B', backgroundColor: 'rgba(9,8,13,0.9)' },
-    bnav: { alignItems: 'center', gap: 2 },
-    bnavIcon: { fontSize: 18 },
-    bnavLabel: { fontSize: 9, color: '#eee' },
-    bnavActive: { color: '#333333' },
+
+    // Avatar
+    avatarWrap: { alignItems: 'center', marginBottom: 20, marginTop: 8 },
+    avatar: {
+        width: 72, height: 72, borderRadius: 36,
+        backgroundColor: '#1E293B',
+        alignItems: 'center', justifyContent: 'center', marginBottom: 10,
+    },
+    avatarText: { color: '#F8FAFC', fontSize: 30, fontWeight: 'bold' },
+    avatarName: { color: '#0F172A', fontSize: 17, fontWeight: '700', marginBottom: 6 },
+    rolBadge: {
+        backgroundColor: '#EEF1FF', borderWidth: 1.5,
+        borderColor: '#1E293B', borderRadius: 20,
+        paddingHorizontal: 14, paddingVertical: 4,
+    },
+    rolText: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
+
+    // Secciones
+    seccion: {
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderWidth: 1.5, borderColor: '#1E293B',
+        borderRadius: 12, padding: 14, marginBottom: 14,
+    },
+    seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 4 },
+    seccionSub:    { color: '#64748B', fontSize: 11, marginBottom: 12 },
+
+    // Filas de info
+    infoRow: {
+        flexDirection: 'row', justifyContent: 'space-between',
+        paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E2E8F0',
+    },
+    infoLabel: { color: '#64748B', fontSize: 13 },
+    infoValor: { color: '#0F172A', fontSize: 13, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
+
+    // Inputs
+    input: {
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderWidth: 1.5, borderColor: '#1E293B',
+        color: '#0F172A', borderRadius: 8,
+        padding: 11, fontSize: 13, marginBottom: 10,
+    },
+
+    // Mensajes
+    mensaje:      { fontSize: 12, marginBottom: 10, textAlign: 'center', fontWeight: '600' },
+    mensajeOk:    { color: '#16A34A' },
+    mensajeError: { color: '#DC2626' },
+
+    // Botón guardar
+    btnGuardar: {
+        backgroundColor: '#1E293B', padding: 13,
+        borderRadius: 8, alignItems: 'center', marginTop: 4,
+    },
+    btnGuardarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
+
+    // Bottom nav
+    bottomNav: {
+        flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8,
+        backgroundColor: 'rgba(255, 255, 255, 1.0)',
+        borderTopWidth: 1.5, borderTopColor: '#1E293B',
+    },
+    bnav:       { alignItems: 'center', gap: 2 },
+    bnavIcon:   { fontSize: 18 },
+    bnavLabel:  { fontSize: 9, color: '#64748B' },
+    bnavActive: { color: '#0F172A', fontWeight: '700' },
 });
