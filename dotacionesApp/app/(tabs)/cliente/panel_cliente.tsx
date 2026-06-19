@@ -4,12 +4,12 @@ import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
 const opciones = [
-  { icon: '🏠', label: 'Inicio',       ruta: '/cliente/panel_cliente' },
-  { icon: '👤', label: 'Perfil',       ruta: '/cliente/perfil_cliente' },
-  { icon: '👕', label: 'Productos',    ruta: '/cliente/productos_cliente' },
-  { icon: '📋', label: 'Ver Pedidos',  ruta: '/cliente/pedidos' },
-  { icon: '🏢', label: 'Nosotros',     ruta: '/cliente/nosotros_cliente' },
-  { icon: '📞', label: 'Contáctanos',  ruta: '/cliente/contactanos_cliente' },
+  { icon: '🏠', label: 'Inicio', ruta: '/cliente/panel_cliente' },
+  { icon: '👤', label: 'Perfil', ruta: '/cliente/perfil_cliente' },
+  { icon: '👕', label: 'Productos', ruta: '/cliente/productos_cliente' },
+  { icon: '📋', label: 'Ver Pedidos', ruta: '/cliente/pedidos_cliente' },
+  { icon: '🏢', label: 'Nosotros', ruta: '/cliente/nosotros_cliente' },
+  { icon: '📞', label: 'Contáctanos', ruta: '/cliente/contactanos_cliente' },
 ];
 
 export default function PanelCliente() {

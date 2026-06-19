@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
-  View, Text, TextInput, TouchableOpacity, FlatList,
+  View, Text, TouchableOpacity, FlatList,
   StyleSheet, ImageBackground, SafeAreaView, Alert,
   Modal, Image,
 } from 'react-native';
 import axios from 'axios';
+import { sesion } from '../../../constants/sesion';
 
 const API_URL = 'http://192.168.137.9/doto/api/productos.php';
+const API_CARRITO = 'http://192.168.137.9/doto/api/carrito.php';
+const API_PEDIDOS = 'http://192.168.137.9/doto/api/pedidos.php';
 const API_BASE = 'http://192.168.137.9/doto/';
 
 type Producto = {
@@ -20,14 +23,21 @@ type Producto = {
   estado: 'Disponible' | 'Agotado';
 };
 
-type ItemCarrito = Producto & { cantidad: number };
+type ItemCarrito = Producto & {
+  cantidad: number;
+  id_detalle_carrito?: number;
+};
 
 export default function ProductosCliente() {
-  const [productos,      setProductos]      = useState<Producto[]>([]);
-  const [carrito,        setCarrito]        = useState<ItemCarrito[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   const [carritoVisible, setCarritoVisible] = useState(false);
+  const [enviandoPedido, setEnviandoPedido] = useState(false);
 
-  useEffect(() => { cargar(); }, []);
+  useEffect(() => {
+    cargar();
+    cargarCarrito();
+  }, []);
 
   const cargar = async () => {
     try {
@@ -39,24 +49,72 @@ export default function ProductosCliente() {
     }
   };
 
-  const agregarAlCarrito = (producto: Producto) => {
-    if (producto.estado === 'Agotado') return;
-    setCarrito(prev => {
-      const existe = prev.find(i => i.id_producto === producto.id_producto);
-      if (existe) {
-        return prev.map(i =>
-          i.id_producto === producto.id_producto
-            ? { ...i, cantidad: i.cantidad + 1 }
-            : i
-        );
-      }
-      return [...prev, { ...producto, cantidad: 1 }];
-    });
-    Alert.alert('🛒 Carrito', `"${producto.nombre}" agregado al carrito`);
+  const cargarCarrito = async () => {
+    try {
+      const res = await axios.get(API_CARRITO, {
+        params: { id_usuario: sesion.id },
+        timeout: 5000,
+      });
+      const data = Array.isArray(res.data) ? res.data : [];
+      const items: ItemCarrito[] = data.map((d: any) => ({
+        id_producto: d.id_producto,
+        id_detalle_carrito: d.id_detalle_carrito,
+        nombre: d.nombre,
+        precio: d.precio,
+        talla: d.talla,
+        color: d.color,
+        imagen: d.imagen,
+        estado: d.estado,
+        cantidad: d.cantidad,
+      }));
+      setCarrito(items);
+    } catch {
+      // sin servidor
+    }
   };
 
-  const quitarDelCarrito = (id: number) => {
-    setCarrito(prev => prev.filter(i => i.id_producto !== id));
+  const agregarAlCarrito = async (producto: Producto) => {
+    if (producto.estado === 'Agotado') return;
+
+    try {
+      await axios.post(API_CARRITO, {
+        id_usuario: sesion.id,
+        id_producto: producto.id_producto,
+        cantidad: 1,
+      });
+      await cargarCarrito();
+      Alert.alert('🛒 Carrito', `"${producto.nombre}" agregado al carrito`);
+    } catch {
+      Alert.alert('⚠ Error', 'No se pudo agregar el producto al carrito');
+    }
+  };
+
+  const quitarDelCarrito = async (item: ItemCarrito) => {
+    if (!item.id_detalle_carrito) return;
+    try {
+      await axios.delete(API_CARRITO, {
+        params: { id_detalle_carrito: item.id_detalle_carrito },
+      });
+      await cargarCarrito();
+    } catch {
+      Alert.alert('⚠ Error', 'No se pudo quitar el producto');
+    }
+  };
+
+  const realizarPedido = async () => {
+    if (carrito.length === 0) return;
+    setEnviandoPedido(true);
+    try {
+      await axios.post(API_PEDIDOS, { id_usuario: sesion.id });
+      setCarritoVisible(false);
+      setCarrito([]);
+      Alert.alert('✅ Pedido', 'Tu pedido fue registrado correctamente');
+      router.push('/cliente/pedidos_cliente' as any);
+    } catch {
+      Alert.alert('⚠ Error', 'No se pudo registrar el pedido');
+    } finally {
+      setEnviandoPedido(false);
+    }
   };
 
   const totalCarrito = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
@@ -87,10 +145,10 @@ export default function ProductosCliente() {
         <Text style={styles.cardInfoText}>Color: {item.color || 'N/A'}</Text>
       </View>
       <View style={[styles.estadoBadge,
-        item.estado === 'Disponible' ? styles.estadoDisponible : styles.estadoAgotado
+      item.estado === 'Disponible' ? styles.estadoDisponible : styles.estadoAgotado
       ]}>
         <Text style={[styles.estadoText,
-          item.estado === 'Disponible' ? styles.estadoDispText : styles.estadoAgotText
+        item.estado === 'Disponible' ? styles.estadoDispText : styles.estadoAgotText
         ]}>
           {item.estado}
         </Text>
@@ -168,10 +226,10 @@ export default function ProductosCliente() {
         {/* Bottom nav */}
         <View style={styles.bottomNav}>
           {[
-            { label: 'Inicio',    icon: '🏠', route: '/cliente/panel_cliente' },
+            { label: 'Inicio', icon: '🏠', route: '/cliente/panel_cliente' },
             { label: 'Productos', icon: '📦', active: true },
-            { label: 'Pedidos',   icon: '📋', route: '/cliente/pedidos' },
-            { label: 'Perfil',    icon: '👤', route: '/cliente/perfil_cliente' },
+            { label: 'Pedidos', icon: '📋', route: '/cliente/pedidos_cliente' },
+            { label: 'Perfil', icon: '👤', route: '/cliente/perfil_cliente' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}
@@ -204,14 +262,14 @@ export default function ProductosCliente() {
             ) : (
               <>
                 {carrito.map(item => (
-                  <View key={item.id_producto} style={styles.carritoItem}>
+                  <View key={item.id_detalle_carrito ?? item.id_producto} style={styles.carritoItem}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.carritoNombre}>{item.nombre}</Text>
                       <Text style={styles.carritoDetalle}>
                         {item.cantidad} x ${Number(item.precio).toLocaleString('es-CO')}
                       </Text>
                     </View>
-                    <TouchableOpacity onPress={() => quitarDelCarrito(item.id_producto)}>
+                    <TouchableOpacity onPress={() => quitarDelCarrito(item)}>
                       <Text style={styles.carritoQuitar}>✖</Text>
                     </TouchableOpacity>
                   </View>
@@ -221,10 +279,13 @@ export default function ProductosCliente() {
                   <Text style={styles.carritoTotalValor}>${totalCarrito.toLocaleString('es-CO')}</Text>
                 </View>
                 <TouchableOpacity
-                  style={styles.btnPedir}
-                  onPress={() => { setCarritoVisible(false); router.push('/cliente/pedidos' as any); }}
+                  style={[styles.btnPedir, enviandoPedido && { opacity: 0.6 }]}
+                  onPress={realizarPedido}
+                  disabled={enviandoPedido}
                 >
-                  <Text style={styles.btnPedirText}>Realizar Pedido</Text>
+                  <Text style={styles.btnPedirText}>
+                    {enviandoPedido ? 'Enviando...' : 'Realizar Pedido'}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
@@ -257,15 +318,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 4,
   },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
-  logoArea:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:   {
+  logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  logoCircle: {
     width: 30, height: 30, borderRadius: 15,
     backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
   },
   logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
-  brand:        { color: '#0F172A', fontWeight: '700', fontSize: 15 },
-  carritoBtn:   { position: 'relative', padding: 4 },
-  carritoIcon:  { fontSize: 22 },
+  brand: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+  carritoBtn: { position: 'relative', padding: 4 },
+  carritoIcon: { fontSize: 22 },
   carritoBadge: {
     position: 'absolute', top: 0, right: 0,
     backgroundColor: '#1E293B', borderRadius: 8,
@@ -280,12 +341,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
   },
   heroTitle: { color: '#0F172A', fontSize: 20, fontWeight: '700', marginBottom: 8 },
-  heroDesc:  { color: '#64748B', fontSize: 12, lineHeight: 19 },
+  heroDesc: { color: '#64748B', fontSize: 12, lineHeight: 19 },
 
   // Lista
   listContent: { padding: 10, paddingBottom: 24 },
-  row:         { justifyContent: 'space-between', marginBottom: 10 },
-  empty:       { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
+  row: { justifyContent: 'space-between', marginBottom: 10 },
+  empty: { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
   // Cards de productos
   card: {
@@ -294,33 +355,33 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: '#1E293B',
     borderRadius: 12, padding: 10,
   },
-  cardImg:            { width: '100%', height: 76, borderRadius: 8, marginBottom: 8 },
+  cardImg: { width: '100%', height: 76, borderRadius: 8, marginBottom: 8 },
   cardImgPlaceholder: {
     backgroundColor: '#F1F5F9', borderRadius: 8,
     alignItems: 'center', justifyContent: 'center',
     height: 70, marginBottom: 8,
   },
-  cardImgIcon:  { fontSize: 32 },
-  cardNombre:   { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 4 },
-  cardPrecio:   { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 6 },
-  cardInfo:     { marginBottom: 6 },
+  cardImgIcon: { fontSize: 32 },
+  cardNombre: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 4 },
+  cardPrecio: { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 6 },
+  cardInfo: { marginBottom: 6 },
   cardInfoText: { color: '#64748B', fontSize: 11 },
 
   // Estado badge
-  estadoBadge:      {
+  estadoBadge: {
     borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3,
     alignSelf: 'flex-start', marginBottom: 8, borderWidth: 1,
   },
   estadoDisponible: { backgroundColor: '#DCFCE7', borderColor: '#16A34A' },
-  estadoAgotado:    { backgroundColor: '#FEE2E2', borderColor: '#DC2626' },
-  estadoText:       { fontSize: 10, fontWeight: 'bold' },
-  estadoDispText:   { color: '#16A34A' },
-  estadoAgotText:   { color: '#DC2626' },
+  estadoAgotado: { backgroundColor: '#FEE2E2', borderColor: '#DC2626' },
+  estadoText: { fontSize: 10, fontWeight: 'bold' },
+  estadoDispText: { color: '#16A34A' },
+  estadoAgotText: { color: '#DC2626' },
 
   // Botón agregar
-  btnAgregar:         { backgroundColor: '#1E293B', padding: 7, borderRadius: 6, alignItems: 'center' },
+  btnAgregar: { backgroundColor: '#1E293B', padding: 7, borderRadius: 6, alignItems: 'center' },
   btnAgregarDisabled: { backgroundColor: '#94A3B8' },
-  btnAgregarText:     { color: '#F8FAFC', fontSize: 11, fontWeight: '600' },
+  btnAgregarText: { color: '#F8FAFC', fontSize: 11, fontWeight: '600' },
 
   // Bottom nav
   bottomNav: {
@@ -328,9 +389,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderTopWidth: 1.5, borderTopColor: '#1E293B',
   },
-  bnav:       { alignItems: 'center', gap: 2 },
-  bnavIcon:   { fontSize: 18 },
-  bnavLabel:  { fontSize: 9, color: '#64748B' },
+  bnav: { alignItems: 'center', gap: 2 },
+  bnavIcon: { fontSize: 18 },
+  bnavLabel: { fontSize: 9, color: '#64748B' },
   bnavActive: { color: '#0F172A', fontWeight: '700' },
 
   // Modal carrito
@@ -345,16 +406,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', marginBottom: 16,
   },
-  modalTitle:  { color: '#0F172A', fontWeight: '700', fontSize: 16 },
+  modalTitle: { color: '#0F172A', fontWeight: '700', fontSize: 16 },
   modalCerrar: { color: '#64748B', fontSize: 18 },
 
   carritoItem: {
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E2E8F0',
   },
-  carritoNombre:     { color: '#0F172A', fontSize: 13, fontWeight: '500' },
-  carritoDetalle:    { color: '#64748B', fontSize: 12 },
-  carritoQuitar:     { color: '#DC2626', fontSize: 16, paddingLeft: 10 },
+  carritoNombre: { color: '#0F172A', fontSize: 13, fontWeight: '500' },
+  carritoDetalle: { color: '#64748B', fontSize: 12 },
+  carritoQuitar: { color: '#DC2626', fontSize: 16, paddingLeft: 10 },
   carritoTotal: {
     flexDirection: 'row', justifyContent: 'space-between',
     paddingVertical: 12, borderTopWidth: 1,
@@ -362,6 +423,6 @@ const styles = StyleSheet.create({
   },
   carritoTotalLabel: { color: '#0F172A', fontWeight: 'bold', fontSize: 14 },
   carritoTotalValor: { color: '#0F172A', fontWeight: 'bold', fontSize: 16 },
-  btnPedir:          { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
-  btnPedirText:      { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
+  btnPedir: { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
+  btnPedirText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 });

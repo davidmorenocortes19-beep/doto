@@ -160,10 +160,10 @@ export default function UsuariosScreen() {
         {/* BOTONES EXPORTAR */}
         <View style={styles.exportarContenedor}>
           <TouchableOpacity style={styles.btnPDF} onPress={exportarPDF}>
-            <Text style={styles.btnExportarTexto}>📄 Exportar PDF</Text>
+            <Text style={styles.btnExportarTexto}> Exportar PDF</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.btnExcel} onPress={exportarExcel}>
-            <Text style={styles.btnExportarTexto}>📊 Exportar Excel</Text>
+            <Text style={styles.btnExportarTexto}> Exportar Excel</Text>
           </TouchableOpacity>
         </View>
 
