@@ -10,7 +10,7 @@ import { sesion } from '../../../constants/sesion';
 
 const API_URL = 'http://192.168.137.9/doto/api/perfil.php';
 
-type Vendedor = {
+type Bodeguero = {
   id?: number;
   nombre: string;
   documento: string;
@@ -38,8 +38,8 @@ const validarDireccion = (direccion: string): string | null => {
   return null;
 };
 
-export default function PerfilVendedor() {
-  const [vendedor, setVendedor] = useState<Vendedor | null>(null);
+export default function PerfilBodeguero() {
+  const [bodeguero, setBodeguero] = useState<Bodeguero | null>(null);
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nombreError, setNombreError] = useState('');
   const [nuevoCorreo, setNuevoCorreo] = useState('');
@@ -61,7 +61,7 @@ export default function PerfilVendedor() {
       const id = Number(sesion.id);
       if (!id || id <= 0) return;
       const res = await axios.get(`${API_URL}?id=${id}`, { timeout: 5000 });
-      if (res.data.success) setVendedor(res.data.data);
+      if (res.data.success) setBodeguero(res.data.data);
     } catch {
       // sin servidor
     } finally {
@@ -133,7 +133,7 @@ export default function PerfilVendedor() {
       return;
     }
 
-    const payload: Partial<Vendedor> & { password?: string } = { id: Number(sesion.id) };
+    const payload: Partial<Bodeguero> & { password?: string } = { id: Number(sesion.id) };
     if (nuevoNombre) payload.nombre = nuevoNombre;
     if (nuevoCorreo) payload.correo = nuevoCorreo;
     if (nuevoTelefono) payload.telefono = nuevoTelefono;
@@ -145,7 +145,7 @@ export default function PerfilVendedor() {
       const res = await axios.put(API_URL, payload, { timeout: 5000 });
       if (res.data.success) {
         setMensaje('✅ Perfil actualizado correctamente');
-        setVendedor(prev => prev ? { ...prev, ...payload } : prev);
+        setBodeguero(prev => prev ? { ...prev, ...payload } : prev);
         if (nuevoNombre) sesion.nombre = nuevoNombre;
         if (nuevoCorreo) sesion.correo = nuevoCorreo;
         setNuevoNombre(''); setNuevoCorreo('');
@@ -189,7 +189,7 @@ export default function PerfilVendedor() {
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity
-              onPress={() => router.replace('/vendedor/panel_vendedor')}
+              onPress={() => router.replace('/bodeguero/panel_bodeguero')}
               style={styles.btnVolver}
             >
               <Text style={styles.btnVolverTexto}>←</Text>
@@ -209,12 +209,12 @@ export default function PerfilVendedor() {
             <View style={styles.avatarWrap}>
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>
-                  {vendedor?.nombre
-                    ? vendedor.nombre.charAt(0).toUpperCase()
+                  {bodeguero?.nombre
+                    ? bodeguero.nombre.charAt(0).toUpperCase()
                     : sesion.nombre.charAt(0).toUpperCase()}
                 </Text>
               </View>
-              <Text style={styles.avatarName}>{vendedor?.nombre ?? sesion.nombre}</Text>
+              <Text style={styles.avatarName}>{bodeguero?.nombre ?? sesion.nombre}</Text>
               <View style={styles.rolBadge}>
                 <Text style={styles.rolText}>{sesion.rol}</Text>
               </View>
@@ -224,11 +224,11 @@ export default function PerfilVendedor() {
             <View style={styles.seccion}>
               <Text style={styles.seccionTitulo}>Información Personal</Text>
               {[
-                { label: 'Nombre', valor: vendedor?.nombre },
-                { label: 'Documento', valor: vendedor?.documento },
-                { label: 'Correo', valor: vendedor?.correo },
-                { label: 'Teléfono', valor: vendedor?.telefono },
-                { label: 'Dirección', valor: vendedor?.direccion },
+                { label: 'Nombre', valor: bodeguero?.nombre },
+                { label: 'Documento', valor: bodeguero?.documento },
+                { label: 'Correo', valor: bodeguero?.correo },
+                { label: 'Teléfono', valor: bodeguero?.telefono },
+                { label: 'Dirección', valor: bodeguero?.direccion },
               ].map(item => (
                 <View key={item.label} style={styles.infoRow}>
                   <Text style={styles.infoLabel}>{item.label}</Text>
@@ -322,11 +322,9 @@ export default function PerfilVendedor() {
           {/* Bottom nav */}
           <View style={styles.bottomNav}>
             {[
-              { label: 'Inicio', icon: '🏠', route: '/vendedor/panel_vendedor' },
-              { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
-              { label: 'Ventas', icon: '💰', route: '/vendedor/ver_ventas' },
+              { label: 'Inicio', icon: '🏠', route: '/bodeguero/panel_bodeguero' },
+              { label: 'Inventario', icon: '📦', route: '/bodeguero/inventario' },
               { label: 'Perfil', icon: '👤', active: true },
-              { label: 'Devol.', icon: '↩️', route: '/vendedor/devoluciones' },
             ].map(item => (
               <TouchableOpacity
                 key={item.label}

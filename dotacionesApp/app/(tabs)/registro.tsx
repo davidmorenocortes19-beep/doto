@@ -17,20 +17,32 @@ const validarPassword = (pass: string): string | null => {
   return null;
 };
 
+const validarCorreo = (correo: string): string | null => {
+  if (!correo.includes('@') || !correo.includes('.')) return '⚠ Ingresa un correo válido';
+  return null;
+};
+
+const validarDireccion = (direccion: string): string | null => {
+  if (direccion.trim().length < 5) return '⚠ Mínimo 5 caracteres';
+  return null;
+};
+
 export default function RegistroScreen() {
-  const [nombre,      setNombre]      = useState('');
+  const [nombre, setNombre] = useState('');
   const [nombreError, setNombreError] = useState('');
-  const [documento,   setDocumento]   = useState('');
-  const [docError,    setDocError]    = useState('');
-  const [correo,      setCorreo]      = useState('');
-  const [telefono,    setTelefono]    = useState('');
-  const [telError,    setTelError]    = useState('');
-  const [direccion,   setDireccion]   = useState('');
-  const [password,    setPassword]    = useState('');
-  const [passError,   setPassError]   = useState('');
-  const [rol,         setRol]         = useState('Cliente');
-  const [mensaje,     setMensaje]     = useState('');
-  const [cargando,    setCargando]    = useState(false);
+  const [documento, setDocumento] = useState('');
+  const [docError, setDocError] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [correoError, setCorreoError] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [telError, setTelError] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [dirError, setDirError] = useState('');
+  const [password, setPassword] = useState('');
+  const [passError, setPassError] = useState('');
+  const [rol, setRol] = useState('Cliente');
+  const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(false);
 
   const roles = ['Administrador', 'Cliente', 'Vendedor', 'Bodeguero'];
 
@@ -58,6 +70,15 @@ export default function RegistroScreen() {
     }
   };
 
+  const handleCorreo = (text: string) => {
+    setCorreo(text);
+    if (text.length > 0) {
+      setCorreoError(validarCorreo(text) ?? '');
+    } else {
+      setCorreoError('');
+    }
+  };
+
   const handleTelefono = (text: string) => {
     const limpio = text.replace(/[^0-9]/g, '');
     setTelefono(limpio);
@@ -67,6 +88,15 @@ export default function RegistroScreen() {
       setTelError('⚠ Mínimo 7 dígitos');
     } else {
       setTelError('');
+    }
+  };
+
+  const handleDireccion = (text: string) => {
+    setDireccion(text);
+    if (text.length > 0) {
+      setDirError(validarDireccion(text) ?? '');
+    } else {
+      setDirError('');
     }
   };
 
@@ -80,11 +110,7 @@ export default function RegistroScreen() {
       setMensaje('⚠ Todos los campos son obligatorios');
       return;
     }
-    if (!correo.includes('@') || !correo.includes('.')) {
-      setMensaje('⚠ Ingresa un correo válido');
-      return;
-    }
-    if (nombreError || docError || telError) {
+    if (nombreError || docError || correoError || telError || dirError) {
       setMensaje('⚠ Corrige los errores antes de continuar');
       return;
     }
@@ -160,9 +186,14 @@ export default function RegistroScreen() {
           {/* CORREO */}
           <TextInput
             placeholder="Correo electrónico" placeholderTextColor="#94A3B8"
-            style={styles.input} keyboardType="email-address"
-            autoCapitalize="none" onChangeText={setCorreo} value={correo}
+            style={[styles.input, correoError ? styles.inputError : null]}
+            keyboardType="email-address"
+            autoCapitalize="none" onChangeText={handleCorreo} value={correo}
           />
+          {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
+          {correo !== '' && correoError === '' && (
+            <Text style={styles.fieldOk}>✅ Correo válido</Text>
+          )}
 
           {/* TELÉFONO */}
           <TextInput
@@ -179,8 +210,13 @@ export default function RegistroScreen() {
           {/* DIRECCIÓN */}
           <TextInput
             placeholder="Dirección" placeholderTextColor="#94A3B8"
-            style={styles.input} onChangeText={setDireccion} value={direccion}
+            style={[styles.input, dirError ? styles.inputError : null]}
+            onChangeText={handleDireccion} value={direccion}
           />
+          {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
+          {direccion.trim().length >= 5 && dirError === '' && (
+            <Text style={styles.fieldOk}>✅ Dirección válida</Text>
+          )}
 
           {/* CONTRASEÑA */}
           <TextInput
@@ -235,7 +271,7 @@ const styles = StyleSheet.create({
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.10)',
   },
-  scroll:    { flexGrow: 1 },
+  scroll: { flexGrow: 1 },
   container: {
     flex: 1, justifyContent: 'center', padding: 30,
     backgroundColor: 'rgba(255, 255, 255, 0)',
@@ -243,7 +279,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: '#1E293B',
     marginTop: 50, marginBottom: 30,
   },
-  title:    { fontSize: 24, textAlign: 'center', marginBottom: 4, fontWeight: '700', color: '#0F172A',},
+  title: { fontSize: 24, textAlign: 'center', marginBottom: 4, fontWeight: '700', color: '#0F172A', },
   subtitle: { fontSize: 14, textAlign: 'center', color: '#64748B', marginBottom: 24 },
 
   input: {
@@ -252,8 +288,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: '#1E293B', fontSize: 15, color: '#0F172A',
   },
   inputError: { borderColor: '#DC2626', marginBottom: 0 },
-  fieldHint:  { color: '#DC2626', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk:    { color: '#16A34A', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldOk: { color: '#16A34A', fontSize: 12, marginBottom: 8, marginLeft: 4 },
 
   label: { marginTop: 8, marginBottom: 8, fontWeight: '600', color: '#0F172A', fontSize: 13 },
   rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
@@ -262,13 +298,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderWidth: 1.5, borderColor: '#1E293B', alignItems: 'center',
   },
-  rolActivo:      { backgroundColor: '#1E293B' },
-  rolTexto:       { fontWeight: '600', color: '#0F172A', fontSize: 13 },
+  rolActivo: { backgroundColor: '#1E293B' },
+  rolTexto: { fontWeight: '600', color: '#0F172A', fontSize: 13 },
   rolTextoActivo: { fontWeight: '600', color: '#F8FAFC', fontSize: 13 },
 
-  button:     { backgroundColor: '#1E293B', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 6 },
+  button: { backgroundColor: '#1E293B', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 6 },
   buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 15 },
 
-  mensaje:   { marginTop: 14, textAlign: 'center', color: '#0F172A', fontSize: 13 },
+  mensaje: { marginTop: 14, textAlign: 'center', color: '#0F172A', fontSize: 13 },
   linkLogin: { marginTop: 20, textAlign: 'center', color: '#102646', textDecorationLine: 'underline', fontSize: 14, fontWeight: '600' },
 });

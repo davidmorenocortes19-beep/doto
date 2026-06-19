@@ -19,15 +19,29 @@ type Vendedor = {
     direccion: string;
 };
 
+const validarPassword = (pass: string): string | null => {
+    if (pass.length < 8) return '⚠ Mínimo 8 caracteres';
+    if (!/[A-Z]/.test(pass)) return '⚠ Debe tener al menos una mayúscula';
+    if (!/[a-z]/.test(pass)) return '⚠ Debe tener al menos una minúscula';
+    if (!/[0-9]/.test(pass)) return '⚠ Debe tener al menos un número';
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) return '⚠ Debe tener al menos un carácter especial (!@#$...)';
+    return null;
+};
+
 export default function PerfilVendedor() {
-    const [vendedor,       setVendedor]       = useState<Vendedor | null>(null);
-    const [nuevoNombre,    setNuevoNombre]    = useState('');
-    const [nuevoCorreo,    setNuevoCorreo]    = useState('');
-    const [nuevoTelefono,  setNuevoTelefono]  = useState('');
+    const [vendedor, setVendedor] = useState<Vendedor | null>(null);
+    const [nuevoNombre, setNuevoNombre] = useState('');
+    const [nombreError, setNombreError] = useState('');
+    const [nuevoCorreo, setNuevoCorreo] = useState('');
+    const [correoError, setCorreoError] = useState('');
+    const [nuevoTelefono, setNuevoTelefono] = useState('');
+    const [telError, setTelError] = useState('');
     const [nuevaDireccion, setNuevaDireccion] = useState('');
-    const [nuevoPassword,  setNuevoPassword]  = useState('');
-    const [cargando,       setCargando]       = useState(false);
-    const [mensaje,        setMensaje]        = useState('');
+    const [dirError, setDirError] = useState('');
+    const [nuevoPassword, setNuevoPassword] = useState('');
+    const [passError, setPassError] = useState('');
+    const [cargando, setCargando] = useState(false);
+    const [mensaje, setMensaje] = useState('');
 
     useEffect(() => { cargar(); }, []);
 
@@ -45,18 +59,76 @@ export default function PerfilVendedor() {
         }
     };
 
+    // ── VALIDACIONES (mismas reglas que registro.tsx) ────────────────
+
+    const handleNombre = (text: string) => {
+        const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+        setNuevoNombre(limpio);
+        if (text !== limpio) {
+            setNombreError('⚠ Solo se permiten letras y espacios');
+        } else if (limpio.trim().length > 0 && limpio.trim().length < 3) {
+            setNombreError('⚠ Mínimo 3 caracteres');
+        } else {
+            setNombreError('');
+        }
+    };
+
+    const handleCorreo = (text: string) => {
+        setNuevoCorreo(text);
+        if (text.length > 0 && (!text.includes('@') || !text.includes('.'))) {
+            setCorreoError('⚠ Ingresa un correo válido');
+        } else {
+            setCorreoError('');
+        }
+    };
+
+    const handleTelefono = (text: string) => {
+        const limpio = text.replace(/[^0-9]/g, '');
+        setNuevoTelefono(limpio);
+        if (text !== limpio) {
+            setTelError('⚠ Solo se permiten números');
+        } else if (limpio.length > 0 && limpio.length < 7) {
+            setTelError('⚠ Mínimo 7 dígitos');
+        } else {
+            setTelError('');
+        }
+    };
+
+    const handleDireccion = (text: string) => {
+        setNuevaDireccion(text);
+        if (text.length > 0 && text.trim().length < 5) {
+            setDirError('⚠ Mínimo 5 caracteres');
+        } else {
+            setDirError('');
+        }
+    };
+
+    const handlePassword = (text: string) => {
+        setNuevoPassword(text);
+        if (text.length > 0) {
+            setPassError(validarPassword(text) ?? '');
+        } else {
+            setPassError('');
+        }
+    };
+
     const guardarCambios = async () => {
         if (!nuevoNombre && !nuevoCorreo && !nuevoTelefono && !nuevaDireccion && !nuevoPassword) {
             setMensaje('⚠ Ingresa al menos un campo para actualizar');
             return;
         }
 
+        if (nombreError || correoError || telError || dirError || passError) {
+            setMensaje('⚠ Corrige los errores antes de continuar');
+            return;
+        }
+
         const payload: Partial<Vendedor> & { password?: string } = { id: Number(sesion.id) };
-        if (nuevoNombre)    payload.nombre    = nuevoNombre;
-        if (nuevoCorreo)    payload.correo    = nuevoCorreo;
-        if (nuevoTelefono)  payload.telefono  = nuevoTelefono;
+        if (nuevoNombre) payload.nombre = nuevoNombre;
+        if (nuevoCorreo) payload.correo = nuevoCorreo;
+        if (nuevoTelefono) payload.telefono = nuevoTelefono;
         if (nuevaDireccion) payload.direccion = nuevaDireccion;
-        if (nuevoPassword)  payload.password  = nuevoPassword;
+        if (nuevoPassword) payload.password = nuevoPassword;
 
         try {
             setCargando(true);
@@ -69,6 +141,8 @@ export default function PerfilVendedor() {
                 setNuevoNombre(''); setNuevoCorreo('');
                 setNuevoTelefono(''); setNuevaDireccion('');
                 setNuevoPassword('');
+                setNombreError(''); setCorreoError('');
+                setTelError(''); setDirError(''); setPassError('');
             } else {
                 setMensaje('❌ ' + res.data.mensaje);
             }
@@ -78,6 +152,8 @@ export default function PerfilVendedor() {
             setCargando(false);
         }
     };
+
+    const hayErrores = !!(nombreError || correoError || telError || dirError || passError);
 
     return (
         <ImageBackground
@@ -131,10 +207,10 @@ export default function PerfilVendedor() {
                         <View style={styles.seccion}>
                             <Text style={styles.seccionTitulo}>Información Personal</Text>
                             {[
-                                { label: 'Nombre',    valor: vendedor?.nombre },
+                                { label: 'Nombre', valor: vendedor?.nombre },
                                 { label: 'Documento', valor: vendedor?.documento },
-                                { label: 'Correo',    valor: vendedor?.correo },
-                                { label: 'Teléfono',  valor: vendedor?.telefono },
+                                { label: 'Correo', valor: vendedor?.correo },
+                                { label: 'Teléfono', valor: vendedor?.telefono },
                                 { label: 'Dirección', valor: vendedor?.direccion },
                             ].map(item => (
                                 <View key={item.label} style={styles.infoRow}>
@@ -149,39 +225,76 @@ export default function PerfilVendedor() {
                             <Text style={styles.seccionTitulo}>Actualizar Información</Text>
                             <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
-                            <TextInput style={styles.input} placeholder="Nuevo nombre"
-                                placeholderTextColor="#94A3B8" value={nuevoNombre}
-                                onChangeText={setNuevoNombre} autoCorrect={false} />
+                            {/* NOMBRE */}
+                            <TextInput
+                                style={[styles.input, nombreError ? styles.inputError : null]}
+                                placeholder="Nuevo nombre" placeholderTextColor="#94A3B8"
+                                value={nuevoNombre} onChangeText={handleNombre} autoCorrect={false}
+                            />
+                            {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+                            {nuevoNombre.trim().length >= 3 && nombreError === '' && (
+                                <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+                            )}
 
-                            <TextInput style={styles.input} placeholder="Nuevo correo"
-                                placeholderTextColor="#94A3B8" value={nuevoCorreo}
-                                onChangeText={setNuevoCorreo} keyboardType="email-address"
-                                autoCapitalize="none" />
+                            {/* CORREO */}
+                            <TextInput
+                                style={[styles.input, correoError ? styles.inputError : null]}
+                                placeholder="Nuevo correo" placeholderTextColor="#94A3B8"
+                                value={nuevoCorreo} onChangeText={handleCorreo}
+                                keyboardType="email-address" autoCapitalize="none"
+                            />
+                            {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
+                            {nuevoCorreo !== '' && correoError === '' && (
+                                <Text style={styles.fieldOk}>✅ Correo válido</Text>
+                            )}
 
-                            <TextInput style={styles.input} placeholder="Nuevo teléfono"
-                                placeholderTextColor="#94A3B8" value={nuevoTelefono}
-                                onChangeText={setNuevoTelefono} keyboardType="phone-pad" />
+                            {/* TELÉFONO */}
+                            <TextInput
+                                style={[styles.input, telError ? styles.inputError : null]}
+                                placeholder="Nuevo teléfono" placeholderTextColor="#94A3B8"
+                                value={nuevoTelefono} onChangeText={handleTelefono}
+                                keyboardType="phone-pad" maxLength={10}
+                            />
+                            {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
+                            {nuevoTelefono.length >= 7 && telError === '' && (
+                                <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
+                            )}
 
-                            <TextInput style={styles.input} placeholder="Nueva dirección"
-                                placeholderTextColor="#94A3B8" value={nuevaDireccion}
-                                onChangeText={setNuevaDireccion} />
+                            {/* DIRECCIÓN */}
+                            <TextInput
+                                style={[styles.input, dirError ? styles.inputError : null]}
+                                placeholder="Nueva dirección" placeholderTextColor="#94A3B8"
+                                value={nuevaDireccion} onChangeText={handleDireccion}
+                            />
+                            {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
+                            {nuevaDireccion.trim().length >= 5 && dirError === '' && (
+                                <Text style={styles.fieldOk}>✅ Dirección válida</Text>
+                            )}
 
-                            <TextInput style={styles.input} placeholder="Nueva contraseña"
-                                placeholderTextColor="#94A3B8" value={nuevoPassword}
-                                onChangeText={setNuevoPassword} secureTextEntry />
+                            {/* CONTRASEÑA */}
+                            <TextInput
+                                style={[styles.input, passError ? styles.inputError : null]}
+                                placeholder="Nueva contraseña" placeholderTextColor="#94A3B8"
+                                value={nuevoPassword} onChangeText={handlePassword}
+                                secureTextEntry
+                            />
+                            {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
+                            {nuevoPassword !== '' && passError === '' && (
+                                <Text style={styles.fieldOk}>✅ Contraseña segura</Text>
+                            )}
 
                             {mensaje !== '' && (
                                 <Text style={[styles.mensaje,
-                                    mensaje.startsWith('✅') ? styles.mensajeOk : styles.mensajeError
+                                mensaje.startsWith('✅') ? styles.mensajeOk : styles.mensajeError
                                 ]}>
                                     {mensaje}
                                 </Text>
                             )}
 
                             <TouchableOpacity
-                                style={[styles.btnGuardar, cargando && { opacity: 0.7 }]}
+                                style={[styles.btnGuardar, (cargando || hayErrores) && { opacity: 0.7 }]}
                                 onPress={guardarCambios}
-                                disabled={cargando}
+                                disabled={cargando || hayErrores}
                             >
                                 <Text style={styles.btnGuardarText}>💾 Guardar Cambios</Text>
                             </TouchableOpacity>
@@ -192,12 +305,12 @@ export default function PerfilVendedor() {
                     {/* Bottom nav */}
                     <View style={styles.bottomNav}>
                         {[
-                            { icon: '🏠', label: 'Inicio',     route: '/cliente/panel_cliente' },
-                            { icon: '👤', label: 'Perfil',     active: true },
-                            { icon: '👕', label: 'Productos',  route: '/cliente/productos_cliente' },
-                            { icon: '📋', label: 'Pedidos',    route: '/cliente/pedidos' },
-                            { icon: '🏢', label: 'Nosotros',   route: '/cliente/nosotros' },
-                            { icon: '📞', label: 'Contactanos',route: '/cliente/contactanos_cliente' },
+                            { icon: '🏠', label: 'Inicio', route: '/cliente/panel_cliente' },
+                            { icon: '👤', label: 'Perfil', active: true },
+                            { icon: '👕', label: 'Productos', route: '/cliente/productos_cliente' },
+                            { icon: '📋', label: 'Pedidos', route: '/cliente/pedidos_cliente' },
+                            { icon: '🏢', label: 'Nosotros', route: '/cliente/nosotros' },
+                            { icon: '📞', label: 'Contactanos', route: '/cliente/contactanos_cliente' },
                         ].map(item => (
                             <TouchableOpacity
                                 key={item.label}
@@ -239,13 +352,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12, paddingVertical: 4,
     },
     btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
-    logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    logoCircle:  {
+    logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    logoCircle: {
         width: 30, height: 30, borderRadius: 15,
         backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
     },
     logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
-    headerTitle:  { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+    headerTitle: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
 
     scroll: { padding: 16, paddingBottom: 24 },
 
@@ -272,7 +385,7 @@ const styles = StyleSheet.create({
         borderRadius: 12, padding: 14, marginBottom: 14,
     },
     seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 4 },
-    seccionSub:    { color: '#64748B', fontSize: 11, marginBottom: 12 },
+    seccionSub: { color: '#64748B', fontSize: 11, marginBottom: 12 },
 
     // Filas de info
     infoRow: {
@@ -287,12 +400,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
         borderWidth: 1.5, borderColor: '#1E293B',
         color: '#0F172A', borderRadius: 8,
-        padding: 11, fontSize: 13, marginBottom: 10,
+        padding: 11, fontSize: 13, marginBottom: 4,
     },
+    inputError: { borderColor: '#DC2626' },
+    fieldHint: { color: '#DC2626', fontSize: 11, marginBottom: 8, marginLeft: 4 },
+    fieldOk: { color: '#16A34A', fontSize: 11, marginBottom: 8, marginLeft: 4 },
 
     // Mensajes
-    mensaje:      { fontSize: 12, marginBottom: 10, textAlign: 'center', fontWeight: '600' },
-    mensajeOk:    { color: '#16A34A' },
+    mensaje: { fontSize: 12, marginBottom: 10, textAlign: 'center', fontWeight: '600' },
+    mensajeOk: { color: '#16A34A' },
     mensajeError: { color: '#DC2626' },
 
     // Botón guardar
@@ -308,8 +424,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
         borderTopWidth: 1.5, borderTopColor: '#1E293B',
     },
-    bnav:       { alignItems: 'center', gap: 2 },
-    bnavIcon:   { fontSize: 18 },
-    bnavLabel:  { fontSize: 9, color: '#64748B' },
+    bnav: { alignItems: 'center', gap: 2 },
+    bnavIcon: { fontSize: 18 },
+    bnavLabel: { fontSize: 9, color: '#64748B' },
     bnavActive: { color: '#0F172A', fontWeight: '700' },
 });
