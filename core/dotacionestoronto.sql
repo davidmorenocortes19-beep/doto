@@ -75,6 +75,7 @@ id_pedido INT AUTO_INCREMENT PRIMARY KEY,
 id_usuario_fk INT,
 fecha_pedido DATETIME,
 estado VARCHAR(50),
+oculto TINYINT(1) DEFAULT 0,
 FOREIGN KEY (id_usuario_fk) REFERENCES usuario(id_usuario)
 );
 

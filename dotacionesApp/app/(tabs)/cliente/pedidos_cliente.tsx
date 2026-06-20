@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { router } from 'expo-router';
+import React, { useState, useCallback } from 'react';
+import { router, useFocusEffect } from 'expo-router';
 import {
     View, Text, TouchableOpacity, FlatList,
     StyleSheet, ImageBackground, SafeAreaView, RefreshControl,
@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_PEDIDOS = 'http://192.168.137.9/doto/api/pedidos.php';
+const API_PEDIDOS = 'http://192.168.40.8/doto/api/pedidos.php';
 
 type ProductoPedido = {
     id_producto_fk: number;
@@ -17,20 +17,29 @@ type ProductoPedido = {
 };
 
 type Pedido = {
-    id_pedido: number;
-    fecha_pedido: string;
-    estado: string;
-    productos: ProductoPedido[];
-    total: number;
+    id_pedido:     number;
+    numero_pedido: number;
+    fecha_pedido:  string;
+    estado:        string;
+    productos:     ProductoPedido[];
+    total:         number;
 };
 
 export default function PedidosCliente() {
-    const [pedidos, setPedidos] = useState<Pedido[]>([]);
+    const [pedidos,  setPedidos]  = useState<Pedido[]>([]);
     const [cargando, setCargando] = useState(false);
 
-    useEffect(() => { cargar(); }, []);
+    // useFocusEffect se ejecuta cada vez que la pantalla recibe foco
+    // así si cambias de usuario y vuelves a entrar, recarga los datos correctos
+    useFocusEffect(
+        useCallback(() => {
+            setPedidos([]); // limpia pedidos del usuario anterior
+            cargar();
+        }, [])
+    );
 
     const cargar = async () => {
+        if (!sesion.id) return;
         setCargando(true);
         try {
             const res = await axios.get(API_PEDIDOS, {
@@ -54,11 +63,11 @@ export default function PedidosCliente() {
 
     const colorEstado = (estado: string) => {
         switch (estado.toLowerCase()) {
-            case 'pendiente': return { bg: '#FEF9C3', border: '#CA8A04', text: '#854D0E' };
+            case 'pendiente':  return { bg: '#FEF9C3', border: '#CA8A04', text: '#854D0E' };
             case 'completado':
-            case 'entregado': return { bg: '#DCFCE7', border: '#16A34A', text: '#166534' };
-            case 'cancelado': return { bg: '#FEE2E2', border: '#DC2626', text: '#991B1B' };
-            default: return { bg: '#E2E8F0', border: '#64748B', text: '#334155' };
+            case 'entregado':  return { bg: '#DCFCE7', border: '#16A34A', text: '#166534' };
+            case 'cancelado':  return { bg: '#FEE2E2', border: '#DC2626', text: '#991B1B' };
+            default:           return { bg: '#E2E8F0', border: '#64748B', text: '#334155' };
         }
     };
 
@@ -67,7 +76,7 @@ export default function PedidosCliente() {
         return (
             <View style={styles.card}>
                 <View style={styles.cardHeader}>
-                    <Text style={styles.cardId}>Pedido #{item.id_pedido}</Text>
+                    <Text style={styles.cardId}>Pedido #{item.numero_pedido}</Text>
                     <View style={[styles.estadoBadge, { backgroundColor: estadoColor.bg, borderColor: estadoColor.border }]}>
                         <Text style={[styles.estadoText, { color: estadoColor.text }]}>{item.estado}</Text>
                     </View>
@@ -133,17 +142,19 @@ export default function PedidosCliente() {
                         <RefreshControl refreshing={cargando} onRefresh={cargar} />
                     }
                     ListEmptyComponent={
-                        <Text style={styles.empty}>Aún no tienes pedidos realizados</Text>
+                        <Text style={styles.empty}>
+                            {cargando ? '' : 'Aún no tienes pedidos realizados'}
+                        </Text>
                     }
                 />
 
                 {/* Bottom nav */}
                 <View style={styles.bottomNav}>
                     {[
-                        { label: 'Inicio', icon: '🏠', route: '/cliente/panel_cliente' },
+                        { label: 'Inicio',    icon: '🏠', route: '/cliente/panel_cliente' },
                         { label: 'Productos', icon: '📦', route: '/cliente/productos_cliente' },
-                        { label: 'Pedidos', icon: '📋', active: true },
-                        { label: 'Perfil', icon: '👤', route: '/cliente/perfil_cliente' },
+                        { label: 'Pedidos',   icon: '📋', active: true },
+                        { label: 'Perfil',    icon: '👤', route: '/cliente/perfil_cliente' },
                     ].map(item => (
                         <TouchableOpacity
                             key={item.label}
@@ -172,7 +183,6 @@ const styles = StyleSheet.create({
     },
     safeArea: { flex: 1 },
 
-    // Header
     header: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         paddingHorizontal: 14, paddingVertical: 12,
@@ -184,46 +194,35 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12, paddingVertical: 4,
     },
     btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
-    logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    logoCircle: {
+    logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    logoCircle:  {
         width: 30, height: 30, borderRadius: 15,
         backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
     },
     logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
-    brand: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+    brand:        { color: '#0F172A', fontWeight: '700', fontSize: 15 },
 
-    // Lista
     listContent: { padding: 14, paddingBottom: 24 },
-    empty: { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
+    empty:       { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
-    // Card de pedido
     card: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
         borderWidth: 1.5, borderColor: '#1E293B',
-        borderRadius: 12, padding: 14,
-        marginBottom: 12,
+        borderRadius: 12, padding: 14, marginBottom: 12,
     },
     cardHeader: {
         flexDirection: 'row', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: 4,
     },
-    cardId: { color: '#0F172A', fontWeight: '700', fontSize: 14 },
+    cardId:    { color: '#0F172A', fontWeight: '700', fontSize: 14 },
     cardFecha: { color: '#64748B', fontSize: 11, marginBottom: 10 },
 
-    estadoBadge: {
-        borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3,
-        borderWidth: 1,
-    },
-    estadoText: { fontSize: 10, fontWeight: 'bold' },
+    estadoBadge: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
+    estadoText:  { fontSize: 10, fontWeight: 'bold' },
 
-    divider: {
-        height: 1, backgroundColor: '#E2E8F0', marginBottom: 8,
-    },
+    divider: { height: 1, backgroundColor: '#E2E8F0', marginBottom: 8 },
 
-    productoRow: {
-        flexDirection: 'row', justifyContent: 'space-between',
-        marginBottom: 4,
-    },
+    productoRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
     productoNombre: { color: '#334155', fontSize: 12, flex: 1, marginRight: 8 },
     productoPrecio: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
 
@@ -235,14 +234,13 @@ const styles = StyleSheet.create({
     totalLabel: { color: '#0F172A', fontWeight: 'bold', fontSize: 13 },
     totalValor: { color: '#0F172A', fontWeight: 'bold', fontSize: 15 },
 
-    // Bottom nav
     bottomNav: {
         flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10,
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
         borderTopWidth: 1.5, borderTopColor: '#1E293B',
     },
-    bnav: { alignItems: 'center', gap: 2 },
-    bnavIcon: { fontSize: 18 },
-    bnavLabel: { fontSize: 9, color: '#64748B' },
+    bnav:       { alignItems: 'center', gap: 2 },
+    bnavIcon:   { fontSize: 18 },
+    bnavLabel:  { fontSize: 9, color: '#64748B' },
     bnavActive: { color: '#0F172A', fontWeight: '700' },
 });
