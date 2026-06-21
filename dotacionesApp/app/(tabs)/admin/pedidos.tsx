@@ -15,17 +15,17 @@ type ProductoPedido = {
 };
 
 type Pedido = {
-  id_pedido:        number;
-  numero_pedido:    number;
-  fecha_pedido:     string;
-  estado:           string;
-  oculto:           number;
-  cliente_nombre:   string;
-  cliente_correo:   string;
-  cliente_telefono: string;
+  id_pedido:         number;
+  numero_pedido:     number;
+  fecha_pedido:      string;
+  estado:            string;
+  oculto:            number;
+  cliente_nombre:    string;
+  cliente_correo:    string;
+  cliente_telefono:  string;
   cliente_direccion: string;
-  productos:        ProductoPedido[];
-  total:            number;
+  productos:         ProductoPedido[];
+  total:             number;
 };
 
 type FiltroEstado = 'Todos' | 'Pendiente' | 'Enviado' | 'Entregado';
@@ -42,13 +42,13 @@ const colorEstado = (estado: string) => {
 };
 
 export default function PedidosAdmin() {
-  const [pedidos,       setPedidos]       = useState<Pedido[]>([]);
-  const [cargando,      setCargando]      = useState(false);
-  const [verOcultos,    setVerOcultos]    = useState(false);
-  const [filtroEstado,  setFiltroEstado]  = useState<FiltroEstado>('Todos');
-  const [modalVisible,  setModalVisible]  = useState(false);
-  const [pedidoActivo,  setPedidoActivo]  = useState<Pedido | null>(null);
-  const [actualizando,  setActualizando]  = useState(false);
+  const [pedidos,      setPedidos]      = useState<Pedido[]>([]);
+  const [cargando,     setCargando]     = useState(false);
+  const [verOcultos,   setVerOcultos]   = useState(false);
+  const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todos');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [pedidoActivo, setPedidoActivo] = useState<Pedido | null>(null);
+  const [actualizando, setActualizando] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,9 +77,7 @@ export default function PedidosAdmin() {
     try {
       await axios.put(API_PEDIDOS, { id_pedido, estado: nuevoEstado });
       await cargar();
-      if (pedidoActivo?.id_pedido === id_pedido) {
-        setPedidoActivo(prev => prev ? { ...prev, estado: nuevoEstado } : null);
-      }
+      setPedidoActivo(prev => prev ? { ...prev, estado: nuevoEstado } : null);
     } catch {
       Alert.alert('Error', 'No se pudo cambiar el estado');
     } finally {
@@ -87,31 +85,23 @@ export default function PedidosAdmin() {
     }
   };
 
-  const toggleOculto = async (pedido: Pedido) => {
-    const accion = pedido.oculto ? 'restaurar' : 'ocultar';
-    Alert.alert(
-      `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} pedido?`,
-      `¿Deseas ${accion} el Pedido #${pedido.numero_pedido} de ${pedido.cliente_nombre}?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: accion.charAt(0).toUpperCase() + accion.slice(1),
-          style: pedido.oculto ? 'default' : 'destructive',
-          onPress: async () => {
-            try {
-              await axios.put(API_PEDIDOS, {
-                id_pedido: pedido.id_pedido,
-                oculto:    pedido.oculto === 0,
-              });
-              setModalVisible(false);
-              await cargar();
-            } catch {
-              Alert.alert('Error', 'No se pudo actualizar el pedido');
-            }
-          },
-        },
-      ]
-    );
+  const ejecutarToggleOculto = async (pedido: Pedido) => {
+    try {
+      const nuevoOculto = pedido.oculto === 0 ? 1 : 0;
+      console.log('Enviando:', { id_pedido: pedido.id_pedido, oculto: nuevoOculto });
+      const res = await axios.put(
+        API_PEDIDOS,
+        { id_pedido: pedido.id_pedido, oculto: nuevoOculto },
+        { timeout: 5000 }
+      );
+      console.log('Respuesta:', res.data);
+      setModalVisible(false);
+      await cargar();
+      Alert.alert('✅', nuevoOculto === 1 ? 'Pedido ocultado' : 'Pedido restaurado');
+    } catch (e: any) {
+      console.log('Error toggle:', e?.message, e?.response?.data);
+      Alert.alert('Error', e?.message ?? 'No se pudo actualizar el pedido');
+    }
   };
 
   const formatearFecha = (fecha: string) => {
@@ -133,7 +123,6 @@ export default function PedidosAdmin() {
     const ec = colorEstado(item.estado);
     return (
       <TouchableOpacity style={styles.card} onPress={() => abrirDetalle(item)} activeOpacity={0.85}>
-        {/* Header card */}
         <View style={styles.cardHeader}>
           <View>
             <Text style={styles.cardId}>Pedido #{item.numero_pedido}</Text>
@@ -145,10 +134,8 @@ export default function PedidosAdmin() {
         </View>
 
         <Text style={styles.cardFecha}>{formatearFecha(item.fecha_pedido)}</Text>
-
         <View style={styles.divider} />
 
-        {/* Resumen productos */}
         {item.productos.slice(0, 2).map((p, idx) => (
           <Text key={idx} style={styles.productoResumen} numberOfLines={1}>
             {p.cantidad} x {p.nombre}
@@ -203,7 +190,6 @@ export default function PedidosAdmin() {
               {verOcultos ? '👁 Ver activos' : '🗄 Ver ocultos'}
             </Text>
           </TouchableOpacity>
-
           <Text style={styles.contadorTexto}>
             {pedidosFiltrados.length} pedido{pedidosFiltrados.length !== 1 ? 's' : ''}
           </Text>
@@ -237,9 +223,7 @@ export default function PedidosAdmin() {
             keyExtractor={item => item.id_pedido.toString()}
             renderItem={renderPedido}
             contentContainerStyle={styles.lista}
-            refreshControl={
-              <RefreshControl refreshing={cargando} onRefresh={cargar} />
-            }
+            refreshControl={<RefreshControl refreshing={cargando} onRefresh={cargar} />}
             ListEmptyComponent={
               <Text style={styles.empty}>
                 {verOcultos ? 'No hay pedidos ocultos' : 'No hay pedidos'}
@@ -254,7 +238,6 @@ export default function PedidosAdmin() {
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
-
             {pedidoActivo && (() => {
               const ec = colorEstado(pedidoActivo.estado);
               return (
@@ -274,15 +257,22 @@ export default function PedidosAdmin() {
                       <Text style={styles.seccionTitulo}>👤 Cliente</Text>
                       <Text style={styles.infoTexto}>{pedidoActivo.cliente_nombre}</Text>
                       <Text style={styles.infoTextoSub}>{pedidoActivo.cliente_correo}</Text>
-                      <Text style={styles.infoTextoSub}>{pedidoActivo.cliente_telefono || 'Sin teléfono'}</Text>
-                      <Text style={styles.infoTextoSub}>{pedidoActivo.cliente_direccion || 'Sin dirección registrada'}</Text>
+                      <Text style={styles.infoTextoSub}>
+                        📞 {pedidoActivo.cliente_telefono || 'Sin teléfono'}
+                      </Text>
+                      <Text style={styles.infoTextoSub}>
+                        📍 {pedidoActivo.cliente_direccion || 'Sin dirección registrada'}
+                      </Text>
                     </View>
 
-                    {/* Fecha y estado actual */}
+                    {/* Fecha y estado */}
                     <View style={styles.seccion}>
                       <Text style={styles.seccionTitulo}>📅 Fecha</Text>
                       <Text style={styles.infoTexto}>{formatearFecha(pedidoActivo.fecha_pedido)}</Text>
-                      <View style={[styles.estadoBadge, { backgroundColor: ec.bg, borderColor: ec.border, marginTop: 8, alignSelf: 'flex-start' }]}>
+                      <View style={[
+                        styles.estadoBadge,
+                        { backgroundColor: ec.bg, borderColor: ec.border, marginTop: 8, alignSelf: 'flex-start' }
+                      ]}>
                         <Text style={[styles.estadoText, { color: ec.text }]}>{pedidoActivo.estado}</Text>
                       </View>
                     </View>
@@ -336,12 +326,18 @@ export default function PedidosAdmin() {
                       </View>
                     </View>
 
-                    {/* Ocultar / restaurar */}
+                    {/* Ocultar / restaurar — sin Alert intermedio para evitar problemas */}
                     <TouchableOpacity
-                      style={[styles.btnOcultarPedido, pedidoActivo.oculto === 1 && styles.btnRestaurar]}
-                      onPress={() => toggleOculto(pedidoActivo)}
+                      style={[
+                        styles.btnOcultarPedido,
+                        pedidoActivo.oculto === 1 && styles.btnRestaurar,
+                      ]}
+                      onPress={() => ejecutarToggleOculto(pedidoActivo)}
                     >
-                      <Text style={styles.btnOcultarPedidoTexto}>
+                      <Text style={[
+                        styles.btnOcultarPedidoTexto,
+                        pedidoActivo.oculto === 1 && { color: '#16A34A' },
+                      ]}>
                         {pedidoActivo.oculto === 1 ? '👁 Restaurar pedido' : '🗄 Ocultar pedido'}
                       </Text>
                     </TouchableOpacity>
@@ -350,7 +346,6 @@ export default function PedidosAdmin() {
                 </>
               );
             })()}
-
           </View>
         </View>
       </Modal>
@@ -367,65 +362,58 @@ const styles = StyleSheet.create({
   },
   container: { flex: 1 },
 
-  // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
   },
-  titulo:         { fontSize: 17, fontWeight: '700', color: '#0F172A' },
-  btnVolver:      { backgroundColor: '#1E293B', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
-  btnVolverTexto: { color: '#F8FAFC', fontSize: 12, fontWeight: '600' },
-  btnRecargar:    { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E293B' },
+  titulo:           { fontSize: 17, fontWeight: '700', color: '#0F172A' },
+  btnVolver:        { backgroundColor: '#1E293B', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  btnVolverTexto:   { color: '#F8FAFC', fontSize: 12, fontWeight: '600' },
+  btnRecargar:      { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E293B' },
   btnRecargarTexto: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
 
-  // Acciones bar
   accionesBar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 14, paddingVertical: 10,
     backgroundColor: 'rgba(255,255,255,1.0)',
     borderBottomWidth: 1, borderBottomColor: '#E2E8F0',
   },
-  btnOcultos:          { borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
-  btnOcultosActivo:    { backgroundColor: '#1E293B' },
-  btnOcultosTexto:     { color: '#0F172A', fontSize: 12, fontWeight: '600' },
-  btnOcultosTextoActivo: { color: '#F8FAFC' },
-  contadorTexto:       { color: '#64748B', fontSize: 12 },
+  btnOcultos:           { borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  btnOcultosActivo:     { backgroundColor: '#1E293B' },
+  btnOcultosTexto:      { color: '#0F172A', fontSize: 12, fontWeight: '600' },
+  btnOcultosTextoActivo:{ color: '#F8FAFC' },
+  contadorTexto:        { color: '#64748B', fontSize: 12 },
 
-  // Filtros
-  filtrosScroll: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
-  chip:          { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E293B' },
-  chipActivo:    { backgroundColor: '#1E293B' },
-  chipTexto:     { color: '#0F172A', fontSize: 12, fontWeight: '500' },
-  chipTextoActivo: { color: '#F8FAFC', fontWeight: '600' },
+  filtrosScroll:  { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
+  chip:           { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E293B' },
+  chipActivo:     { backgroundColor: '#1E293B' },
+  chipTexto:      { color: '#0F172A', fontSize: 12, fontWeight: '500' },
+  chipTextoActivo:{ color: '#F8FAFC', fontWeight: '600' },
 
-  // Lista
   lista: { padding: 14, paddingBottom: 30 },
   empty: { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
-  // Card
   card: {
     backgroundColor: 'rgba(255,255,255,1.0)',
     borderWidth: 1.5, borderColor: '#1E293B',
     borderRadius: 12, padding: 14, marginBottom: 12,
   },
-  cardHeader:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 },
-  cardId:       { color: '#0F172A', fontWeight: '700', fontSize: 14 },
-  cardCliente:  { color: '#64748B', fontSize: 12, marginTop: 2 },
-  cardFecha:    { color: '#94A3B8', fontSize: 11, marginBottom: 8 },
-  divider:      { height: 1, backgroundColor: '#E2E8F0', marginBottom: 8 },
+  cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 },
+  cardId:          { color: '#0F172A', fontWeight: '700', fontSize: 14 },
+  cardCliente:     { color: '#64748B', fontSize: 12, marginTop: 2 },
+  cardFecha:       { color: '#94A3B8', fontSize: 11, marginBottom: 8 },
+  divider:         { height: 1, backgroundColor: '#E2E8F0', marginBottom: 8 },
   productoResumen: { color: '#334155', fontSize: 12, marginBottom: 2 },
-  masProductos: { color: '#94A3B8', fontSize: 11, marginBottom: 4 },
-  cardFooter:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
-  totalLabel:   { color: '#64748B', fontSize: 12 },
-  totalValor:   { color: '#0F172A', fontWeight: '700', fontSize: 14 },
-  verDetalle:   { color: '#1E293B', fontSize: 12, fontWeight: '600' },
+  masProductos:    { color: '#94A3B8', fontSize: 11, marginBottom: 4 },
+  cardFooter:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  totalLabel:      { color: '#64748B', fontSize: 12 },
+  totalValor:      { color: '#0F172A', fontWeight: '700', fontSize: 14 },
+  verDetalle:      { color: '#1E293B', fontSize: 12, fontWeight: '600' },
+  estadoBadge:     { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
+  estadoText:      { fontSize: 10, fontWeight: 'bold' },
 
-  estadoBadge:  { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
-  estadoText:   { fontSize: 10, fontWeight: 'bold' },
-
-  // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.5)', justifyContent: 'flex-end' },
   modalBox: {
     backgroundColor: '#F8FAFC',
@@ -433,19 +421,19 @@ const styles = StyleSheet.create({
     padding: 20, maxHeight: '85%',
     borderTopWidth: 1.5, borderTopColor: '#1E293B',
   },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  modalTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 17 },
-  modalCerrar: { color: '#64748B', fontSize: 20, padding: 4 },
+  modalHeader:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  modalTitulo:  { color: '#0F172A', fontWeight: '700', fontSize: 17 },
+  modalCerrar:  { color: '#64748B', fontSize: 20, padding: 4 },
 
-  seccion:      { backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 12 },
-  seccionTitulo:{ color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 8 },
-  infoTexto:    { color: '#0F172A', fontSize: 14, fontWeight: '500' },
-  infoTextoSub: { color: '#64748B', fontSize: 12, marginTop: 2 },
+  seccion:       { backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 12 },
+  seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 8 },
+  infoTexto:     { color: '#0F172A', fontSize: 14, fontWeight: '500' },
+  infoTextoSub:  { color: '#64748B', fontSize: 12, marginTop: 4 },
 
-  productoRow:  { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  productoNombre: { color: '#334155', fontSize: 12, flex: 1, marginRight: 8 },
-  productoPrecio: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
-  totalRow:     { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 6, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
+  productoRow:     { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  productoNombre:  { color: '#334155', fontSize: 12, flex: 1, marginRight: 8 },
+  productoPrecio:  { color: '#0F172A', fontSize: 12, fontWeight: '600' },
+  totalRow:        { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 6, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
   totalLabelModal: { color: '#0F172A', fontWeight: 'bold', fontSize: 13 },
   totalValorModal: { color: '#0F172A', fontWeight: 'bold', fontSize: 15 },
 
