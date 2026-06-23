@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_PEDIDOS = 'http://192.168.40.8/doto/api/pedidos.php';
+const API_PEDIDOS = 'http://192.168.1.19/doto/api/pedidos.php';
 
 type ProductoPedido = {
     id_producto_fk: number;

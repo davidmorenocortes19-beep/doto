@@ -45,75 +45,33 @@ class Pedido
         }
     }
 
-    // ── LISTAR PEDIDOS DE UN USUARIO (con número de pedido por cliente)
+    // ── LISTAR PEDIDOS DE UN USUARIO ──────────────────────────────────
     public static function listarPorUsuario($id_usuario)
     {
         $db = DataBase::conectar();
 
+        // Obtenemos los pedidos ordenados por fecha ASC para numerar, luego reordenamos
         $stmt = $db->prepare("
             SELECT
                 p.id_pedido,
                 p.fecha_pedido,
-                p.estado,
-                ROW_NUMBER() OVER (
-                    PARTITION BY p.id_usuario_fk
-                    ORDER BY p.fecha_pedido ASC, p.id_pedido ASC
-                ) AS numero_pedido
+                p.estado
             FROM pedido p
             WHERE p.id_usuario_fk = ?
               AND p.oculto = 0
-            ORDER BY p.fecha_pedido DESC
+            ORDER BY p.fecha_pedido ASC, p.id_pedido ASC
         ");
         $stmt->execute([$id_usuario]);
         $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $stmtDetalle = $db->prepare("
-            SELECT dp.id_producto_fk, p.nombre, dp.precio_unitario, dp.cantidad
-            FROM detalle_pedido dp
-            INNER JOIN producto p ON p.id_producto = dp.id_producto_fk
-            WHERE dp.id_pedido_fk = ?
-        ");
-
-        foreach ($pedidos as &$pedido) {
-            $stmtDetalle->execute([$pedido['id_pedido']]);
-            $pedido['productos'] = $stmtDetalle->fetchAll(PDO::FETCH_ASSOC);
-            $pedido['total']     = array_reduce(
-                $pedido['productos'],
-                fn($acc, $p) => $acc + ($p['precio_unitario'] * $p['cantidad']),
-                0
-            );
+        // Numerar manualmente
+        foreach ($pedidos as $i => &$pedido) {
+            $pedido['numero_pedido'] = $i + 1;
         }
+        unset($pedido);
 
-        return $pedidos;
-    }
-
-    // ── LISTAR TODOS LOS PEDIDOS (admin) ──────────────────────────────
-    public static function listarTodos(bool $soloOcultos = false)
-    {
-        $db = DataBase::conectar();
-
-        $condicion = $soloOcultos ? 'p.oculto = 1' : 'p.oculto = 0';
-
-        $stmt = $db->query("
-           SELECT
-                p.id_pedido,
-                p.fecha_pedido,
-                p.estado,
-                p.oculto,
-                u.nombre     AS cliente_nombre,
-                u.correo     AS cliente_correo,
-                u.telefono   AS cliente_telefono,
-                u.direccion  AS cliente_direccion,
-                ROW_NUMBER() OVER (
-                    PARTITION BY p.id_usuario_fk
-                    ORDER BY p.fecha_pedido ASC, p.id_pedido ASC
-                ) AS numero_pedido
-            FROM pedido p
-            INNER JOIN usuario u ON u.id_usuario = p.id_usuario_fk
-            WHERE {$condicion}
-            ORDER BY p.fecha_pedido DESC
-        ");
-        $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Reordenar de más reciente a más antiguo
+        $pedidos = array_reverse($pedidos);
 
         $stmtDetalle = $db->prepare("
             SELECT dp.id_producto_fk, pr.nombre, dp.precio_unitario, dp.cantidad
@@ -125,12 +83,78 @@ class Pedido
         foreach ($pedidos as &$pedido) {
             $stmtDetalle->execute([$pedido['id_pedido']]);
             $pedido['productos'] = $stmtDetalle->fetchAll(PDO::FETCH_ASSOC);
-            $pedido['total']     = array_reduce(
-                $pedido['productos'],
-                fn($acc, $p) => $acc + ($p['precio_unitario'] * $p['cantidad']),
-                0
-            );
+            $total = 0;
+            foreach ($pedido['productos'] as $p) {
+                $total += floatval($p['precio_unitario']) * intval($p['cantidad']);
+            }
+            $pedido['total'] = $total;
         }
+        unset($pedido);
+
+        return $pedidos;
+    }
+
+    // ── LISTAR TODOS LOS PEDIDOS (admin) ──────────────────────────────
+    public static function listarTodos($soloOcultos = false)
+    {
+        $db = DataBase::conectar();
+
+        $condicion = $soloOcultos ? 'p.oculto = 1' : 'p.oculto = 0';
+
+        // Traemos todos los pedidos agrupados por usuario para numerar manualmente
+        $stmt = $db->prepare("
+            SELECT
+                p.id_pedido,
+                p.fecha_pedido,
+                p.estado,
+                p.oculto,
+                p.id_usuario_fk,
+                u.nombre    AS cliente_nombre,
+                u.correo    AS cliente_correo,
+                u.telefono  AS cliente_telefono,
+                u.direccion AS cliente_direccion
+            FROM pedido p
+            INNER JOIN usuario u ON u.id_usuario = p.id_usuario_fk
+            WHERE {$condicion}
+            ORDER BY p.id_usuario_fk ASC, p.fecha_pedido ASC, p.id_pedido ASC
+        ");
+        $stmt->execute();
+        $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Numerar por usuario manualmente
+        $contadorPorUsuario = [];
+        foreach ($pedidos as &$pedido) {
+            $uid = $pedido['id_usuario_fk'];
+            if (!isset($contadorPorUsuario[$uid])) {
+                $contadorPorUsuario[$uid] = 0;
+            }
+            $contadorPorUsuario[$uid]++;
+            $pedido['numero_pedido'] = $contadorPorUsuario[$uid];
+        }
+        unset($pedido);
+
+        // Reordenar de más reciente a más antiguo
+        usort($pedidos, function($a, $b) {
+            return strcmp($b['fecha_pedido'], $a['fecha_pedido']);
+        });
+
+        $stmtDetalle = $db->prepare("
+            SELECT dp.id_producto_fk, pr.nombre, dp.precio_unitario, dp.cantidad
+            FROM detalle_pedido dp
+            INNER JOIN producto pr ON pr.id_producto = dp.id_producto_fk
+            WHERE dp.id_pedido_fk = ?
+        ");
+
+        foreach ($pedidos as &$pedido) {
+            $stmtDetalle->execute([$pedido['id_pedido']]);
+            $pedido['productos'] = $stmtDetalle->fetchAll(PDO::FETCH_ASSOC);
+            $total = 0;
+            foreach ($pedido['productos'] as $p) {
+                $total += floatval($p['precio_unitario']) * intval($p['cantidad']);
+            }
+            $pedido['total'] = $total;
+        }
+        unset($pedido);
 
         return $pedidos;
     }

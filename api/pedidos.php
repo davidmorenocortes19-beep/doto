@@ -10,14 +10,16 @@ switch ($metodo) {
         // Admin: listar todos los pedidos
         if (!empty($_GET['admin'])) {
             $soloOcultos = !empty($_GET['ocultos']) && $_GET['ocultos'] === '1';
-            responder(200, Pedido::listarTodos($soloOcultos));
+            $data = Pedido::listarTodos($soloOcultos);
+            responder(200, $data);
         }
 
         // Cliente: listar sus pedidos
         if (empty($_GET['id_usuario'])) {
             responder(400, ['error' => 'El parámetro id_usuario es obligatorio']);
         }
-        responder(200, Pedido::listarPorUsuario((int) $_GET['id_usuario']));
+        $data = Pedido::listarPorUsuario((int) $_GET['id_usuario']);
+        responder(200, $data);
         break;
 
     case 'POST':
@@ -74,7 +76,7 @@ switch ($metodo) {
         responder(405, ['error' => 'Método no permitido']);
 }
 
-function responder(int $codigo, array $datos): never
+function responder(int $codigo, array $datos): void
 {
     http_response_code($codigo);
     echo json_encode($datos, JSON_UNESCAPED_UNICODE);
