@@ -2,7 +2,7 @@
 import { router } from 'expo-router';
 import {
   TextInput, TouchableOpacity, Text, StyleSheet,
-  KeyboardAvoidingView, Platform, ActivityIndicator, ImageBackground,
+  KeyboardAvoidingView, Platform, ActivityIndicator, ImageBackground, View,
 } from 'react-native';
 import axios, { isAxiosError } from 'axios';
 import { sesion } from '../../constants/sesion';
@@ -14,6 +14,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const login = async () => {
     if (!username || !password) {
@@ -34,7 +35,6 @@ export default function LoginScreen() {
 
         const { nombre, rol, correo, id } = res.data.usuario;
 
-        // id guardado como número
         sesion.nombre = nombre;
         sesion.rol = rol;
         sesion.correo = correo;
@@ -81,14 +81,26 @@ export default function LoginScreen() {
           value={username}
           autoCapitalize="none"
         />
-        <TextInput
-          placeholder="Contraseña"
-          placeholderTextColor="#999"
-          secureTextEntry
-          style={styles.input}
-          onChangeText={setPassword}
-          value={password}
-        />
+
+        <View style={styles.inputWrapper}>
+          <TextInput
+            placeholder="Contraseña"
+            placeholderTextColor="#999"
+            secureTextEntry={!mostrarPassword}
+            style={styles.inputPassword}
+            onChangeText={setPassword}
+            value={password}
+          />
+          <TouchableOpacity
+            style={styles.eyeButton}
+            onPress={() => setMostrarPassword(!mostrarPassword)}
+            activeOpacity={0.6}
+          >
+            <Text style={styles.eyeIcon}>
+              {mostrarPassword ? '🙈' : '👁️'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           style={[styles.button, cargando && { opacity: 0.7 }]}
@@ -172,6 +184,31 @@ const styles = StyleSheet.create({
     color: '#0F172A',
     fontSize: 15,
   },
+  inputWrapper: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginBottom: 14,
+    borderWidth: 0.5,
+    borderColor: 'rgba(100, 116, 139, 0.25)',
+  },
+  inputPassword: {
+    flex: 1,
+    padding: 14,
+    color: '#0F172A',
+    fontSize: 15,
+  },
+  eyeButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eyeIcon: {
+    fontSize: 18,
+  },
   button: {
     width: '100%',
     backgroundColor: '#1E293B',
@@ -198,6 +235,4 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#0F172A',
   },
-  
 });
-

@@ -40,6 +40,7 @@ export default function RegistroScreen() {
   const [dirError, setDirError] = useState('');
   const [password, setPassword] = useState('');
   const [passError, setPassError] = useState('');
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const [rol, setRol] = useState('Cliente');
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -152,7 +153,6 @@ export default function RegistroScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      {/* Overlay blanco semitransparente */}
       <View style={styles.overlay} />
 
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -219,12 +219,23 @@ export default function RegistroScreen() {
           )}
 
           {/* CONTRASEÑA */}
-          <TextInput
-            placeholder="Contraseña" placeholderTextColor="#94A3B8"
-            secureTextEntry
-            style={[styles.input, passError ? styles.inputError : null]}
-            onChangeText={handlePassword} value={password}
-          />
+          <View style={[styles.inputWrapper, passError ? styles.inputError : null]}>
+            <TextInput
+              placeholder="Contraseña" placeholderTextColor="#94A3B8"
+              secureTextEntry={!mostrarPassword}
+              style={styles.inputPasswordInner}
+              onChangeText={handlePassword} value={password}
+            />
+            <TouchableOpacity
+              onPress={() => setMostrarPassword(!mostrarPassword)}
+              activeOpacity={0.6}
+              style={styles.eyeBtn}
+            >
+              <Text style={{ fontSize: 18 }}>
+                {mostrarPassword ? '🙈' : '👁️'}
+              </Text>
+            </TouchableOpacity>
+          </View>
           {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
           {password !== '' && passError === '' && (
             <Text style={styles.fieldOk}>✅ Contraseña segura</Text>
@@ -279,7 +290,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: '#1E293B',
     marginTop: 50, marginBottom: 30,
   },
-  title: { fontSize: 24, textAlign: 'center', marginBottom: 4, fontWeight: '700', color: '#0F172A', },
+  title: { fontSize: 24, textAlign: 'center', marginBottom: 4, fontWeight: '700', color: '#0F172A' },
   subtitle: { fontSize: 14, textAlign: 'center', color: '#64748B', marginBottom: 24 },
 
   input: {
@@ -290,6 +301,26 @@ const styles = StyleSheet.create({
   inputError: { borderColor: '#DC2626', marginBottom: 0 },
   fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 8, marginLeft: 4 },
   fieldOk: { color: '#16A34A', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    borderRadius: 10,
+    marginBottom: 4,
+    borderWidth: 1.5,
+    borderColor: '#1E293B',
+  },
+  inputPasswordInner: {
+    flex: 1,
+    padding: 14,
+    fontSize: 15,
+    color: '#0F172A',
+  },
+  eyeBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
 
   label: { marginTop: 8, marginBottom: 8, fontWeight: '600', color: '#0F172A', fontSize: 13 },
   rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },

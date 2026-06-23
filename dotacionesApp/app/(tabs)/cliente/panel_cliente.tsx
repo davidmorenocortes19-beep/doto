@@ -9,7 +9,7 @@ const opciones = [
   { icon: '👕', label: 'Productos', ruta: '/cliente/productos_cliente' },
   { icon: '📋', label: 'Ver Pedidos', ruta: '/cliente/pedidos_cliente' },
   { icon: '🏢', label: 'Nosotros', ruta: '/cliente/nosotros_cliente' },
-  { icon: '📞', label: 'Contáctanos', ruta: '/cliente/contactanos_cliente' },
+  { icon: '\u{21A9}\u{FE0F}', label: 'Devoluciones', ruta: '/cliente/devoluciones_cliente' },
 ];
 
 export default function PanelCliente() {

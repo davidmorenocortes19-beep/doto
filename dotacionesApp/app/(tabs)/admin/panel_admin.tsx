@@ -9,7 +9,7 @@ const opciones = [
   { icon: '\u{1F455}', label: 'Productos',    ruta: '/admin/Productos' },
   { icon: '\u{1F4CB}', label: 'Ver Pedidos',  ruta: '/admin/pedidos' },
   { icon: '\u{1F4E6}', label: 'Inventario',   ruta: '/admin/inventario' },
-  { icon: '\u{21A9}\u{FE0F}', label: 'Devoluciones', ruta: '/admin/devoluciones' },
+  { icon: '\u{21A9}\u{FE0F}', label: 'Devoluciones', ruta: '/admin/devoluciones_admin' },
 ];
 
 export default function PanelAdmin() {
