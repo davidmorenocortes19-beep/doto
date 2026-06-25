@@ -1,174 +1,100 @@
-﻿import React, { useState, useEffect } from 'react';
-import { router } from 'expo-router';
+﻿import React, { useState, useCallback } from 'react';
+import { router, useFocusEffect } from 'expo-router';
 import {
-  View, Text, TextInput, TouchableOpacity, FlatList,
-  StyleSheet, ImageBackground, SafeAreaView, Alert, Modal,
-  KeyboardAvoidingView, Platform,
+  View, Text, TouchableOpacity, FlatList, ScrollView, Modal,
+  StyleSheet, ImageBackground, ActivityIndicator, Alert, RefreshControl,
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.137.9/doto/api/ventas.php';
+const API_VENTAS = 'http://192.168.40.8/doto/api/ventas.php';
 
-type Producto = {
-  nombre: string;
-  precio: number;
-  cantidad: number;
+type ProductoVenta = {
+  id_detalle_venta: number;
+  nombre:           string;
+  cantidad:         number;
+  precio_unitario:  number;
 };
 
 type Venta = {
-  id?: number;
-  cliente: string;
-  productos: Producto[];
-  estado: 'Pendiente' | 'Completada' | 'Cancelada';
-  fecha: string;
+  id_venta:         number;
+  fecha_venta:      string;
+  total_pagado:     number;
+  cliente_nombre:   string;
+  cliente_correo:   string;
+  cliente_telefono: string;
+  productos:        ProductoVenta[];
 };
 
-const hoy = () => new Date().toISOString().split('T')[0];
+type Estadisticas = {
+  total_semana:  number;
+  total_mes:     number;
+  total_general: number;
+  por_mes:       { mes: string; cantidad: number; total: number }[];
+};
 
-export default function VerVentasScreen() {
-  const [ventas,       setVentas]       = useState<Venta[]>([]);
-  const [busqueda,     setBusqueda]     = useState('');
-  const [cargando,     setCargando]     = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [ventaSel,     setVentaSel]     = useState<Venta | null>(null);
+export default function VerVentas() {
+  const [ventas,        setVentas]        = useState<Venta[]>([]);
+  const [estadisticas,  setEstadisticas]  = useState<Estadisticas | null>(null);
+  const [cargando,      setCargando]      = useState(false);
+  const [modalVisible,  setModalVisible]  = useState(false);
+  const [ventaActiva,   setVentaActiva]   = useState<Venta | null>(null);
 
-  useEffect(() => { cargar(); }, []);
+  useFocusEffect(useCallback(() => { cargar(); }, []));
 
   const cargar = async () => {
+    setCargando(true);
     try {
-      setCargando(true);
-      const res = await axios.get(API_URL, { timeout: 5000 });
-      if (res.data.success) setVentas(res.data.data);
+      const [resVentas, resStats] = await Promise.all([
+        axios.get(API_VENTAS, { timeout: 5000 }),
+        axios.get(API_VENTAS, { params: { estadisticas: 1 }, timeout: 5000 }),
+      ]);
+      setVentas(Array.isArray(resVentas.data) ? resVentas.data : []);
+      setEstadisticas(resStats.data);
     } catch {
-      // fallback local
+      Alert.alert('Error', 'No se pudo cargar las ventas');
     } finally {
       setCargando(false);
     }
   };
 
-  const cambiarEstado = (index: number, nuevoEstado: Venta['estado']) => {
-    Alert.alert(
-      'Cambiar estado',
-      `¿Marcar esta venta como "${nuevoEstado}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Confirmar',
-          onPress: async () => {
-            try {
-              const venta = ventas[index];
-              await axios.put(API_URL, { id: venta.id, estado: nuevoEstado }, { timeout: 5000 });
-              cargar();
-            } catch {
-              setVentas(prev =>
-                prev.map((v, i) => i === index ? { ...v, estado: nuevoEstado } : v)
-              );
-            }
-          },
-        },
-      ]
-    );
+  const formatearFecha = (fecha: string) => {
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) return fecha;
+    return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
-  const eliminarVenta = (index: number) => {
-    Alert.alert(
-      'Eliminar venta',
-      '¿Estás seguro de que deseas eliminar esta venta?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const venta = ventas[index];
-              await axios.delete(API_URL, { data: { id: venta.id }, timeout: 5000 });
-              cargar();
-            } catch {
-              setVentas(prev => prev.filter((_, i) => i !== index));
-            }
-          },
-        },
-      ]
-    );
+  const formatearMes = (mes: string) => {
+    const [anio, m] = mes.split('-');
+    const nombres = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    return `${nombres[parseInt(m) - 1]} ${anio}`;
   };
 
-  const verDetalle = (venta: Venta) => {
-    setVentaSel(venta);
-    setModalVisible(true);
-  };
-
-  const calcularTotal = (productos: Producto[]) =>
-    productos.reduce((acc, p) => acc + p.precio * (p.cantidad || 1), 0);
-
-  const colorEstado = (estado: string) => {
-    if (estado === 'Completada') return { bg: '#333333', border: '#333333', text: '#333333' };
-    if (estado === 'Cancelada')  return { bg: '#B7975B22', border: '#333333', text: '#333333' };
-    return { bg: '#333333', border: '#333333', text: '#333333' };
-  };
-
-  const ventasFiltradas = ventas.filter(v =>
-    JSON.stringify(v).toLowerCase().includes(busqueda.toLowerCase())
-  );
-
-  const totalGeneral = ventas
-    .filter(v => v.estado === 'Completada')
-    .reduce((acc, v) => acc + calcularTotal(v.productos), 0);
-
-  const renderItem = ({ item, index }: { item: Venta; index: number }) => {
-    const total  = calcularTotal(item.productos);
-    const colores = colorEstado(item.estado);
-
-    return (
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Venta #{index + 1}</Text>
-          <View style={[styles.estadoBadge, { backgroundColor: colores.bg, borderColor: colores.border }]}>
-            <Text style={[styles.estadoText, { color: colores.text }]}>{item.estado}</Text>
-          </View>
+  const renderVenta = ({ item }: { item: Venta }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => { setVentaActiva(item); setModalVisible(true); }}
+      activeOpacity={0.85}
+    >
+      <View style={styles.cardHeader}>
+        <View>
+          <Text style={styles.cardId}>Venta #{item.id_venta}</Text>
+          <Text style={styles.cardCliente}>{item.cliente_nombre}</Text>
         </View>
-
-        <View style={styles.cardRow}>
-          <Text style={styles.rowLabel}>Cliente</Text>
-          <Text style={styles.rowValue}>{item.cliente}</Text>
-        </View>
-        <View style={styles.cardRow}>
-          <Text style={styles.rowLabel}>Fecha</Text>
-          <Text style={styles.rowValue}>{item.fecha}</Text>
-        </View>
-        <View style={styles.cardRow}>
-          <Text style={styles.rowLabel}>Productos</Text>
-          <Text style={styles.rowValue}>{item.productos.length} ítem(s)</Text>
-        </View>
-        <View style={[styles.cardRow, styles.totalRow]}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValor}>${total}.000</Text>
-        </View>
-
-        <View style={styles.acciones}>
-          <TouchableOpacity style={styles.btnDetalle} onPress={() => verDetalle(item)}>
-            <Text style={styles.btnText}>Ver detalle</Text>
-          </TouchableOpacity>
-
-          {item.estado === 'Pendiente' && (
-            <TouchableOpacity style={styles.btnCompletar} onPress={() => cambiarEstado(index, 'Completada')}>
-              <Text style={styles.btnText}>Completar</Text>
-            </TouchableOpacity>
-          )}
-          {item.estado === 'Pendiente' && (
-            <TouchableOpacity style={styles.btnCancelar} onPress={() => cambiarEstado(index, 'Cancelada')}>
-              <Text style={styles.btnText}>Cancelar</Text>
-            </TouchableOpacity>
-          )}
-          {item.estado !== 'Pendiente' && (
-            <TouchableOpacity style={styles.btnEliminar} onPress={() => eliminarVenta(index)}>
-              <Text style={styles.btnText}>Eliminar</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        <Text style={styles.cardTotal}>${Number(item.total_pagado).toLocaleString('es-CO')}</Text>
       </View>
-    );
-  };
+      <Text style={styles.cardFecha}>{formatearFecha(item.fecha_venta)}</Text>
+      <View style={styles.divider} />
+      {item.productos.slice(0, 2).map((p, idx) => (
+        <Text key={idx} style={styles.productoResumen} numberOfLines={1}>
+          {p.cantidad} x {p.nombre}
+        </Text>
+      ))}
+      {item.productos.length > 2 && (
+        <Text style={styles.masProductos}>+{item.productos.length - 2} más...</Text>
+      )}
+      <Text style={styles.verDetalle}>Ver detalle →</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <ImageBackground
@@ -176,207 +102,180 @@ export default function VerVentasScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      <SafeAreaView style={styles.safeArea}>
+      <View style={styles.overlay} />
+      <View style={styles.container}>
 
-        {/* Header */}
+        {/* HEADER */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')}>
-            <Text style={styles.backBtn}>←</Text>
+          <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')} style={styles.btnVolver}>
+            <Text style={styles.btnVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <View style={styles.logoArea}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoInitials}>DT</Text>
-            </View>
-            <Text style={styles.headerTitle}>Ver Ventas</Text>
-          </View>
-          <View style={{ width: 32 }} />
+          <Text style={styles.titulo}>💰 Ventas</Text>
+          <TouchableOpacity style={styles.btnRecargar} onPress={cargar}>
+            <Text style={styles.btnRecargarTexto}>↻ Recargar</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Resumen */}
-        <View style={styles.resumen}>
-          <View style={styles.resumenCard}>
-            <Text style={styles.resumenNum}>{ventas.length}</Text>
-            <Text style={styles.resumenLabel}>Total ventas</Text>
-          </View>
-          <View style={styles.resumenCard}>
-            <Text style={styles.resumenNum}>{ventas.filter(v => v.estado === 'Completada').length}</Text>
-            <Text style={styles.resumenLabel}>Completadas</Text>
-          </View>
-          <View style={styles.resumenCard}>
-            <Text style={styles.resumenNum}>${totalGeneral}.000</Text>
-            <Text style={styles.resumenLabel}>Ingresos</Text>
-          </View>
-        </View>
+        {cargando && !estadisticas ? (
+          <ActivityIndicator size="large" color="#1E293B" style={{ marginTop: 40 }} />
+        ) : (
+          <FlatList
+            data={ventas}
+            keyExtractor={item => item.id_venta.toString()}
+            renderItem={renderVenta}
+            contentContainerStyle={styles.lista}
+            refreshControl={<RefreshControl refreshing={cargando} onRefresh={cargar} />}
+            ListHeaderComponent={estadisticas ? (
+              <View>
+                {/* Estadísticas */}
+                <View style={styles.statsGrid}>
+                  <View style={styles.statCard}>
+                    <Text style={styles.statLabel}>Esta semana</Text>
+                    <Text style={styles.statValor}>${Number(estadisticas.total_semana).toLocaleString('es-CO')}</Text>
+                  </View>
+                  <View style={styles.statCard}>
+                    <Text style={styles.statLabel}>Este mes</Text>
+                    <Text style={styles.statValor}>${Number(estadisticas.total_mes).toLocaleString('es-CO')}</Text>
+                  </View>
+                  <View style={[styles.statCard, styles.statCardFull]}>
+                    <Text style={styles.statLabel}>Total general</Text>
+                    <Text style={[styles.statValor, styles.statValorGrande]}>${Number(estadisticas.total_general).toLocaleString('es-CO')}</Text>
+                  </View>
+                </View>
 
-        {/* Búsqueda */}
-        <View style={styles.searchWrap}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar por cliente, fecha, estado..."
-            placeholderTextColor="#999"
-            value={busqueda}
-            onChangeText={setBusqueda}
+                {/* Por mes */}
+                {estadisticas.por_mes.length > 0 && (
+                  <View style={styles.seccionMes}>
+                    <Text style={styles.seccionMesTitulo}>Últimos 6 meses</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      {estadisticas.por_mes.map((m, idx) => (
+                        <View key={idx} style={styles.mesBarra}>
+                          <Text style={styles.mesTotal}>${Number(m.total).toLocaleString('es-CO')}</Text>
+                          <View style={[styles.mesBarraFill, {
+                            height: Math.max(20, (Number(m.total) / Math.max(...estadisticas.por_mes.map(x => Number(x.total)))) * 80),
+                          }]} />
+                          <Text style={styles.mesNombre}>{formatearMes(m.mes)}</Text>
+                          <Text style={styles.mesCantidad}>{m.cantidad} venta{Number(m.cantidad) !== 1 ? 's' : ''}</Text>
+                        </View>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
+
+                <Text style={styles.listaTitle}>Historial de ventas</Text>
+              </View>
+            ) : null}
+            ListEmptyComponent={<Text style={styles.empty}>No hay ventas registradas</Text>}
           />
-          <Text style={styles.searchIcon}>🔍</Text>
-        </View>
+        )}
+      </View>
 
-        {/* Lista */}
-        <FlatList
-          data={ventasFiltradas}
-          keyExtractor={(_, i) => i.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <Text style={styles.empty}>Sin ventas registradas</Text>
-          }
-        />
-
-        {/* Bottom nav */}
-        <View style={styles.bottomNav}>
-          {[
-            { label: 'Inicio',  icon: '🏠', route: '/vendedor/panel_vendedor' },
-            { label: 'Pedidos', icon: '📋', route: '/vendedor/pedidos_vendedor' },
-            { label: 'Ventas',  icon: '💰', active: true },
-            { label: 'Perfil',  icon: '👤', route: '/vendedor/perfil_vendedor' },
-            { label: 'Devol.', icon: '↩️', route: '/vendedor/devoluciones' },
-          ].map(item => (
-            <TouchableOpacity
-              key={item.label}
-              style={styles.bnav}
-              onPress={() => item.route && router.push(item.route as any)}
-            >
-              <Text style={styles.bnavIcon}>{item.icon}</Text>
-              <Text style={[styles.bnavLabel, item.active && styles.bnavActive]}>
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-      </SafeAreaView>
-
-      {/* Modal detalle */}
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.modalOverlay}
-        >
+      {/* MODAL DETALLE VENTA */}
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>Detalle de venta</Text>
-
-            {ventaSel && (
+            {ventaActiva && (
               <>
-                <View style={styles.cardRow}>
-                  <Text style={styles.rowLabel}>Cliente</Text>
-                  <Text style={styles.rowValue}>{ventaSel.cliente}</Text>
-                </View>
-                <View style={styles.cardRow}>
-                  <Text style={styles.rowLabel}>Fecha</Text>
-                  <Text style={styles.rowValue}>{ventaSel.fecha}</Text>
-                </View>
-                <View style={styles.cardRow}>
-                  <Text style={styles.rowLabel}>Estado</Text>
-                  <Text style={[styles.rowValue, { color: colorEstado(ventaSel.estado).text }]}>
-                    {ventaSel.estado}
-                  </Text>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitulo}>Venta #{ventaActiva.id_venta}</Text>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <Text style={styles.modalCerrar}>✖</Text>
+                  </TouchableOpacity>
                 </View>
 
-                <Text style={styles.prodTitle}>Productos</Text>
-                {ventaSel.productos.map((p, i) => (
-                  <View key={i} style={styles.productoItem}>
-                    <Text style={styles.productoNombre}>{p.nombre}</Text>
-                    <View style={styles.productoDetalle}>
-                      <Text style={styles.productoInfo}>Cant: {p.cantidad}</Text>
-                      <Text style={styles.productoInfo}>${p.precio}.000</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <View style={styles.seccion}>
+                    <Text style={styles.seccionTitulo}>👤 Cliente</Text>
+                    <Text style={styles.infoTexto}>{ventaActiva.cliente_nombre}</Text>
+                    <Text style={styles.infoTextoSub}>{ventaActiva.cliente_correo}</Text>
+                    <Text style={styles.infoTextoSub}>📞 {ventaActiva.cliente_telefono || 'Sin teléfono'}</Text>
+                  </View>
+
+                  <View style={styles.seccion}>
+                    <Text style={styles.seccionTitulo}>📅 Fecha</Text>
+                    <Text style={styles.infoTexto}>{formatearFecha(ventaActiva.fecha_venta)}</Text>
+                  </View>
+
+                  <View style={styles.seccion}>
+                    <Text style={styles.seccionTitulo}>🛍 Productos</Text>
+                    {ventaActiva.productos.map((p, idx) => (
+                      <View key={idx} style={styles.productoRow}>
+                        <Text style={styles.productoNombre} numberOfLines={2}>{p.cantidad} x {p.nombre}</Text>
+                        <Text style={styles.productoPrecio}>${Number(p.precio_unitario * p.cantidad).toLocaleString('es-CO')}</Text>
+                      </View>
+                    ))}
+                    <View style={styles.totalRow}>
+                      <Text style={styles.totalLabelModal}>Total pagado</Text>
+                      <Text style={styles.totalValorModal}>${Number(ventaActiva.total_pagado).toLocaleString('es-CO')}</Text>
                     </View>
                   </View>
-                ))}
-
-                <View style={[styles.cardRow, styles.totalRow, { marginTop: 12 }]}>
-                  <Text style={styles.totalLabel}>Total</Text>
-                  <Text style={styles.totalValor}>${calcularTotal(ventaSel.productos)}.000</Text>
-                </View>
+                </ScrollView>
               </>
             )}
-
-            <TouchableOpacity style={styles.btnCerrar} onPress={() => setModalVisible(false)}>
-              <Text style={styles.btnCerrarText}>Cerrar</Text>
-            </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
-
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-  },
-  safeArea: { flex: 1 },
+  background: { flex: 1 },
+  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.10)' },
+  container: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: 'rgba(255,255,255,1.0)', borderBottomWidth: 1.5, borderBottomColor: '#1E293B' },
+  titulo: { fontSize: 17, fontWeight: '700', color: '#0F172A' },
+  btnVolver: { backgroundColor: '#1E293B', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  btnVolverTexto: { color: '#F8FAFC', fontSize: 12, fontWeight: '600' },
+  btnRecargar: { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E293B' },
+  btnRecargarTexto: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
+  lista: { padding: 14, paddingBottom: 30 },
+  listaTitle: { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 12, marginTop: 4 },
+  empty: { color: '#0F172A', textAlign: 'center', marginTop: 20, fontSize: 13 },
 
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: 'rgba(100, 116, 139, 0.2)', backgroundColor: 'rgba(255, 255, 255, 1.0)' },
-  backBtn: { color: '#1E293B', fontSize: 22, paddingHorizontal: 4 },
-  logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' },
-  logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
-  headerTitle: { color: '#0F172A', fontWeight: '600', fontSize: 15 },
+  // Stats
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 14 },
+  statCard: { flex: 1, minWidth: '45%', backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 12, padding: 14 },
+  statCardFull: { width: '100%', flex: 0 },
+  statLabel: { color: '#64748B', fontSize: 11, marginBottom: 4 },
+  statValor: { color: '#0F172A', fontWeight: '700', fontSize: 16 },
+  statValorGrande: { fontSize: 22 },
 
-  resumen: { flexDirection: 'row', gap: 8, padding: 12 },
-  resumenCard: { flex: 1, backgroundColor: '#fff', borderWidth: 3.0, borderColor: '#1E293B', borderRadius: 16, padding: 10, alignItems: 'center' },
-  resumenNum: { color: '#0F172A', fontWeight: 'bold', fontSize: 15 },
-  resumenLabel: { color: '#64748B', fontSize: 10, marginTop: 2, textAlign: 'center' },
+  // Barras por mes
+  seccionMes: { backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 12, padding: 14, marginBottom: 14 },
+  seccionMesTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 12 },
+  mesBarra: { alignItems: 'center', marginRight: 16, width: 64 },
+  mesTotal: { color: '#0F172A', fontSize: 9, fontWeight: '600', marginBottom: 4, textAlign: 'center' },
+  mesBarraFill: { width: 32, backgroundColor: '#1E293B', borderRadius: 4, marginBottom: 6 },
+  mesNombre: { color: '#64748B', fontSize: 10, textAlign: 'center' },
+  mesCantidad: { color: '#94A3B8', fontSize: 9, textAlign: 'center', marginTop: 2 },
 
-  searchWrap: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 12, marginBottom: 10, backgroundColor: '#fff', borderWidth: 3.0, borderColor: '#1E293B', borderRadius: 16 },
-  searchInput: { flex: 1, color: '#0F172A', padding: 9, fontSize: 12 },
-  searchIcon: { paddingRight: 10, fontSize: 14 },
+  // Cards
+  card: { backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 12, padding: 14, marginBottom: 12 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 },
+  cardId: { color: '#0F172A', fontWeight: '700', fontSize: 14 },
+  cardCliente: { color: '#64748B', fontSize: 12, marginTop: 2 },
+  cardTotal: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+  cardFecha: { color: '#94A3B8', fontSize: 11, marginBottom: 8 },
+  divider: { height: 1, backgroundColor: '#E2E8F0', marginBottom: 8 },
+  productoResumen: { color: '#334155', fontSize: 12, marginBottom: 2 },
+  masProductos: { color: '#94A3B8', fontSize: 11, marginBottom: 4 },
+  verDetalle: { color: '#1E293B', fontSize: 12, fontWeight: '600', marginTop: 6, textAlign: 'right' },
 
-  listContent: { paddingHorizontal: 12, paddingBottom: 24 },
-  empty: { color: '#64748B', textAlign: 'center', marginTop: 60, fontSize: 14 },
-
-  card: { backgroundColor: '#fff', borderWidth: 3.0, borderColor: '#1E293B', borderRadius: 16, padding: 14, marginBottom: 12 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  cardTitle: { color: '#0F172A', fontWeight: '600', fontSize: 15 },
-  estadoBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, borderWidth: 1 },
-  estadoText: { fontSize: 11, fontWeight: 'bold' },
-
-  cardRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  rowLabel: { color: '#64748B', fontSize: 12 },
-  rowValue: { color: '#0F172A', fontSize: 12, fontWeight: '500' },
-  totalRow: { borderTopWidth: 0.5, borderTopColor: 'rgba(100, 116, 139, 0.2)', paddingTop: 10, marginTop: 6 },
-  totalLabel: { color: '#64748B', fontWeight: 'bold', fontSize: 14 },
-  totalValor: { color: '#0F172A', fontWeight: 'bold', fontSize: 16 },
-
-  acciones: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12 },
-  btnDetalle: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnCompletar: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnCancelar: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnEliminar: { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 },
-  btnText: { color: '#F8FAFC', fontSize: 12 },
-
-  bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8, borderTopWidth: 0.5, borderTopColor: 'rgba(100, 116, 139, 0.2)', backgroundColor: 'rgba(255, 255, 255, 1.0)' },
-  bnav: { alignItems: 'center', gap: 2 },
-  bnavIcon: { fontSize: 18 },
-  bnavLabel: { fontSize: 9, color: '#64748B' },
-  bnavActive: { color: '#1E293B', fontWeight: '600' },
-
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.45)', justifyContent: 'center', alignItems: 'center' },
-  modalBox: { backgroundColor: '#fff', borderWidth: 3.0, borderColor: '#1E293B', borderRadius: 16, padding: 18, width: '90%' },
-  modalTitle: { color: '#0F172A', fontSize: 16, fontWeight: '600', textAlign: 'center', marginBottom: 14 },
-  prodTitle: { color: '#0F172A', fontSize: 13, fontWeight: '600', marginTop: 12, marginBottom: 6 },
-  productoItem: { backgroundColor: '#F8FAFC', borderRadius: 8, padding: 10, marginBottom: 6 },
-  productoNombre: { color: '#0F172A', fontSize: 13, fontWeight: '500', marginBottom: 4 },
-  productoDetalle: { flexDirection: 'row', justifyContent: 'space-between' },
-  productoInfo: { color: '#64748B', fontSize: 11 },
-  btnCerrar: { backgroundColor: '#1E293B', padding: 11, borderRadius: 8, alignItems: 'center', marginTop: 16 },
-  btnCerrarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
+  // Modal
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.5)', justifyContent: 'flex-end' },
+  modalBox: { backgroundColor: '#F8FAFC', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '80%', borderTopWidth: 1.5, borderTopColor: '#1E293B' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  modalTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 17 },
+  modalCerrar: { color: '#64748B', fontSize: 20, padding: 4 },
+  seccion: { backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 12 },
+  seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 8 },
+  infoTexto: { color: '#0F172A', fontSize: 14, fontWeight: '500' },
+  infoTextoSub: { color: '#64748B', fontSize: 12, marginTop: 4 },
+  productoRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+  productoNombre: { color: '#334155', fontSize: 12, flex: 1, marginRight: 8 },
+  productoPrecio: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
+  totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 6, borderTopWidth: 1, borderTopColor: '#E2E8F0' },
+  totalLabelModal: { color: '#0F172A', fontWeight: 'bold', fontSize: 13 },
+  totalValorModal: { color: '#0F172A', fontWeight: 'bold', fontSize: 15 },
 });

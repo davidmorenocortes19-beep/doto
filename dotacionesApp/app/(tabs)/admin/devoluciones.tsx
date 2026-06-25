@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import {
   View, Text, TouchableOpacity, FlatList, Modal, ScrollView,
@@ -34,8 +34,7 @@ const colorEstado = (estado: string) => {
   }
 };
 
-// Cambia esta constante según el rol: '/vendedor/panel_vendedor' o '/admin/panel_admin'
-const RUTA_PANEL = '/vendedor/panel_vendedor';
+const RUTA_PANEL = '/admin/panel_admin';
 
 export default function DevolucionesVendedor() {
   const [devoluciones,  setDevoluciones]  = useState<Devolucion[]>([]);

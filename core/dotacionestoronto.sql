@@ -95,6 +95,8 @@ id_venta INT AUTO_INCREMENT PRIMARY KEY,
 id_usuario_fk INT,
 fecha_venta DATETIME,
 total_pagado DECIMAL(10,2),
+id_pedido_fk INT NULL,
+FOREIGN KEY (id_pedido_fk) REFERENCES pedido(id_pedido),
 FOREIGN KEY (id_usuario_fk) REFERENCES usuario(id_usuario)
 );
 
@@ -103,6 +105,7 @@ id_detalle_venta INT AUTO_INCREMENT PRIMARY KEY,
 id_venta_fk INT,
 id_producto_fk INT,
 cantidad INT,
+precio_unitario DECIMAL(10,2) NOT NULL DEFAULT 0,
 FOREIGN KEY (id_venta_fk) REFERENCES venta(id_venta),
 FOREIGN KEY (id_producto_fk) REFERENCES producto(id_producto)
 );
@@ -122,6 +125,7 @@ id_detalle_venta_fk INT,
 cantidad INT,
 motivo VARCHAR(200),
 fecha_devolucion DATE,
+estado VARCHAR(50) DEFAULT 'Pendiente',
 FOREIGN KEY (id_detalle_venta_fk) REFERENCES detalle_venta(id_detalle_venta)
 );
 

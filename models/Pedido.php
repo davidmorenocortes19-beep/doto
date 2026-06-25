@@ -50,7 +50,6 @@ class Pedido
     {
         $db = DataBase::conectar();
 
-        // Obtenemos los pedidos ordenados por fecha ASC para numerar, luego reordenamos
         $stmt = $db->prepare("
             SELECT
                 p.id_pedido,
@@ -73,6 +72,11 @@ class Pedido
         // Reordenar de más reciente a más antiguo
         $pedidos = array_reverse($pedidos);
 
+        // Obtener id_venta asociada a cada pedido (para el botón de devolución)
+        $stmtVenta = $db->prepare("
+            SELECT id_venta FROM venta WHERE id_pedido_fk = ? LIMIT 1
+        ");
+
         $stmtDetalle = $db->prepare("
             SELECT dp.id_producto_fk, pr.nombre, dp.precio_unitario, dp.cantidad
             FROM detalle_pedido dp
@@ -81,6 +85,7 @@ class Pedido
         ");
 
         foreach ($pedidos as &$pedido) {
+            // Productos
             $stmtDetalle->execute([$pedido['id_pedido']]);
             $pedido['productos'] = $stmtDetalle->fetchAll(PDO::FETCH_ASSOC);
             $total = 0;
@@ -88,20 +93,24 @@ class Pedido
                 $total += floatval($p['precio_unitario']) * intval($p['cantidad']);
             }
             $pedido['total'] = $total;
+
+            // Venta asociada
+            $stmtVenta->execute([$pedido['id_pedido']]);
+            $venta = $stmtVenta->fetch(PDO::FETCH_ASSOC);
+            $pedido['id_venta'] = $venta ? (int) $venta['id_venta'] : null;
         }
         unset($pedido);
 
         return $pedidos;
     }
 
-    // ── LISTAR TODOS LOS PEDIDOS (admin) ──────────────────────────────
+    // ── LISTAR TODOS LOS PEDIDOS (admin/vendedor) ─────────────────────
     public static function listarTodos($soloOcultos = false)
     {
         $db = DataBase::conectar();
 
         $condicion = $soloOcultos ? 'p.oculto = 1' : 'p.oculto = 0';
 
-        // Traemos todos los pedidos agrupados por usuario para numerar manualmente
         $stmt = $db->prepare("
             SELECT
                 p.id_pedido,
@@ -134,7 +143,7 @@ class Pedido
         unset($pedido);
 
         // Reordenar de más reciente a más antiguo
-        usort($pedidos, function($a, $b) {
+        usort($pedidos, function ($a, $b) {
             return strcmp($b['fecha_pedido'], $a['fecha_pedido']);
         });
 
@@ -162,12 +171,26 @@ class Pedido
     // ── CAMBIAR ESTADO DE UN PEDIDO ───────────────────────────────────
     public static function cambiarEstado($id_pedido, $estado)
     {
-        $estadosValidos = ['Pendiente', 'Enviado', 'Entregado'];
+        $estadosValidos = ['Pendiente', 'Enviado', 'Entregado', 'Cancelado'];
         if (!in_array($estado, $estadosValidos)) return 'estado_invalido';
 
         $db   = DataBase::conectar();
         $stmt = $db->prepare("UPDATE pedido SET estado = ? WHERE id_pedido = ?");
         return $stmt->execute([$estado, $id_pedido]);
+    }
+
+    // ── CANCELAR PEDIDO (solo si está Pendiente) ──────────────────────
+    public static function cancelar($id_pedido)
+    {
+        $db   = DataBase::conectar();
+        $stmt = $db->prepare("SELECT estado FROM pedido WHERE id_pedido = ?");
+        $stmt->execute([$id_pedido]);
+        $pedido = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$pedido || $pedido['estado'] !== 'Pendiente') return 'no_pendiente';
+
+        $stmt = $db->prepare("UPDATE pedido SET estado = 'Cancelado' WHERE id_pedido = ?");
+        return $stmt->execute([$id_pedido]);
     }
 
     // ── OCULTAR / MOSTRAR UN PEDIDO ───────────────────────────────────
