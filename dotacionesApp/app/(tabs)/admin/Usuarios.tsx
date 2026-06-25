@@ -5,8 +5,8 @@ import {
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL  = 'http://192.168.40.8/doto/api/usuarios.php';
-const API_BASE = 'http://192.168.40.8/doto/api';
+const API_URL  = 'http://172.30.4.41/doto/api/usuarios.php';
+const API_BASE = 'http://172.30.4.41/doto/api';
 
 type Usuario = {
   id_usuario:  number;

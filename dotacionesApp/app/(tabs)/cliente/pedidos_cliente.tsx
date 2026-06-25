@@ -8,47 +8,47 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_PEDIDOS      = 'http://192.168.40.8/doto/api/pedidos.php';
-const API_DEVOLUCIONES = 'http://192.168.40.8/doto/api/devoluciones.php';
+const API_PEDIDOS = 'http://172.30.4.41/doto/api/pedidos.php';
+const API_DEVOLUCIONES = 'http://172.30.4.41/doto/api/devoluciones.php';
 
 type ProductoPedido = {
-  id_producto_fk:  number;
-  nombre:          string;
+  id_producto_fk: number;
+  nombre: string;
   precio_unitario: number;
-  cantidad:        number;
+  cantidad: number;
 };
 
 type Pedido = {
-  id_pedido:     number;
+  id_pedido: number;
   numero_pedido: number;
-  fecha_pedido:  string;
-  estado:        string;
-  id_venta?:     number;
-  productos:     ProductoPedido[];
-  total:         number;
+  fecha_pedido: string;
+  estado: string;
+  id_venta?: number;
+  productos: ProductoPedido[];
+  total: number;
 };
 
 type ProductoVenta = {
   id_detalle_venta: number;
-  nombre:           string;
-  cantidad:         number;
-  precio_unitario:  number;
+  nombre: string;
+  cantidad: number;
+  precio_unitario: number;
 };
 
 export default function PedidosCliente() {
-  const [pedidos,            setPedidos]            = useState<Pedido[]>([]);
-  const [cargando,           setCargando]           = useState(false);
-  const [cancelando,         setCancelando]         = useState(false);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [cargando, setCargando] = useState(false);
+  const [cancelando, setCancelando] = useState(false);
 
   // Devolución
-  const [modalDevolucion,    setModalDevolucion]    = useState(false);
+  const [modalDevolucion, setModalDevolucion] = useState(false);
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState<Pedido | null>(null);
-  const [productosVenta,     setProductosVenta]     = useState<ProductoVenta[]>([]);
-  const [productoElegido,    setProductoElegido]    = useState<ProductoVenta | null>(null);
+  const [productosVenta, setProductosVenta] = useState<ProductoVenta[]>([]);
+  const [productoElegido, setProductoElegido] = useState<ProductoVenta | null>(null);
   const [cantidadDevolucion, setCantidadDevolucion] = useState('1');
-  const [motivoDevolucion,   setMotivoDevolucion]   = useState('');
-  const [enviandoDev,        setEnviandoDev]        = useState(false);
-  const [cargandoProductos,  setCargandoProductos]  = useState(false);
+  const [motivoDevolucion, setMotivoDevolucion] = useState('');
+  const [enviandoDev, setEnviandoDev] = useState(false);
+  const [cargandoProductos, setCargandoProductos] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -79,7 +79,7 @@ export default function PedidosCliente() {
     try {
       const res = await axios.put(API_PEDIDOS, {
         id_pedido: pedido.id_pedido,
-        cancelar:  true,
+        cancelar: true,
       }, { timeout: 5000 });
       console.log('Respuesta cancelar:', res.data);
       await cargar();
@@ -130,8 +130,8 @@ export default function PedidosCliente() {
     try {
       await axios.post(API_DEVOLUCIONES, {
         id_detalle_venta: productoElegido.id_detalle_venta,
-        cantidad:         cant,
-        motivo:           motivoDevolucion.trim(),
+        cantidad: cant,
+        motivo: motivoDevolucion.trim(),
       });
       setModalDevolucion(false);
       Alert.alert('✅', 'Devolución registrada correctamente. Pronto te contactaremos.');
@@ -151,10 +151,10 @@ export default function PedidosCliente() {
   const colorEstado = (estado: string) => {
     switch (estado.toLowerCase()) {
       case 'pendiente': return { bg: '#FEF9C3', border: '#CA8A04', text: '#854D0E' };
-      case 'enviado':   return { bg: '#DBEAFE', border: '#2563EB', text: '#1E3A8A' };
+      case 'enviado': return { bg: '#DBEAFE', border: '#2563EB', text: '#1E3A8A' };
       case 'entregado': return { bg: '#DCFCE7', border: '#16A34A', text: '#166534' };
       case 'cancelado': return { bg: '#FEE2E2', border: '#DC2626', text: '#991B1B' };
-      default:          return { bg: '#E2E8F0', border: '#64748B', text: '#334155' };
+      default: return { bg: '#E2E8F0', border: '#64748B', text: '#334155' };
     }
   };
 
@@ -256,10 +256,10 @@ export default function PedidosCliente() {
 
         <View style={styles.bottomNav}>
           {[
-            { label: 'Inicio',    icon: '🏠', route: '/cliente/panel_cliente' },
+            { label: 'Inicio', icon: '🏠', route: '/cliente/panel_cliente' },
             { label: 'Productos', icon: '📦', route: '/cliente/productos_cliente' },
-            { label: 'Pedidos',   icon: '📋', active: true },
-            { label: 'Perfil',    icon: '👤', route: '/cliente/perfil_cliente' },
+            { label: 'Pedidos', icon: '📋', active: true },
+            { label: 'Perfil', icon: '👤', route: '/cliente/perfil_cliente' },
           ].map(item => (
             <TouchableOpacity
               key={item.label}

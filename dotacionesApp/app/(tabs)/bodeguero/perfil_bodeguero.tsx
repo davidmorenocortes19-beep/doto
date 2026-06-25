@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://192.168.40.8/doto/api/perfil.php';
+const API_URL = 'http://172.30.4.41/doto/api/perfil.php';
 
 type Bodeguero = {
   id?: number;
@@ -20,21 +20,21 @@ type Bodeguero = {
 };
 
 const validarPassword = (pass: string): string | null => {
-  if (pass.length < 8) return '⚠ Mínimo 8 caracteres';
-  if (!/[A-Z]/.test(pass)) return '⚠ Debe tener al menos una mayúscula';
-  if (!/[a-z]/.test(pass)) return '⚠ Debe tener al menos una minúscula';
-  if (!/[0-9]/.test(pass)) return '⚠ Debe tener al menos un número';
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) return '⚠ Debe tener al menos un carácter especial (!@#$...)';
+  if (pass.length < 8) return '? M�nimo 8 caracteres';
+  if (!/[A-Z]/.test(pass)) return '? Debe tener al menos una may�scula';
+  if (!/[a-z]/.test(pass)) return '? Debe tener al menos una min�scula';
+  if (!/[0-9]/.test(pass)) return '? Debe tener al menos un n�mero';
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) return '? Debe tener al menos un car�cter especial (!@#$...)';
   return null;
 };
 
 const validarCorreo = (correo: string): string | null => {
-  if (!correo.includes('@') || !correo.includes('.')) return '⚠ Ingresa un correo válido';
+  if (!correo.includes('@') || !correo.includes('.')) return '? Ingresa un correo v�lido';
   return null;
 };
 
 const validarDireccion = (direccion: string): string | null => {
-  if (direccion.trim().length < 5) return '⚠ Mínimo 5 caracteres';
+  if (direccion.trim().length < 5) return '? M�nimo 5 caracteres';
   return null;
 };
 
@@ -69,15 +69,15 @@ export default function PerfilBodeguero() {
     }
   };
 
-  // ── VALIDACIONES EN TIEMPO REAL ───────────────────────────────────
+  // -- VALIDACIONES EN TIEMPO REAL -----------------------------------
 
   const handleNombre = (text: string) => {
-    const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    const limpio = text.replace(/[^a-zA-Z��������������\s]/g, '');
     setNuevoNombre(limpio);
     if (text !== limpio) {
-      setNombreError('⚠ Solo se permiten letras y espacios');
+      setNombreError('? Solo se permiten letras y espacios');
     } else if (limpio.trim().length > 0 && limpio.trim().length < 3) {
-      setNombreError('⚠ Mínimo 3 caracteres');
+      setNombreError('? M�nimo 3 caracteres');
     } else {
       setNombreError('');
     }
@@ -96,9 +96,9 @@ export default function PerfilBodeguero() {
     const limpio = text.replace(/[^0-9]/g, '');
     setNuevoTelefono(limpio);
     if (text !== limpio) {
-      setTelError('⚠ Solo se permiten números');
+      setTelError('? Solo se permiten n�meros');
     } else if (limpio.length > 0 && limpio.length < 7) {
-      setTelError('⚠ Mínimo 7 dígitos');
+      setTelError('? M�nimo 7 d�gitos');
     } else {
       setTelError('');
     }
@@ -124,12 +124,12 @@ export default function PerfilBodeguero() {
 
   const guardarCambios = async () => {
     if (!nuevoNombre && !nuevoCorreo && !nuevoTelefono && !nuevaDireccion && !nuevoPassword) {
-      setMensaje('⚠ Ingresa al menos un campo para actualizar');
+      setMensaje('? Ingresa al menos un campo para actualizar');
       return;
     }
 
     if (nombreError || correoError || telError || dirError || passError) {
-      setMensaje('⚠ Corrige los errores antes de continuar');
+      setMensaje('? Corrige los errores antes de continuar');
       return;
     }
 
@@ -144,7 +144,7 @@ export default function PerfilBodeguero() {
       setCargando(true);
       const res = await axios.put(API_URL, payload, { timeout: 5000 });
       if (res.data.success) {
-        setMensaje('✅ Perfil actualizado correctamente');
+        setMensaje('? Perfil actualizado correctamente');
         setBodeguero(prev => prev ? { ...prev, ...payload } : prev);
         if (nuevoNombre) sesion.nombre = nuevoNombre;
         if (nuevoCorreo) sesion.correo = nuevoCorreo;
@@ -154,19 +154,19 @@ export default function PerfilBodeguero() {
         setNombreError(''); setCorreoError('');
         setTelError(''); setDirError(''); setPassError('');
       } else {
-        setMensaje('❌ ' + res.data.mensaje);
+        setMensaje('? ' + res.data.mensaje);
       }
     } catch {
-      setMensaje('⚠ Error de conexión con el servidor');
+      setMensaje('? Error de conexi�n con el servidor');
     } finally {
       setCargando(false);
     }
   };
 
   const cerrarSesion = () => {
-    Alert.alert('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', [
+    Alert.alert('Cerrar sesi�n', '�Est�s seguro de que deseas cerrar sesi�n?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesión', style: 'destructive', onPress: () => router.replace('/') },
+      { text: 'Cerrar sesi�n', style: 'destructive', onPress: () => router.replace('/') },
     ]);
   };
 
@@ -192,7 +192,7 @@ export default function PerfilBodeguero() {
               onPress={() => router.replace('/bodeguero/panel_bodeguero')}
               style={styles.btnVolver}
             >
-              <Text style={styles.btnVolverTexto}>←</Text>
+              <Text style={styles.btnVolverTexto}>?</Text>
             </TouchableOpacity>
             <View style={styles.logoArea}>
               <View style={styles.logoCircle}>
@@ -220,26 +220,26 @@ export default function PerfilBodeguero() {
               </View>
             </View>
 
-            {/* Información actual */}
+            {/* Informaci�n actual */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Información Personal</Text>
+              <Text style={styles.seccionTitulo}>Informaci�n Personal</Text>
               {[
                 { label: 'Nombre', valor: bodeguero?.nombre },
                 { label: 'Documento', valor: bodeguero?.documento },
                 { label: 'Correo', valor: bodeguero?.correo },
-                { label: 'Teléfono', valor: bodeguero?.telefono },
-                { label: 'Dirección', valor: bodeguero?.direccion },
+                { label: 'Tel�fono', valor: bodeguero?.telefono },
+                { label: 'Direcci�n', valor: bodeguero?.direccion },
               ].map(item => (
                 <View key={item.label} style={styles.infoRow}>
                   <Text style={styles.infoLabel}>{item.label}</Text>
-                  <Text style={styles.infoValor}>{item.valor ?? '—'}</Text>
+                  <Text style={styles.infoValor}>{item.valor ?? '�'}</Text>
                 </View>
               ))}
             </View>
 
-            {/* Formulario de actualización */}
+            {/* Formulario de actualizaci�n */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Actualizar Información</Text>
+              <Text style={styles.seccionTitulo}>Actualizar Informaci�n</Text>
               <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
               {/* NOMBRE */}
@@ -250,7 +250,7 @@ export default function PerfilBodeguero() {
               />
               {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
               {nuevoNombre.trim().length >= 3 && nombreError === '' && (
-                <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+                <Text style={styles.fieldOk}>? Nombre v�lido</Text>
               )}
 
               {/* CORREO */}
@@ -262,47 +262,47 @@ export default function PerfilBodeguero() {
               />
               {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
               {nuevoCorreo !== '' && correoError === '' && (
-                <Text style={styles.fieldOk}>✅ Correo válido</Text>
+                <Text style={styles.fieldOk}>? Correo v�lido</Text>
               )}
 
-              {/* TELÉFONO */}
+              {/* TEL�FONO */}
               <TextInput
                 style={[styles.input, telError ? styles.inputError : null]}
-                placeholder="Nuevo teléfono" placeholderTextColor="#94A3B8"
+                placeholder="Nuevo tel�fono" placeholderTextColor="#94A3B8"
                 value={nuevoTelefono} onChangeText={handleTelefono}
                 keyboardType="phone-pad" maxLength={10}
               />
               {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
               {nuevoTelefono.length >= 7 && telError === '' && (
-                <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
+                <Text style={styles.fieldOk}>? Tel�fono v�lido</Text>
               )}
 
-              {/* DIRECCIÓN */}
+              {/* DIRECCI�N */}
               <TextInput
                 style={[styles.input, dirError ? styles.inputError : null]}
-                placeholder="Nueva dirección" placeholderTextColor="#94A3B8"
+                placeholder="Nueva direcci�n" placeholderTextColor="#94A3B8"
                 value={nuevaDireccion} onChangeText={handleDireccion}
               />
               {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
               {nuevaDireccion.trim().length >= 5 && dirError === '' && (
-                <Text style={styles.fieldOk}>✅ Dirección válida</Text>
+                <Text style={styles.fieldOk}>? Direcci�n v�lida</Text>
               )}
 
-              {/* CONTRASEÑA */}
+              {/* CONTRASE�A */}
               <TextInput
                 style={[styles.input, passError ? styles.inputError : null]}
-                placeholder="Nueva contraseña" placeholderTextColor="#94A3B8"
+                placeholder="Nueva contrase�a" placeholderTextColor="#94A3B8"
                 value={nuevoPassword} onChangeText={handlePassword}
                 secureTextEntry
               />
               {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
               {nuevoPassword !== '' && passError === '' && (
-                <Text style={styles.fieldOk}>✅ Contraseña segura</Text>
+                <Text style={styles.fieldOk}>? Contrase�a segura</Text>
               )}
 
               {mensaje !== '' && (
                 <Text style={[styles.mensaje,
-                mensaje.startsWith('✅') ? styles.mensajeOk : styles.mensajeError
+                mensaje.startsWith('?') ? styles.mensajeOk : styles.mensajeError
                 ]}>
                   {mensaje}
                 </Text>
@@ -313,7 +313,7 @@ export default function PerfilBodeguero() {
                 onPress={guardarCambios}
                 disabled={cargando || hayErrores}
               >
-                <Text style={styles.btnGuardarText}>💾 Guardar Cambios</Text>
+                <Text style={styles.btnGuardarText}>?? Guardar Cambios</Text>
               </TouchableOpacity>
             </View>
 
@@ -322,9 +322,9 @@ export default function PerfilBodeguero() {
           {/* Bottom nav */}
           <View style={styles.bottomNav}>
             {[
-              { label: 'Inicio', icon: '🏠', route: '/bodeguero/panel_bodeguero' },
-              { label: 'Inventario', icon: '📦', route: '/bodeguero/inventario' },
-              { label: 'Perfil', icon: '👤', active: true },
+              { label: 'Inicio', icon: '??', route: '/bodeguero/panel_bodeguero' },
+              { label: 'Inventario', icon: '??', route: '/bodeguero/inventario' },
+              { label: 'Perfil', icon: '??', active: true },
             ].map(item => (
               <TouchableOpacity
                 key={item.label}

@@ -8,10 +8,10 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL      = 'http://192.168.40.8/doto/api/productos.php';
-const API_CARRITO  = 'http://192.168.40.8/doto/api/carrito.php';
-const API_PEDIDOS  = 'http://192.168.40.8/doto/api/pedidos.php';
-const API_BASE     = 'http://192.168.40.8/doto/';
+const API_URL      = 'http://172.30.4.41/doto/api/productos.php';
+const API_CARRITO  = 'http://172.30.4.41/doto/api/carrito.php';
+const API_PEDIDOS  = 'http://172.30.4.41/doto/api/pedidos.php';
+const API_BASE     = 'http://172.30.4.41/doto/';
 
 type Producto = {
   id_producto: number;

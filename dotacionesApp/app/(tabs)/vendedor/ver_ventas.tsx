@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import {
   View, Text, TouchableOpacity, FlatList, ScrollView, Modal,
@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_VENTAS = 'http://192.168.40.8/doto/api/ventas.php';
+const API_VENTAS = 'http://172.30.4.41/doto/api/ventas.php';
 
 type ProductoVenta = {
   id_detalle_venta: number;
@@ -90,9 +90,9 @@ export default function VerVentas() {
         </Text>
       ))}
       {item.productos.length > 2 && (
-        <Text style={styles.masProductos}>+{item.productos.length - 2} más...</Text>
+        <Text style={styles.masProductos}>+{item.productos.length - 2} m�s...</Text>
       )}
-      <Text style={styles.verDetalle}>Ver detalle →</Text>
+      <Text style={styles.verDetalle}>Ver detalle ?</Text>
     </TouchableOpacity>
   );
 
@@ -108,11 +108,11 @@ export default function VerVentas() {
         {/* HEADER */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')} style={styles.btnVolver}>
-            <Text style={styles.btnVolverTexto}>← Volver</Text>
+            <Text style={styles.btnVolverTexto}>? Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.titulo}>💰 Ventas</Text>
+          <Text style={styles.titulo}>?? Ventas</Text>
           <TouchableOpacity style={styles.btnRecargar} onPress={cargar}>
-            <Text style={styles.btnRecargarTexto}>↻ Recargar</Text>
+            <Text style={styles.btnRecargarTexto}>? Recargar</Text>
           </TouchableOpacity>
         </View>
 
@@ -127,7 +127,7 @@ export default function VerVentas() {
             refreshControl={<RefreshControl refreshing={cargando} onRefresh={cargar} />}
             ListHeaderComponent={estadisticas ? (
               <View>
-                {/* Estadísticas */}
+                {/* Estad�sticas */}
                 <View style={styles.statsGrid}>
                   <View style={styles.statCard}>
                     <Text style={styles.statLabel}>Esta semana</Text>
@@ -146,7 +146,7 @@ export default function VerVentas() {
                 {/* Por mes */}
                 {estadisticas.por_mes.length > 0 && (
                   <View style={styles.seccionMes}>
-                    <Text style={styles.seccionMesTitulo}>Últimos 6 meses</Text>
+                    <Text style={styles.seccionMesTitulo}>�ltimos 6 meses</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       {estadisticas.por_mes.map((m, idx) => (
                         <View key={idx} style={styles.mesBarra}>
@@ -179,25 +179,25 @@ export default function VerVentas() {
                 <View style={styles.modalHeader}>
                   <Text style={styles.modalTitulo}>Venta #{ventaActiva.id_venta}</Text>
                   <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <Text style={styles.modalCerrar}>✖</Text>
+                    <Text style={styles.modalCerrar}>?</Text>
                   </TouchableOpacity>
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View style={styles.seccion}>
-                    <Text style={styles.seccionTitulo}>👤 Cliente</Text>
+                    <Text style={styles.seccionTitulo}>?? Cliente</Text>
                     <Text style={styles.infoTexto}>{ventaActiva.cliente_nombre}</Text>
                     <Text style={styles.infoTextoSub}>{ventaActiva.cliente_correo}</Text>
-                    <Text style={styles.infoTextoSub}>📞 {ventaActiva.cliente_telefono || 'Sin teléfono'}</Text>
+                    <Text style={styles.infoTextoSub}>?? {ventaActiva.cliente_telefono || 'Sin tel�fono'}</Text>
                   </View>
 
                   <View style={styles.seccion}>
-                    <Text style={styles.seccionTitulo}>📅 Fecha</Text>
+                    <Text style={styles.seccionTitulo}>?? Fecha</Text>
                     <Text style={styles.infoTexto}>{formatearFecha(ventaActiva.fecha_venta)}</Text>
                   </View>
 
                   <View style={styles.seccion}>
-                    <Text style={styles.seccionTitulo}>🛍 Productos</Text>
+                    <Text style={styles.seccionTitulo}>?? Productos</Text>
                     {ventaActiva.productos.map((p, idx) => (
                       <View key={idx} style={styles.productoRow}>
                         <Text style={styles.productoNombre} numberOfLines={2}>{p.cantidad} x {p.nombre}</Text>

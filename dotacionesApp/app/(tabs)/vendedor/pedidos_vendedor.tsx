@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import {
   View, Text, TouchableOpacity, FlatList, ScrollView, Modal,
@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_PEDIDOS = 'http://192.168.40.8/doto/api/pedidos.php';
+const API_PEDIDOS = 'http://172.30.4.41/doto/api/pedidos.php';
 
 type ProductoPedido = {
   nombre:          string;
@@ -116,13 +116,13 @@ export default function PedidosVendedor() {
           </Text>
         ))}
         {item.productos.length > 2 && (
-          <Text style={styles.masProductos}>+{item.productos.length - 2} más...</Text>
+          <Text style={styles.masProductos}>+{item.productos.length - 2} m�s...</Text>
         )}
         <View style={styles.cardFooter}>
           <Text style={styles.totalLabel}>
             Total: <Text style={styles.totalValor}>${Number(item.total).toLocaleString('es-CO')}</Text>
           </Text>
-          <Text style={styles.verDetalle}>Ver detalle →</Text>
+          <Text style={styles.verDetalle}>Ver detalle ?</Text>
         </View>
       </TouchableOpacity>
     );
@@ -139,11 +139,11 @@ export default function PedidosVendedor() {
 
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.replace('/vendedor/panel_vendedor')} style={styles.btnVolver}>
-            <Text style={styles.btnVolverTexto}>← Volver</Text>
+            <Text style={styles.btnVolverTexto}>? Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.titulo}>📋 Pedidos</Text>
+          <Text style={styles.titulo}>?? Pedidos</Text>
           <TouchableOpacity style={styles.btnRecargar} onPress={cargar}>
-            <Text style={styles.btnRecargarTexto}>↻ Recargar</Text>
+            <Text style={styles.btnRecargarTexto}>? Recargar</Text>
           </TouchableOpacity>
         </View>
 
@@ -191,21 +191,21 @@ export default function PedidosVendedor() {
                   <View style={styles.modalHeader}>
                     <Text style={styles.modalTitulo}>Pedido #{pedidoActivo.numero_pedido}</Text>
                     <TouchableOpacity onPress={() => setModalVisible(false)}>
-                      <Text style={styles.modalCerrar}>✖</Text>
+                      <Text style={styles.modalCerrar}>?</Text>
                     </TouchableOpacity>
                   </View>
 
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>👤 Cliente</Text>
+                      <Text style={styles.seccionTitulo}>?? Cliente</Text>
                       <Text style={styles.infoTexto}>{pedidoActivo.cliente_nombre}</Text>
                       <Text style={styles.infoTextoSub}>{pedidoActivo.cliente_correo}</Text>
-                      <Text style={styles.infoTextoSub}>📞 {pedidoActivo.cliente_telefono || 'Sin teléfono'}</Text>
-                      <Text style={styles.infoTextoSub}>📍 {pedidoActivo.cliente_direccion || 'Sin dirección'}</Text>
+                      <Text style={styles.infoTextoSub}>?? {pedidoActivo.cliente_telefono || 'Sin tel�fono'}</Text>
+                      <Text style={styles.infoTextoSub}>?? {pedidoActivo.cliente_direccion || 'Sin direcci�n'}</Text>
                     </View>
 
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>📅 Fecha</Text>
+                      <Text style={styles.seccionTitulo}>?? Fecha</Text>
                       <Text style={styles.infoTexto}>{formatearFecha(pedidoActivo.fecha_pedido)}</Text>
                       <View style={[styles.estadoBadge, { backgroundColor: ec.bg, borderColor: ec.border, marginTop: 8, alignSelf: 'flex-start' }]}>
                         <Text style={[styles.estadoText, { color: ec.text }]}>{pedidoActivo.estado}</Text>
@@ -213,7 +213,7 @@ export default function PedidosVendedor() {
                     </View>
 
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>🛍 Productos</Text>
+                      <Text style={styles.seccionTitulo}>?? Productos</Text>
                       {pedidoActivo.productos.map((p, idx) => (
                         <View key={idx} style={styles.productoRow}>
                           <Text style={styles.productoNombre} numberOfLines={2}>{p.cantidad} x {p.nombre}</Text>
@@ -228,7 +228,7 @@ export default function PedidosVendedor() {
 
                     {pedidoActivo.estado !== 'Cancelado' && pedidoActivo.estado !== 'Entregado' && (
                       <View style={styles.seccion}>
-                        <Text style={styles.seccionTitulo}>🔄 Cambiar estado</Text>
+                        <Text style={styles.seccionTitulo}>?? Cambiar estado</Text>
                         <View style={styles.estadosBotones}>
                           {(['Pendiente', 'Enviado', 'Entregado'] as const).map(est => {
                             const ecc = colorEstado(est);
@@ -241,7 +241,7 @@ export default function PedidosVendedor() {
                                 disabled={actualizando || esActual}
                               >
                                 <Text style={[styles.btnEstadoTexto, { color: ecc.text }]}>
-                                  {esActual ? '✓ ' : ''}{est}
+                                  {esActual ? '? ' : ''}{est}
                                 </Text>
                               </TouchableOpacity>
                             );

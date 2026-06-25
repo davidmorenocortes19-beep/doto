@@ -6,8 +6,8 @@ import {
 } from 'react-native';
 
 export default function ContactanosCliente() {
-    const [nombre,  setNombre]  = useState('');
-    const [correo,  setCorreo]  = useState('');
+    const [nombre, setNombre] = useState('');
+    const [correo, setCorreo] = useState('');
     const [mensaje, setMensaje] = useState('');
 
     const enviar = () => {
@@ -101,9 +101,9 @@ export default function ContactanosCliente() {
                 {/* Bottom nav */}
                 <View style={styles.bottomNav}>
                     {[
-                        { label: 'Inicio',      icon: '🏠', route: '/cliente/panel_cliente' },
-                        { label: 'Productos',   icon: '📦', route: '/cliente/productos_cliente' },
-                        { label: 'Pedidos',     icon: '📋', route: '/cliente/pedidos' },
+                        { label: 'Inicio', icon: '🏠', route: '/cliente/panel_cliente' },
+                        { label: 'Productos', icon: '📦', route: '/cliente/productos_cliente' },
+                        { label: 'Pedidos', icon: '📋', route: '/cliente/pedidos' },
                         { label: 'Contáctanos', icon: '✉️', active: true },
                     ].map(item => (
                         <TouchableOpacity
@@ -145,13 +145,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12, paddingVertical: 4,
     },
     btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
-    logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    logoCircle:  {
+    logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    logoCircle: {
         width: 30, height: 30, borderRadius: 15,
         backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
     },
     logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
-    brand:        { color: '#0F172A', fontWeight: '700', fontSize: 15 },
+    brand: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
 
     scroll: { padding: 16, paddingBottom: 24 },
 
@@ -162,15 +162,15 @@ const styles = StyleSheet.create({
         borderRadius: 12, padding: 16, marginBottom: 14,
     },
     seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 18, marginBottom: 6 },
-    seccionSub:    { color: '#64748B', fontSize: 12, lineHeight: 18, marginBottom: 16 },
+    seccionSub: { color: '#64748B', fontSize: 12, lineHeight: 18, marginBottom: 16 },
     input: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
         borderWidth: 1.5, borderColor: '#1E293B',
         color: '#0F172A', borderRadius: 8,
         padding: 11, fontSize: 13, marginBottom: 10,
     },
-    textArea:      { height: 100, textAlignVertical: 'top' },
-    btnEnviar:     { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+    textArea: { height: 100, textAlignVertical: 'top' },
+    btnEnviar: { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
     btnEnviarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 
     // Info contacto
@@ -179,12 +179,12 @@ const styles = StyleSheet.create({
         borderWidth: 1.5, borderColor: '#1E293B',
         borderRadius: 12, padding: 16, alignItems: 'center',
     },
-    infoTel:       { color: '#1E293B', fontWeight: '700', fontSize: 17, marginBottom: 8 },
-    infoText:      { color: '#64748B', fontSize: 12, marginBottom: 4, textAlign: 'center' },
-    horario:       { marginTop: 14, alignItems: 'center' },
+    infoTel: { color: '#1E293B', fontWeight: '700', fontSize: 17, marginBottom: 8 },
+    infoText: { color: '#64748B', fontSize: 12, marginBottom: 4, textAlign: 'center' },
+    horario: { marginTop: 14, alignItems: 'center' },
     horarioTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 8 },
-    horarioText:   { color: '#64748B', fontSize: 12, marginBottom: 4 },
-    copy:          { color: '#94A3B8', fontSize: 11, marginTop: 16 },
+    horarioText: { color: '#64748B', fontSize: 12, marginBottom: 4 },
+    copy: { color: '#94A3B8', fontSize: 11, marginTop: 16 },
 
     // Bottom nav
     bottomNav: {
@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
         borderTopWidth: 1.5, borderTopColor: '#1E293B',
     },
-    bnav:       { alignItems: 'center', gap: 2 },
-    bnavIcon:   { fontSize: 18 },
-    bnavLabel:  { fontSize: 9, color: '#64748B' },
+    bnav: { alignItems: 'center', gap: 2 },
+    bnavIcon: { fontSize: 18 },
+    bnavLabel: { fontSize: 9, color: '#64748B' },
     bnavActive: { color: '#0F172A', fontWeight: '700' },
 });

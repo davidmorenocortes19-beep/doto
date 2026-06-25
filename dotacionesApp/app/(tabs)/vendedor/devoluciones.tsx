@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import {
   View, Text, TouchableOpacity, FlatList, Modal, ScrollView,
@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_DEVOLUCIONES = 'http://192.168.40.8/doto/api/devoluciones.php';
+const API_DEVOLUCIONES = 'http://172.30.4.41/doto/api/devoluciones.php';
 
 type Devolucion = {
   id_devolucion:    number;
@@ -34,7 +34,7 @@ const colorEstado = (estado: string) => {
   }
 };
 
-// Cambia esta constante según el rol: '/vendedor/panel_vendedor' o '/admin/panel_admin'
+// Cambia esta constante seg�n el rol: '/vendedor/panel_vendedor' o '/admin/panel_admin'
 const RUTA_PANEL = '/vendedor/panel_vendedor';
 
 export default function DevolucionesVendedor() {
@@ -104,7 +104,7 @@ export default function DevolucionesVendedor() {
         </View>
         <Text style={styles.cardProducto}>{item.cantidad} x {item.producto_nombre}</Text>
         <Text style={styles.cardFecha}>{formatearFecha(item.fecha_devolucion)}</Text>
-        <Text style={styles.verDetalle}>Ver detalle →</Text>
+        <Text style={styles.verDetalle}>Ver detalle ?</Text>
       </TouchableOpacity>
     );
   };
@@ -120,17 +120,17 @@ export default function DevolucionesVendedor() {
 
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.replace(RUTA_PANEL as any)} style={styles.btnVolver}>
-            <Text style={styles.btnVolverTexto}>← Volver</Text>
+            <Text style={styles.btnVolverTexto}>? Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.titulo}>↩ Devoluciones</Text>
+          <Text style={styles.titulo}>? Devoluciones</Text>
           <TouchableOpacity style={styles.btnRecargar} onPress={cargar}>
-            <Text style={styles.btnRecargarTexto}>↻ Recargar</Text>
+            <Text style={styles.btnRecargarTexto}>? Recargar</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.accionesBar}>
           <Text style={styles.contadorTexto}>
-            {devolucionesFiltradas.length} devolución{devolucionesFiltradas.length !== 1 ? 'es' : ''}
+            {devolucionesFiltradas.length} devoluci�n{devolucionesFiltradas.length !== 1 ? 'es' : ''}
           </Text>
         </View>
 
@@ -171,22 +171,22 @@ export default function DevolucionesVendedor() {
               return (
                 <>
                   <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitulo}>Devolución #{devActiva.id_devolucion}</Text>
+                    <Text style={styles.modalTitulo}>Devoluci�n #{devActiva.id_devolucion}</Text>
                     <TouchableOpacity onPress={() => setModalVisible(false)}>
-                      <Text style={styles.modalCerrar}>✖</Text>
+                      <Text style={styles.modalCerrar}>?</Text>
                     </TouchableOpacity>
                   </View>
 
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>👤 Cliente</Text>
+                      <Text style={styles.seccionTitulo}>?? Cliente</Text>
                       <Text style={styles.infoTexto}>{devActiva.cliente_nombre}</Text>
                       <Text style={styles.infoTextoSub}>{devActiva.cliente_correo}</Text>
-                      <Text style={styles.infoTextoSub}>📞 {devActiva.cliente_telefono || 'Sin teléfono'}</Text>
+                      <Text style={styles.infoTextoSub}>?? {devActiva.cliente_telefono || 'Sin tel�fono'}</Text>
                     </View>
 
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>📦 Producto</Text>
+                      <Text style={styles.seccionTitulo}>?? Producto</Text>
                       <Text style={styles.infoTexto}>{devActiva.cantidad} x {devActiva.producto_nombre}</Text>
                       <Text style={styles.infoTextoSub}>
                         Subtotal: ${Number(devActiva.precio_unitario * devActiva.cantidad).toLocaleString('es-CO')}
@@ -194,7 +194,7 @@ export default function DevolucionesVendedor() {
                     </View>
 
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>📝 Motivo</Text>
+                      <Text style={styles.seccionTitulo}>?? Motivo</Text>
                       <Text style={styles.infoTexto}>{devActiva.motivo}</Text>
                       <Text style={styles.infoTextoSub}>Fecha: {formatearFecha(devActiva.fecha_devolucion)}</Text>
                       <View style={[styles.estadoBadge, { backgroundColor: ec.bg, borderColor: ec.border, marginTop: 8, alignSelf: 'flex-start' }]}>
@@ -203,7 +203,7 @@ export default function DevolucionesVendedor() {
                     </View>
 
                     <View style={styles.seccion}>
-                      <Text style={styles.seccionTitulo}>🔄 Cambiar estado</Text>
+                      <Text style={styles.seccionTitulo}>?? Cambiar estado</Text>
                       <View style={styles.estadosBotones}>
                         {(['Pendiente', 'Aprobada', 'Rechazada'] as const).map(est => {
                           const ecc = colorEstado(est);
@@ -216,7 +216,7 @@ export default function DevolucionesVendedor() {
                               disabled={actualizando || esActual}
                             >
                               <Text style={[styles.btnEstadoTexto, { color: ecc.text }]}>
-                                {esActual ? '✓ ' : ''}{est}
+                                {esActual ? '? ' : ''}{est}
                               </Text>
                             </TouchableOpacity>
                           );
