@@ -8,8 +8,8 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_PEDIDOS = 'http://172.30.4.41/doto/api/pedidos.php';
-const API_DEVOLUCIONES = 'http://172.30.4.41/doto/api/devoluciones.php';
+const API_PEDIDOS = 'http://192.168.137.9/doto/api/pedidos.php';
+const API_DEVOLUCIONES = 'http://192.168.137.9/doto/api/devoluciones.php';
 
 type ProductoPedido = {
   id_producto_fk: number;
@@ -52,7 +52,6 @@ export default function PedidosCliente() {
 
   useFocusEffect(
     useCallback(() => {
-      setPedidos([]);
       cargar();
     }, [])
   );
@@ -63,12 +62,13 @@ export default function PedidosCliente() {
     try {
       const res = await axios.get(API_PEDIDOS, {
         params: { id_usuario: sesion.id },
-        timeout: 5000,
+        timeout: 8000,
       });
       const data: Pedido[] = Array.isArray(res.data) ? res.data : [];
       setPedidos(data);
-    } catch {
-      // sin servidor
+    } catch (e: any) {
+      console.log('Error cargando pedidos:', e?.message, e?.response?.data);
+      // No vaciamos pedidos aquí: si falla, dejamos lo que ya estaba en pantalla
     } finally {
       setCargando(false);
     }
@@ -80,7 +80,7 @@ export default function PedidosCliente() {
       const res = await axios.put(API_PEDIDOS, {
         id_pedido: pedido.id_pedido,
         cancelar: true,
-      }, { timeout: 5000 });
+      }, { timeout: 8000 });
       console.log('Respuesta cancelar:', res.data);
       await cargar();
       Alert.alert('✅', 'Pedido cancelado correctamente');
@@ -106,7 +106,7 @@ export default function PedidosCliente() {
     try {
       const res = await axios.get(API_DEVOLUCIONES, {
         params: { id_venta: pedido.id_venta, productos: 1 },
-        timeout: 5000,
+        timeout: 8000,
       });
       setProductosVenta(Array.isArray(res.data) ? res.data : []);
     } catch {

@@ -8,10 +8,10 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL      = 'http://172.30.4.41/doto/api/productos.php';
-const API_CARRITO  = 'http://172.30.4.41/doto/api/carrito.php';
-const API_PEDIDOS  = 'http://172.30.4.41/doto/api/pedidos.php';
-const API_BASE     = 'http://172.30.4.41/doto/';
+const API_URL      = 'http://192.168.137.9/doto/api/productos.php';
+const API_CARRITO  = 'http://192.168.137.9/doto/api/carrito.php';
+const API_PEDIDOS  = 'http://192.168.137.9/doto/api/pedidos.php';
+const API_BASE     = 'http://192.168.137.9/doto/';
 
 type Producto = {
   id_producto: number;
@@ -114,7 +114,7 @@ export default function ProductosCliente() {
       await axios.post(API_PEDIDOS, { id_usuario: sesion.id });
       setCarritoVisible(false);
       setCarrito([]);
-      Alert.alert('✅ Pedido', 'Tu pedido fue registrado correctamente');
+     
       router.push('/cliente/pedidos_cliente' as any);
     } catch {
       Alert.alert('⚠ Error', 'No se pudo registrar el pedido');

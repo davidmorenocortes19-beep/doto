@@ -16,8 +16,8 @@ class Pedido
         $db->beginTransaction();
         try {
             $stmt = $db->prepare("
-                INSERT INTO pedido (id_usuario_fk, fecha_pedido, estado)
-                VALUES (?, NOW(), 'Pendiente')
+                INSERT INTO pedido (id_usuario_fk, fecha_pedido, estado, oculto)
+                VALUES (?, NOW(), 'Pendiente', 0)
             ");
             $stmt->execute([$id_usuario]);
             $id_pedido = $db->lastInsertId();
@@ -38,7 +38,6 @@ class Pedido
             Carrito::vaciar($id_usuario);
             $db->commit();
             return $id_pedido;
-
         } catch (Exception $e) {
             $db->rollBack();
             return false;
