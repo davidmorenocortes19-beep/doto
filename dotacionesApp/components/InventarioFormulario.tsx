@@ -6,8 +6,8 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.137.9/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://192.168.137.9/doto/api/productos.php';
+const API_URL = 'http://192.168.40.8/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://192.168.40.8/doto/api/productos.php';
 
 type InventarioItem = {
   id_inventario: number;
@@ -327,10 +327,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
   },
   titulo:         { fontSize: 18, fontWeight: '600', color: '#0F172A' },
-  btnVolver:      { padding: 8, backgroundColor: '#1E293B', borderRadius: 8, width: 70, alignItems: 'center' },
+  btnVolver:      { padding: 8, backgroundColor: '#991B1B', borderRadius: 8, width: 70, alignItems: 'center' },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
 
   // Formulario
@@ -342,17 +342,17 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     color: '#0F172A', padding: 12, borderRadius: 10,
-    marginBottom: 8, borderWidth: 1.5, borderColor: '#1E293B', fontSize: 14,
+    marginBottom: 8, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 14,
   },
 
   // Selector de productos
   productosSelector: { marginBottom: 8, gap: 6 },
   productoOpcion: {
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#991B1B',
     borderRadius: 10, padding: 10,
   },
-  productoOpcionActiva: { backgroundColor: '#1E293B', borderColor: '#1E293B' },
+  productoOpcionActiva: { backgroundColor: '#991B1B', borderColor: '#991B1B' },
   productoNombre:       { color: '#0F172A', fontWeight: '600', fontSize: 13 },
   productoNombreActivo: { color: '#F8FAFC' },
   productoDetalle:      { color: '#64748B', fontSize: 11, marginTop: 2 },
@@ -362,14 +362,14 @@ const styles = StyleSheet.create({
 
   // Botones
   btnGuardar: {
-    backgroundColor: '#1E293B', padding: 14,
+    backgroundColor: '#991B1B', padding: 14,
     borderRadius: 10, alignItems: 'center', marginTop: 18,
   },
   btnGuardarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
   btnCancelar:     { padding: 12, alignItems: 'center', marginTop: 4 },
   btnCancelarTexto:{ color: '#64748B', textDecorationLine: 'underline', fontSize: 13 },
   btnReintentar:   {
-    backgroundColor: '#1E293B', paddingHorizontal: 16,
+    backgroundColor: '#991B1B', paddingHorizontal: 16,
     paddingVertical: 10, borderRadius: 8, marginTop: 16,
   },
   btnReintentarTexto: { color: '#F8FAFC', fontWeight: '600' },

@@ -5,8 +5,8 @@ import {
 import { router } from 'expo-router';
 import axios from 'axios';
 
-const API_URL  = 'http://192.168.137.9/doto/api/usuarios.php';
-const API_BASE = 'http://192.168.137.9/doto/api';
+const API_URL  = 'http://192.168.40.8/doto/api/usuarios.php';
+const API_BASE = 'http://192.168.40.8/doto/api';
 
 type Usuario = {
   id_usuario:  number;
@@ -256,39 +256,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
   },
   titulo:          { fontSize: 20, fontWeight: '600', color: '#0F172A' },
-  btnVolver:       { padding: 8, backgroundColor: '#1E293B', borderRadius: 8, width: 70, alignItems: 'center' },
+  btnVolver:       { padding: 8, backgroundColor: '#991B1B', borderRadius: 8, width: 70, alignItems: 'center' },
   btnVolverTexto:  { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
-  btnAgregar:      { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
+  btnAgregar:      { backgroundColor: '#991B1B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
   btnAgregarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 13 },
 
   // Exportar
   exportarContenedor: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 10, paddingBottom: 2 },
-  btnPDF:             { flex: 1, backgroundColor: '#1E293B', paddingVertical: 10, borderRadius: 8, alignItems: 'center', borderWidth: 1.5, borderColor: '#1E293B' },
-  btnExcel:           { flex: 1, backgroundColor: '#1E293B', paddingVertical: 10, borderRadius: 8, alignItems: 'center', borderWidth: 1.5, borderColor: '#1E293B' },
+  btnPDF:             { flex: 1, backgroundColor: '#991B1B', paddingVertical: 10, borderRadius: 8, alignItems: 'center', borderWidth: 1.5, borderColor: '#991B1B' },
+  btnExcel:           { flex: 1, backgroundColor: '#991B1B', paddingVertical: 10, borderRadius: 8, alignItems: 'center', borderWidth: 1.5, borderColor: '#991B1B' },
   btnExportarTexto:   { color: '#F8FAFC', fontWeight: '600', fontSize: 13 },
 
   // Buscador
   buscadorFila: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8 },
   buscador: {
     flex: 1, backgroundColor: 'rgba(255, 255, 255, 1.0)', color: '#0F172A',
-    padding: 12, borderRadius: 8, borderWidth: 1.5, borderColor: '#1E293B', fontSize: 14,
+    padding: 12, borderRadius: 8, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 14,
   },
-  btnFiltros:      { backgroundColor: 'rgba(255, 255, 255, 1.0)', borderWidth: 1.5, borderColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 12, borderRadius: 8 },
+  btnFiltros:      { backgroundColor: 'rgba(255, 255, 255, 1.0)', borderWidth: 1.5, borderColor: '#991B1B', paddingHorizontal: 12, paddingVertical: 12, borderRadius: 8 },
   btnFiltrosTexto: { color: '#0F172A', fontWeight: '600', fontSize: 13 },
 
   // Lista
   lista:       { paddingHorizontal: 12, paddingBottom: 20 },
-  fila:        { backgroundColor: 'rgba(255, 255, 255, 1.0)', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1.5, borderColor: '#1E293B' },
+  fila:        { backgroundColor: 'rgba(255, 255, 255, 1.0)', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1.5, borderColor: '#991B1B' },
   infoBloque:  { marginBottom: 12 },
   nombre:      { fontSize: 16, fontWeight: '600', color: '#0F172A', marginBottom: 4 },
   detalle:     { color: '#64748B', fontSize: 13, marginBottom: 2 },
-  rolBadge:    { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#1E293B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  rolBadge:    { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#991B1B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
   rolTexto:    { color: '#F8FAFC', fontWeight: '600', fontSize: 12 },
   acciones:    { flexDirection: 'row', gap: 10 },
-  btnEditar:   { flex: 1, backgroundColor: '#1E293B', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEditar:   { flex: 1, backgroundColor: '#991B1B', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnEliminar: { flex: 1, backgroundColor: '#DC2626', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnTexto:    { color: '#F8FAFC', fontWeight: '600', fontSize: 13 },
   error:         { color: '#DC2626', textAlign: 'center', marginTop: 20, fontSize: 14 },
@@ -296,19 +296,19 @@ const styles = StyleSheet.create({
 
   // Modal
   modalOverlay:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContenido: { backgroundColor: '#F8FAFC', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '75%', paddingBottom: 20, borderTopWidth: 1.5, borderColor: '#1E293B' },
+  modalContenido: { backgroundColor: '#F8FAFC', borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '75%', paddingBottom: 20, borderTopWidth: 1.5, borderColor: '#991B1B' },
   modalHeader:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(100, 116, 139, 0.2)' },
   modalTitulo:    { fontSize: 17, fontWeight: '600', color: '#0F172A' },
   modalCerrar:    { fontSize: 18, color: '#64748B', padding: 4 },
   filtrosTitulo:  { color: '#0F172A', fontSize: 13, fontWeight: '600', marginLeft: 16, marginTop: 16, marginBottom: 6 },
   chipsWrap:      { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, gap: 8 },
-  chip:           { backgroundColor: 'rgba(255, 255, 255, 1.0)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E293B' },
-  chipActivo:     { backgroundColor: '#1E293B', borderColor: '#1E293B' },
+  chip:           { backgroundColor: 'rgba(255, 255, 255, 1.0)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5, borderColor: '#991B1B' },
+  chipActivo:     { backgroundColor: '#991B1B', borderColor: '#991B1B' },
   chipTexto:      { color: '#0F172A', fontSize: 12, fontWeight: '500' },
   chipTextoActivo:{ color: '#F8FAFC', fontWeight: '600' },
   modalBotones:   { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingTop: 12, borderTopWidth: 1, borderTopColor: 'rgba(100, 116, 139, 0.2)' },
-  btnLimpiarModal:      { flex: 1, backgroundColor: 'rgba(255, 255, 255, 1.0)', paddingVertical: 12, borderRadius: 8, alignItems: 'center', borderWidth: 1.5, borderColor: '#1E293B' },
+  btnLimpiarModal:      { flex: 1, backgroundColor: 'rgba(255, 255, 255, 1.0)', paddingVertical: 12, borderRadius: 8, alignItems: 'center', borderWidth: 1.5, borderColor: '#991B1B' },
   btnLimpiarModalTexto: { color: '#0F172A', fontWeight: '600', fontSize: 13 },
-  btnAplicarModal:      { flex: 1, backgroundColor: '#1E293B', paddingVertical: 12, borderRadius: 8, alignItems: 'center' },
+  btnAplicarModal:      { flex: 1, backgroundColor: '#991B1B', paddingVertical: 12, borderRadius: 8, alignItems: 'center' },
   btnAplicarModalTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 13 },
 });

@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_DEVOLUCIONES = 'http://192.168.137.9/doto/api/devoluciones.php';
+const API_DEVOLUCIONES = 'http://192.168.40.8/doto/api/devoluciones.php';
 
 type Devolucion = {
   id_devolucion:    number;
@@ -34,7 +34,7 @@ const colorEstado = (estado: string) => {
   }
 };
 
-// Cambia esta constante según el rol: '/vendedor/panel_vendedor' o '/admin/panel_admin'
+// Cambia esta constante segï¿½n el rol: '/vendedor/panel_vendedor' o '/admin/panel_admin'
 const RUTA_PANEL = '/vendedor/panel_vendedor';
 
 export default function DevolucionesVendedor() {
@@ -130,7 +130,7 @@ export default function DevolucionesVendedor() {
 
         <View style={styles.accionesBar}>
           <Text style={styles.contadorTexto}>
-            {devolucionesFiltradas.length} devolución{devolucionesFiltradas.length !== 1 ? 'es' : ''}
+            {devolucionesFiltradas.length} devoluciï¿½n{devolucionesFiltradas.length !== 1 ? 'es' : ''}
           </Text>
         </View>
 
@@ -171,7 +171,7 @@ export default function DevolucionesVendedor() {
               return (
                 <>
                   <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitulo}>Devolución #{devActiva.id_devolucion}</Text>
+                    <Text style={styles.modalTitulo}>Devoluciï¿½n #{devActiva.id_devolucion}</Text>
                     <TouchableOpacity onPress={() => setModalVisible(false)}>
                       <Text style={styles.modalCerrar}>?</Text>
                     </TouchableOpacity>
@@ -182,7 +182,7 @@ export default function DevolucionesVendedor() {
                       <Text style={styles.seccionTitulo}>?? Cliente</Text>
                       <Text style={styles.infoTexto}>{devActiva.cliente_nombre}</Text>
                       <Text style={styles.infoTextoSub}>{devActiva.cliente_correo}</Text>
-                      <Text style={styles.infoTextoSub}>?? {devActiva.cliente_telefono || 'Sin teléfono'}</Text>
+                      <Text style={styles.infoTextoSub}>?? {devActiva.cliente_telefono || 'Sin telï¿½fono'}</Text>
                     </View>
 
                     <View style={styles.seccion}>
@@ -238,32 +238,32 @@ const styles = StyleSheet.create({
   background: { flex: 1 },
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.10)' },
   container: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: 'rgba(255,255,255,1.0)', borderBottomWidth: 1.5, borderBottomColor: '#1E293B' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, paddingTop: 50, backgroundColor: 'rgba(255,255,255,1.0)', borderBottomWidth: 1.5, borderBottomColor: '#166534' },
   titulo: { fontSize: 17, fontWeight: '700', color: '#0F172A' },
-  btnVolver: { backgroundColor: '#1E293B', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  btnVolver: { backgroundColor: '#166534', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 12, fontWeight: '600' },
-  btnRecargar: { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E293B' },
+  btnRecargar: { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#166534' },
   btnRecargarTexto: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
   accionesBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingHorizontal: 14, paddingVertical: 10, backgroundColor: 'rgba(255,255,255,1.0)', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
   contadorTexto: { color: '#64748B', fontSize: 12 },
   filtrosScroll: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
-  chip: { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E293B' },
-  chipActivo: { backgroundColor: '#1E293B' },
+  chip: { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#166534' },
+  chipActivo: { backgroundColor: '#166534' },
   chipTexto: { color: '#0F172A', fontSize: 12, fontWeight: '500' },
   chipTextoActivo: { color: '#F8FAFC', fontWeight: '600' },
   lista: { padding: 14, paddingBottom: 30 },
   empty: { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
-  card: { backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 12, padding: 14, marginBottom: 12 },
+  card: { backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#166534', borderRadius: 12, padding: 14, marginBottom: 12 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
   cardId: { color: '#0F172A', fontWeight: '700', fontSize: 14 },
   cardCliente: { color: '#64748B', fontSize: 12, marginTop: 2 },
   cardProducto: { color: '#334155', fontSize: 13, marginBottom: 2 },
   cardFecha: { color: '#94A3B8', fontSize: 11, marginBottom: 6 },
-  verDetalle: { color: '#1E293B', fontSize: 12, fontWeight: '600', textAlign: 'right' },
+  verDetalle: { color: '#166534', fontSize: 12, fontWeight: '600', textAlign: 'right' },
   estadoBadge: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
   estadoText: { fontSize: 10, fontWeight: 'bold' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(15,23,42,0.5)', justifyContent: 'flex-end' },
-  modalBox: { backgroundColor: '#F8FAFC', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '85%', borderTopWidth: 1.5, borderTopColor: '#1E293B' },
+  modalBox: { backgroundColor: '#F8FAFC', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '85%', borderTopWidth: 1.5, borderTopColor: '#166534' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   modalTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 17 },
   modalCerrar: { color: '#64748B', fontSize: 20, padding: 4 },

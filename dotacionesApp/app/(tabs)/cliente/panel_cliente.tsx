@@ -3,13 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ImageBackground }
 import { router } from 'expo-router';
 import { sesion } from '../../../constants/sesion';
 
+const ROL_COLOR  = '#1E40AF';
+const ROL_LIGHT  = '#DBEAFE';
+const ROL_ICONO  = '🛍️';
+const ROL_NOMBRE = 'Cliente';
+const ROL_DESC   = 'Consulta tus pedidos y productos';
+
 const opciones = [
-  { icon: '🏠', label: 'Inicio', ruta: '/cliente/panel_cliente' },
-  { icon: '👤', label: 'Perfil', ruta: '/cliente/perfil_cliente' },
-  { icon: '👕', label: 'Productos', ruta: '/cliente/productos_cliente' },
-  { icon: '📋', label: 'Ver Pedidos', ruta: '/cliente/pedidos_cliente' },
-  { icon: '🏢', label: 'Nosotros', ruta: '/cliente/nosotros_cliente' },
-  { icon: '\u{21A9}\u{FE0F}', label: 'Devoluciones', ruta: '/cliente/devoluciones_cliente' },
+  { icon: '🏠', label: 'Inicio',        ruta: '/cliente/panel_cliente' },
+  { icon: '👤', label: 'Perfil',        ruta: '/cliente/perfil_cliente' },
+  { icon: '👕', label: 'Productos',     ruta: '/cliente/productos_cliente' },
+  { icon: '📋', label: 'Ver Pedidos',   ruta: '/cliente/pedidos_cliente' },
+  { icon: '🏢', label: 'Nosotros',      ruta: '/cliente/nosotros_cliente' },
+  { icon: '↩️', label: 'Devoluciones',  ruta: '/cliente/devoluciones_cliente' },
 ];
 
 export default function PanelCliente() {
@@ -25,13 +31,23 @@ export default function PanelCliente() {
 
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>PANEL CLIENTE</Text>
+
+          <View style={[styles.rolIconWrap, { backgroundColor: ROL_LIGHT, borderColor: ROL_COLOR }]}>
+            <Text style={styles.rolIconText}>{ROL_ICONO}</Text>
           </View>
-          <Text style={styles.title}>
-            Bienvenido, {sesion.nombre}
-          </Text>
-          <Text style={styles.subtitle}>Consulta tus pedidos y productos</Text>
+
+          <View style={[styles.badge, { backgroundColor: ROL_COLOR }]}>
+            <Text style={styles.badgeText}>{ROL_NOMBRE.toUpperCase()}</Text>
+          </View>
+
+          <Text style={styles.title}>Bienvenido, {sesion.nombre}</Text>
+          <Text style={styles.subtitle}>{ROL_DESC}</Text>
+
+          <View style={[styles.accesoBar, { backgroundColor: ROL_LIGHT, borderColor: ROL_COLOR }]}>
+            <Text style={[styles.accesoTexto, { color: ROL_COLOR }]}>
+              🛒 Nivel de acceso: <Text style={{ fontWeight: '700' }}>Comprador</Text>
+            </Text>
+          </View>
         </View>
 
         {/* Grid */}
@@ -39,11 +55,11 @@ export default function PanelCliente() {
           {opciones.map((op) => (
             <TouchableOpacity
               key={op.label}
-              style={styles.card}
+              style={[styles.card, { borderColor: ROL_COLOR }]}
               onPress={() => router.push(op.ruta as any)}
               activeOpacity={0.8}
             >
-              <View style={styles.iconWrap}>
+              <View style={[styles.iconWrap, { backgroundColor: ROL_COLOR }]}>
                 <Text style={styles.cardIcon}>{op.icon}</Text>
               </View>
               <Text style={styles.cardText}>{op.label}</Text>
@@ -51,8 +67,10 @@ export default function PanelCliente() {
           ))}
         </View>
 
-        {/* Botón cerrar sesión */}
-        <TouchableOpacity style={styles.btnSalir} onPress={() => router.replace('/')}>
+        <TouchableOpacity
+          style={[styles.btnSalir, { backgroundColor: ROL_COLOR }]}
+          onPress={() => router.replace('/')}
+        >
           <Text style={styles.btnSalirText}>🚪 Cerrar Sesión</Text>
         </TouchableOpacity>
 
@@ -64,98 +82,66 @@ export default function PanelCliente() {
 const styles = StyleSheet.create({
   background: { flex: 1 },
   overlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.10)',
   },
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
+  container: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 40 },
 
-  // Header
   header: {
     alignItems: 'center',
-    paddingTop: 28,
-    paddingBottom: 28,
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'rgba(100, 116, 139, 0.2)',
+    paddingTop: 28, paddingBottom: 24,
     marginBottom: 16,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderRadius: 16,
-    paddingHorizontal: 16,
+    borderRadius: 16, paddingHorizontal: 16,
   },
+  rolIconWrap: {
+    width: 72, height: 72, borderRadius: 36,
+    borderWidth: 2, alignItems: 'center',
+    justifyContent: 'center', marginBottom: 12,
+  },
+  rolIconText: { fontSize: 36 },
   badge: {
-    backgroundColor: '#1E293B',
     borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    marginBottom: 14,
+    paddingHorizontal: 16, paddingVertical: 5, marginBottom: 12,
   },
   badgeText: {
-    color: '#F8FAFC',
-    fontSize: 10,
-    fontWeight: '600',
-    letterSpacing: 1.5,
+    color: '#F8FAFC', fontSize: 11,
+    fontWeight: '700', letterSpacing: 1.5,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#0F172A',
-    textAlign: 'center',
-    marginBottom: 5,
+    fontSize: 20, fontWeight: '600',
+    color: '#0F172A', textAlign: 'center', marginBottom: 4,
   },
   subtitle: {
-    fontSize: 13,
-    color: '#64748B',
-    textAlign: 'center',
+    fontSize: 13, color: '#64748B',
+    textAlign: 'center', marginBottom: 14,
   },
+  accesoBar: {
+    borderRadius: 8, borderWidth: 1,
+    paddingHorizontal: 14, paddingVertical: 7,
+  },
+  accesoTexto: { fontSize: 12 },
 
-  // Grid
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'center',
-    marginBottom: 8,
+    flexDirection: 'row', flexWrap: 'wrap',
+    gap: 12, justifyContent: 'center', marginBottom: 8,
   },
   card: {
     width: '46%',
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#1E293B',
-    padding: 20,
-    alignItems: 'center',
-    gap: 10,
+    borderRadius: 16, borderWidth: 1.5,
+    padding: 20, alignItems: 'center', gap: 10,
   },
   iconWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: 13,
-    backgroundColor: '#1E293B',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 52, height: 52, borderRadius: 13,
+    alignItems: 'center', justifyContent: 'center',
   },
   cardIcon: { fontSize: 24 },
-  cardText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#0F172A',
-  },
+  cardText: { fontSize: 13, fontWeight: '600', color: '#0F172A' },
 
-  // Botón salir
   btnSalir: {
-    marginTop: 28,
-    backgroundColor: '#1E293B',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
+    marginTop: 28, paddingVertical: 14,
+    borderRadius: 10, alignItems: 'center',
   },
-  btnSalirText: {
-    color: '#F8FAFC',
-    fontWeight: '600',
-    fontSize: 14,
-  },
+  btnSalirText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 });

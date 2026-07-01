@@ -138,17 +138,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         paddingHorizontal: 14, paddingVertical: 12,
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+        borderBottomWidth: 1.5, borderBottomColor: '#1E40AF',
     },
     btnVolver: {
-        backgroundColor: '#1E293B', borderRadius: 8,
+        backgroundColor: '#1E40AF', borderRadius: 8,
         paddingHorizontal: 12, paddingVertical: 4,
     },
     btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
     logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     logoCircle: {
         width: 30, height: 30, borderRadius: 15,
-        backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: '#1E40AF', alignItems: 'center', justifyContent: 'center',
     },
     logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
     brand: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
@@ -158,28 +158,28 @@ const styles = StyleSheet.create({
     // Formulario
     seccion: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderWidth: 1.5, borderColor: '#1E293B',
+        borderWidth: 1.5, borderColor: '#1E40AF',
         borderRadius: 12, padding: 16, marginBottom: 14,
     },
     seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 18, marginBottom: 6 },
     seccionSub: { color: '#64748B', fontSize: 12, lineHeight: 18, marginBottom: 16 },
     input: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderWidth: 1.5, borderColor: '#1E293B',
+        borderWidth: 1.5, borderColor: '#1E40AF',
         color: '#0F172A', borderRadius: 8,
         padding: 11, fontSize: 13, marginBottom: 10,
     },
     textArea: { height: 100, textAlignVertical: 'top' },
-    btnEnviar: { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+    btnEnviar: { backgroundColor: '#1E40AF', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
     btnEnviarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 
     // Info contacto
     infoBox: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderWidth: 1.5, borderColor: '#1E293B',
+        borderWidth: 1.5, borderColor: '#1E40AF',
         borderRadius: 12, padding: 16, alignItems: 'center',
     },
-    infoTel: { color: '#1E293B', fontWeight: '700', fontSize: 17, marginBottom: 8 },
+    infoTel: { color: '#1E40AF', fontWeight: '700', fontSize: 17, marginBottom: 8 },
     infoText: { color: '#64748B', fontSize: 12, marginBottom: 4, textAlign: 'center' },
     horario: { marginTop: 14, alignItems: 'center' },
     horarioTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 13, marginBottom: 8 },
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     bottomNav: {
         flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8,
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderTopWidth: 1.5, borderTopColor: '#1E293B',
+        borderTopWidth: 1.5, borderTopColor: '#1E40AF',
     },
     bnav: { alignItems: 'center', gap: 2 },
     bnavIcon: { fontSize: 18 },

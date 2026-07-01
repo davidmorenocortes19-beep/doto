@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_PEDIDOS = 'http://192.168.137.9/doto/api/pedidos.php';
+const API_PEDIDOS = 'http://192.168.40.8/doto/api/pedidos.php';
 
 type ProductoPedido = {
   nombre:          string;
@@ -366,12 +366,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
   },
   titulo:           { fontSize: 17, fontWeight: '700', color: '#0F172A' },
-  btnVolver:        { backgroundColor: '#1E293B', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  btnVolver:        { backgroundColor: '#991B1B', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
   btnVolverTexto:   { color: '#F8FAFC', fontSize: 12, fontWeight: '600' },
-  btnRecargar:      { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E293B' },
+  btnRecargar:      { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#991B1B' },
   btnRecargarTexto: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
 
   accionesBar: {
@@ -380,15 +380,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,1.0)',
     borderBottomWidth: 1, borderBottomColor: '#E2E8F0',
   },
-  btnOcultos:           { borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
-  btnOcultosActivo:     { backgroundColor: '#1E293B' },
+  btnOcultos:           { borderWidth: 1.5, borderColor: '#991B1B', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  btnOcultosActivo:     { backgroundColor: '#991B1B' },
   btnOcultosTexto:      { color: '#0F172A', fontSize: 12, fontWeight: '600' },
   btnOcultosTextoActivo:{ color: '#F8FAFC' },
   contadorTexto:        { color: '#64748B', fontSize: 12 },
 
   filtrosScroll:  { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
-  chip:           { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E293B' },
-  chipActivo:     { backgroundColor: '#1E293B' },
+  chip:           { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#991B1B' },
+  chipActivo:     { backgroundColor: '#991B1B' },
   chipTexto:      { color: '#0F172A', fontSize: 12, fontWeight: '500' },
   chipTextoActivo:{ color: '#F8FAFC', fontWeight: '600' },
 
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: 'rgba(255,255,255,1.0)',
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#991B1B',
     borderRadius: 12, padding: 14, marginBottom: 12,
   },
   cardHeader:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 },
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   cardFooter:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   totalLabel:      { color: '#64748B', fontSize: 12 },
   totalValor:      { color: '#0F172A', fontWeight: '700', fontSize: 14 },
-  verDetalle:      { color: '#1E293B', fontSize: 12, fontWeight: '600' },
+  verDetalle:      { color: '#991B1B', fontSize: 12, fontWeight: '600' },
   estadoBadge:     { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
   estadoText:      { fontSize: 10, fontWeight: 'bold' },
 
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     borderTopLeftRadius: 20, borderTopRightRadius: 20,
     padding: 20, maxHeight: '85%',
-    borderTopWidth: 1.5, borderTopColor: '#1E293B',
+    borderTopWidth: 1.5, borderTopColor: '#991B1B',
   },
   modalHeader:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   modalTitulo:  { color: '#0F172A', fontWeight: '700', fontSize: 17 },

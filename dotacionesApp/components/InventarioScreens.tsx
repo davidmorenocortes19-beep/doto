@@ -6,8 +6,8 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.137.9/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://192.168.137.9/doto/api/productos.php';
+const API_URL = 'http://192.168.40.8/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://192.168.40.8/doto/api/productos.php';
 
 type RolInventario = 'admin' | 'bodeguero';
 
@@ -49,7 +49,7 @@ function estadoStock(item: InventarioItem): { texto: string; badge: string } {
     return { texto: 'Agotado',    badge: '#DC2626' };
   if (Number(item.cantidad_actual) <= Number(item.stock_minimo))
     return { texto: 'Stock bajo', badge: '#D97706' };
-  return   { texto: 'Disponible', badge: '#1E293B' };
+  return   { texto: 'Disponible', badge: '#991B1B' };
 }
 
 function useInventarioData() {
@@ -433,35 +433,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
     backgroundColor: 'rgba(255,255,255,1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
   },
   titulo:          { fontSize: 20, fontWeight: '600', color: '#0F172A' },
-  btnVolver:       { padding: 8, backgroundColor: '#1E293B', borderRadius: 8, width: 70, alignItems: 'center' },
+  btnVolver:       { padding: 8, backgroundColor: '#991B1B', borderRadius: 8, width: 70, alignItems: 'center' },
   btnVolverTexto:  { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
-  btnAgregar:      { backgroundColor: '#1E293B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
+  btnAgregar:      { backgroundColor: '#991B1B', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
   btnAgregarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 13 },
 
   resumenContenedor: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 12 },
-  resumenCard:  { flex: 1, backgroundColor: '#fff', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1.5, borderColor: '#1E293B' },
+  resumenCard:  { flex: 1, backgroundColor: '#fff', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1.5, borderColor: '#991B1B' },
   resumenValor: { color: '#0F172A', fontSize: 24, fontWeight: '700' },
   resumenLabel: { color: '#64748B', fontSize: 11, marginTop: 2, textAlign: 'center' },
 
-  formulario: { margin: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, borderWidth: 1.5, borderColor: '#1E293B' },
+  formulario: { margin: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, borderWidth: 1.5, borderColor: '#991B1B' },
   formTitulo: { color: '#0F172A', fontWeight: '600', fontSize: 16, marginBottom: 10 },
   input: {
     backgroundColor: '#F8FAFC', padding: 12, borderRadius: 8,
-    marginBottom: 8, borderWidth: 1.5, borderColor: '#1E293B', fontSize: 14, color: '#0F172A',
+    marginBottom: 8, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 14, color: '#0F172A',
   },
   productosSelector:     { marginBottom: 8, gap: 6 },
-  productoOpcion:        { backgroundColor: '#F8FAFC', borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 8, padding: 10 },
-  productoOpcionActiva:  { backgroundColor: '#1E293B', borderColor: '#1E293B' },
+  productoOpcion:        { backgroundColor: '#F8FAFC', borderWidth: 1.5, borderColor: '#991B1B', borderRadius: 8, padding: 10 },
+  productoOpcionActiva:  { backgroundColor: '#991B1B', borderColor: '#991B1B' },
   productoNombre:        { color: '#0F172A', fontWeight: '600', fontSize: 13 },
   productoNombreActivo:  { color: '#F8FAFC' },
   productoDetalle:       { color: '#64748B', fontSize: 11, marginTop: 2 },
   productoDetalleActivo: { color: '#CBD5E1' },
   productoSeleccionado:  { color: '#16A34A', fontSize: 12, marginBottom: 8, fontWeight: '600' },
   sinProductos:          { color: '#64748B', fontSize: 12, textAlign: 'center', marginBottom: 8 },
-  btnGuardar:      { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
+  btnGuardar:      { backgroundColor: '#991B1B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 4 },
   btnGuardarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
   btnCancelar:     { padding: 10, alignItems: 'center' },
   btnCancelarTexto:{ color: '#64748B', textDecorationLine: 'underline', fontSize: 13 },
@@ -470,17 +470,17 @@ const styles = StyleSheet.create({
   buscadorContenedor: { padding: 12 },
   buscador: {
     backgroundColor: '#fff', color: '#0F172A', padding: 12,
-    borderRadius: 8, borderWidth: 1.5, borderColor: '#1E293B', fontSize: 14,
+    borderRadius: 8, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 14,
   },
   lista:       { paddingHorizontal: 12, paddingBottom: 20 },
-  fila:        { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1.5, borderColor: '#1E293B' },
+  fila:        { backgroundColor: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, borderWidth: 1.5, borderColor: '#991B1B' },
   infoBloque:  { marginBottom: 12 },
   nombre:      { fontSize: 16, fontWeight: '600', color: '#0F172A', marginBottom: 4 },
   detalle:     { color: '#64748B', fontSize: 13, marginBottom: 2 },
   estadoBadge: { marginTop: 6, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
   estadoTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 12 },
   acciones:    { flexDirection: 'row', gap: 10 },
-  btnEditar:   { flex: 1, backgroundColor: '#1E293B', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEditar:   { flex: 1, backgroundColor: '#991B1B', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnEliminar: { flex: 1, backgroundColor: '#DC2626', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnTexto:    { color: '#F8FAFC', fontWeight: '600', fontSize: 13 },
   error:         { color: '#DC2626', textAlign: 'center', marginTop: 20, fontSize: 14 },

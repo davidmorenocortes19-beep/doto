@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://192.168.137.9/doto/api/perfil.php';
+const API_URL = 'http://192.168.40.8/doto/api/perfil.php';
 
 type Bodeguero = {
   id?: number;
@@ -20,21 +20,21 @@ type Bodeguero = {
 };
 
 const validarPassword = (pass: string): string | null => {
-  if (pass.length < 8) return '? Mínimo 8 caracteres';
-  if (!/[A-Z]/.test(pass)) return '? Debe tener al menos una mayúscula';
-  if (!/[a-z]/.test(pass)) return '? Debe tener al menos una minúscula';
-  if (!/[0-9]/.test(pass)) return '? Debe tener al menos un número';
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) return '? Debe tener al menos un carácter especial (!@#$...)';
+  if (pass.length < 8) return '? Mï¿½nimo 8 caracteres';
+  if (!/[A-Z]/.test(pass)) return '? Debe tener al menos una mayï¿½scula';
+  if (!/[a-z]/.test(pass)) return '? Debe tener al menos una minï¿½scula';
+  if (!/[0-9]/.test(pass)) return '? Debe tener al menos un nï¿½mero';
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) return '? Debe tener al menos un carï¿½cter especial (!@#$...)';
   return null;
 };
 
 const validarCorreo = (correo: string): string | null => {
-  if (!correo.includes('@') || !correo.includes('.')) return '? Ingresa un correo válido';
+  if (!correo.includes('@') || !correo.includes('.')) return '? Ingresa un correo vï¿½lido';
   return null;
 };
 
 const validarDireccion = (direccion: string): string | null => {
-  if (direccion.trim().length < 5) return '? Mínimo 5 caracteres';
+  if (direccion.trim().length < 5) return '? Mï¿½nimo 5 caracteres';
   return null;
 };
 
@@ -72,12 +72,12 @@ export default function PerfilBodeguero() {
   // -- VALIDACIONES EN TIEMPO REAL -----------------------------------
 
   const handleNombre = (text: string) => {
-    const limpio = text.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, '');
+    const limpio = text.replace(/[^a-zA-Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\s]/g, '');
     setNuevoNombre(limpio);
     if (text !== limpio) {
       setNombreError('? Solo se permiten letras y espacios');
     } else if (limpio.trim().length > 0 && limpio.trim().length < 3) {
-      setNombreError('? Mínimo 3 caracteres');
+      setNombreError('? Mï¿½nimo 3 caracteres');
     } else {
       setNombreError('');
     }
@@ -96,9 +96,9 @@ export default function PerfilBodeguero() {
     const limpio = text.replace(/[^0-9]/g, '');
     setNuevoTelefono(limpio);
     if (text !== limpio) {
-      setTelError('? Solo se permiten números');
+      setTelError('? Solo se permiten nï¿½meros');
     } else if (limpio.length > 0 && limpio.length < 7) {
-      setTelError('? Mínimo 7 dígitos');
+      setTelError('? Mï¿½nimo 7 dï¿½gitos');
     } else {
       setTelError('');
     }
@@ -157,16 +157,16 @@ export default function PerfilBodeguero() {
         setMensaje('? ' + res.data.mensaje);
       }
     } catch {
-      setMensaje('? Error de conexión con el servidor');
+      setMensaje('? Error de conexiï¿½n con el servidor');
     } finally {
       setCargando(false);
     }
   };
 
   const cerrarSesion = () => {
-    Alert.alert('Cerrar sesión', '¿Estás seguro de que deseas cerrar sesión?', [
+    Alert.alert('Cerrar sesiï¿½n', 'ï¿½Estï¿½s seguro de que deseas cerrar sesiï¿½n?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Cerrar sesión', style: 'destructive', onPress: () => router.replace('/') },
+      { text: 'Cerrar sesiï¿½n', style: 'destructive', onPress: () => router.replace('/') },
     ]);
   };
 
@@ -220,26 +220,26 @@ export default function PerfilBodeguero() {
               </View>
             </View>
 
-            {/* Información actual */}
+            {/* Informaciï¿½n actual */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Información Personal</Text>
+              <Text style={styles.seccionTitulo}>Informaciï¿½n Personal</Text>
               {[
                 { label: 'Nombre', valor: bodeguero?.nombre },
                 { label: 'Documento', valor: bodeguero?.documento },
                 { label: 'Correo', valor: bodeguero?.correo },
-                { label: 'Teléfono', valor: bodeguero?.telefono },
-                { label: 'Dirección', valor: bodeguero?.direccion },
+                { label: 'Telï¿½fono', valor: bodeguero?.telefono },
+                { label: 'Direcciï¿½n', valor: bodeguero?.direccion },
               ].map(item => (
                 <View key={item.label} style={styles.infoRow}>
                   <Text style={styles.infoLabel}>{item.label}</Text>
-                  <Text style={styles.infoValor}>{item.valor ?? '—'}</Text>
+                  <Text style={styles.infoValor}>{item.valor ?? 'ï¿½'}</Text>
                 </View>
               ))}
             </View>
 
-            {/* Formulario de actualización */}
+            {/* Formulario de actualizaciï¿½n */}
             <View style={styles.seccion}>
-              <Text style={styles.seccionTitulo}>Actualizar Información</Text>
+              <Text style={styles.seccionTitulo}>Actualizar Informaciï¿½n</Text>
               <Text style={styles.seccionSub}>Solo llena los campos que deseas cambiar</Text>
 
               {/* NOMBRE */}
@@ -250,7 +250,7 @@ export default function PerfilBodeguero() {
               />
               {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
               {nuevoNombre.trim().length >= 3 && nombreError === '' && (
-                <Text style={styles.fieldOk}>? Nombre válido</Text>
+                <Text style={styles.fieldOk}>? Nombre vï¿½lido</Text>
               )}
 
               {/* CORREO */}
@@ -262,42 +262,42 @@ export default function PerfilBodeguero() {
               />
               {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
               {nuevoCorreo !== '' && correoError === '' && (
-                <Text style={styles.fieldOk}>? Correo válido</Text>
+                <Text style={styles.fieldOk}>? Correo vï¿½lido</Text>
               )}
 
-              {/* TELÉFONO */}
+              {/* TELï¿½FONO */}
               <TextInput
                 style={[styles.input, telError ? styles.inputError : null]}
-                placeholder="Nuevo teléfono" placeholderTextColor="#94A3B8"
+                placeholder="Nuevo telï¿½fono" placeholderTextColor="#94A3B8"
                 value={nuevoTelefono} onChangeText={handleTelefono}
                 keyboardType="phone-pad" maxLength={10}
               />
               {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
               {nuevoTelefono.length >= 7 && telError === '' && (
-                <Text style={styles.fieldOk}>? Teléfono válido</Text>
+                <Text style={styles.fieldOk}>? Telï¿½fono vï¿½lido</Text>
               )}
 
-              {/* DIRECCIÓN */}
+              {/* DIRECCIï¿½N */}
               <TextInput
                 style={[styles.input, dirError ? styles.inputError : null]}
-                placeholder="Nueva dirección" placeholderTextColor="#94A3B8"
+                placeholder="Nueva direcciï¿½n" placeholderTextColor="#94A3B8"
                 value={nuevaDireccion} onChangeText={handleDireccion}
               />
               {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
               {nuevaDireccion.trim().length >= 5 && dirError === '' && (
-                <Text style={styles.fieldOk}>? Dirección válida</Text>
+                <Text style={styles.fieldOk}>? Direcciï¿½n vï¿½lida</Text>
               )}
 
-              {/* CONTRASEÑA */}
+              {/* CONTRASEï¿½A */}
               <TextInput
                 style={[styles.input, passError ? styles.inputError : null]}
-                placeholder="Nueva contraseña" placeholderTextColor="#94A3B8"
+                placeholder="Nueva contraseï¿½a" placeholderTextColor="#94A3B8"
                 value={nuevoPassword} onChangeText={handlePassword}
                 secureTextEntry
               />
               {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
               {nuevoPassword !== '' && passError === '' && (
-                <Text style={styles.fieldOk}>? Contraseña segura</Text>
+                <Text style={styles.fieldOk}>? Contraseï¿½a segura</Text>
               )}
 
               {mensaje !== '' && (
@@ -359,17 +359,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 14, paddingVertical: 12,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#9A3412',
   },
   btnVolver: {
-    backgroundColor: '#1E293B', borderRadius: 8,
+    backgroundColor: '#9A3412', borderRadius: 8,
     paddingHorizontal: 12, paddingVertical: 4,
   },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
   logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle: {
     width: 30, height: 30, borderRadius: 15,
-    backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#9A3412', alignItems: 'center', justifyContent: 'center',
   },
   logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
   headerTitle: { color: '#0F172A', fontWeight: '600', fontSize: 15 },
@@ -380,13 +380,13 @@ const styles = StyleSheet.create({
   avatarWrap: { alignItems: 'center', marginBottom: 20, marginTop: 8 },
   avatar: {
     width: 72, height: 72, borderRadius: 36,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#9A3412',
     alignItems: 'center', justifyContent: 'center', marginBottom: 10,
   },
   avatarText: { color: '#F8FAFC', fontSize: 30, fontWeight: 'bold' },
   avatarName: { color: '#0F172A', fontSize: 17, fontWeight: '700', marginBottom: 6 },
   rolBadge: {
-    backgroundColor: '#1E293B', borderRadius: 20,
+    backgroundColor: '#9A3412', borderRadius: 20,
     paddingHorizontal: 14, paddingVertical: 4,
   },
   rolText: { color: '#F8FAFC', fontSize: 12, fontWeight: '600' },
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   // Secciones
   seccion: {
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#9A3412',
     borderRadius: 16, padding: 14, marginBottom: 14,
   },
   seccionTitulo: { color: '#0F172A', fontWeight: '600', fontSize: 15, marginBottom: 4 },
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   // Inputs
   input: {
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#9A3412',
     color: '#0F172A', borderRadius: 8,
     padding: 11, fontSize: 13, marginBottom: 4,
   },
@@ -426,22 +426,22 @@ const styles = StyleSheet.create({
 
   // Botones
   btnGuardar: {
-    backgroundColor: '#1E293B', padding: 13,
+    backgroundColor: '#9A3412', padding: 13,
     borderRadius: 8, alignItems: 'center', marginTop: 4,
   },
   btnGuardarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
   btnSalir: {
     marginTop: 4, marginBottom: 8,
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#9A3412',
     paddingVertical: 13, borderRadius: 10, alignItems: 'center',
   },
-  btnSalirText: { color: '#1E293B', fontWeight: '600', fontSize: 14 },
+  btnSalirText: { color: '#9A3412', fontWeight: '600', fontSize: 14 },
 
   // Bottom nav
   bottomNav: {
     flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderTopWidth: 1.5, borderTopColor: '#1E293B',
+    borderTopWidth: 1.5, borderTopColor: '#9A3412',
   },
   bnav: { alignItems: 'center', gap: 2 },
   bnavIcon: { fontSize: 18 },

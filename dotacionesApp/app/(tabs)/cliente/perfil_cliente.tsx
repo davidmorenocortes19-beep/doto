@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL = 'http://192.168.137.9/doto/api/perfil.php';
+const API_URL = 'http://192.168.40.8/doto/api/perfil.php';
 
 type Vendedor = {
     id?: number;
@@ -345,17 +345,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         paddingHorizontal: 14, paddingVertical: 12,
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+        borderBottomWidth: 1.5, borderBottomColor: '#1E40AF',
     },
     btnVolver: {
-        backgroundColor: '#1E293B', borderRadius: 8,
+        backgroundColor: '#1E40AF', borderRadius: 8,
         paddingHorizontal: 12, paddingVertical: 4,
     },
     btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
     logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     logoCircle: {
         width: 30, height: 30, borderRadius: 15,
-        backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: '#1E40AF', alignItems: 'center', justifyContent: 'center',
     },
     logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
     headerTitle: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
@@ -366,14 +366,14 @@ const styles = StyleSheet.create({
     avatarWrap: { alignItems: 'center', marginBottom: 20, marginTop: 8 },
     avatar: {
         width: 72, height: 72, borderRadius: 36,
-        backgroundColor: '#1E293B',
+        backgroundColor: '#1E40AF',
         alignItems: 'center', justifyContent: 'center', marginBottom: 10,
     },
     avatarText: { color: '#F8FAFC', fontSize: 30, fontWeight: 'bold' },
     avatarName: { color: '#0F172A', fontSize: 17, fontWeight: '700', marginBottom: 6 },
     rolBadge: {
         backgroundColor: '#EEF1FF', borderWidth: 1.5,
-        borderColor: '#1E293B', borderRadius: 20,
+        borderColor: '#1E40AF', borderRadius: 20,
         paddingHorizontal: 14, paddingVertical: 4,
     },
     rolText: { color: '#0F172A', fontSize: 12, fontWeight: '600' },
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     // Secciones
     seccion: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderWidth: 1.5, borderColor: '#1E293B',
+        borderWidth: 1.5, borderColor: '#1E40AF',
         borderRadius: 12, padding: 14, marginBottom: 14,
     },
     seccionTitulo: { color: '#0F172A', fontWeight: '700', fontSize: 15, marginBottom: 4 },
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     // Inputs
     input: {
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderWidth: 1.5, borderColor: '#1E293B',
+        borderWidth: 1.5, borderColor: '#1E40AF',
         color: '#0F172A', borderRadius: 8,
         padding: 11, fontSize: 13, marginBottom: 4,
     },
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
 
     // Botón guardar
     btnGuardar: {
-        backgroundColor: '#1E293B', padding: 13,
+        backgroundColor: '#1E40AF', padding: 13,
         borderRadius: 8, alignItems: 'center', marginTop: 4,
     },
     btnGuardarText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     bottomNav: {
         flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8,
         backgroundColor: 'rgba(255, 255, 255, 1.0)',
-        borderTopWidth: 1.5, borderTopColor: '#1E293B',
+        borderTopWidth: 1.5, borderTopColor: '#1E40AF',
     },
     bnav: { alignItems: 'center', gap: 2 },
     bnavIcon: { fontSize: 18 },

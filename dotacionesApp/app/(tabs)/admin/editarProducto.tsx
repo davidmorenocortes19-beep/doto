@@ -5,7 +5,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const BASE = 'http://192.168.137.9/doto/api';
+const BASE = 'http://192.168.40.8/doto/api';
 
 export default function EditarProductoScreen() {
   const params = useLocalSearchParams();
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   btnReintentar: {
     marginTop: 20,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderBottomWidth: 1.5,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: '#991B1B',
   },
   titulo: {
     fontSize: 18,
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   btnVolver: {
     padding: 8,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
     borderRadius: 8,
     width: 70,
     alignItems: 'center',
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 4,
     borderWidth: 1.5,
-    borderColor: '#1E293B',
+    borderColor: '#991B1B',
     fontSize: 15,
   },
   inputError: {
@@ -411,12 +411,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: '#1E293B',
+    borderColor: '#991B1B',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
   },
   estadoBtnDisponible: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
   },
   estadoBtnAgotado: {
     backgroundColor: '#DC2626',
@@ -437,10 +437,10 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderTopWidth: 1.5,
-    borderTopColor: '#1E293B',
+    borderTopColor: '#991B1B',
   },
   btnGuardar: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#1E293B',
+    borderColor: '#991B1B',
   },
   exitoTexto: {
     color: '#16A34A',

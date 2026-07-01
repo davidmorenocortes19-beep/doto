@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     borderBottomWidth: 1.5,
-    borderBottomColor: '#1E293B',
+    borderBottomColor: '#991B1B',
   },
   titulo: {
     fontSize: 18,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   btnVolver: {
     padding: 8,
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
     borderRadius: 8,
     width: 70,
     alignItems: 'center',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#1E293B',
+    borderColor: '#991B1B',
     fontSize: 14,
   },
   inputError: {
@@ -326,12 +326,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1.5,
-    borderColor: '#1E293B',
+    borderColor: '#991B1B',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
   },
   estadoBtnDisponible: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
   },
   estadoBtnAgotado: {
     backgroundColor: '#DC2626',
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
 
   // Botón guardar
   btnGuardar: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#991B1B',
     padding: 14,
     borderRadius: 10,
     alignItems: 'center',
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     margin: 16,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#1E293B',
+    borderColor: '#991B1B',
   },
   exitoTexto: {
     color: '#16A34A',

@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_DEVOLUCIONES = 'http://192.168.137.9/doto/api/devoluciones.php';
+const API_DEVOLUCIONES = 'http://192.168.40.8/doto/api/devoluciones.php';
 
 type Devolucion = {
   id_devolucion: number;
@@ -231,20 +231,20 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
 
   // Header
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, backgroundColor: 'rgba(255,255,255,1.0)', borderBottomWidth: 1.5, borderBottomColor: '#1E293B' },
-  btnVolver: { backgroundColor: '#1E293B', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 12, backgroundColor: 'rgba(255,255,255,1.0)', borderBottomWidth: 1.5, borderBottomColor: '#1E40AF' },
+  btnVolver: { backgroundColor: '#1E40AF', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 4 },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
   logoArea: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' },
+  logoCircle: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1E40AF', alignItems: 'center', justifyContent: 'center' },
   logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
   brand: { color: '#0F172A', fontWeight: '700', fontSize: 15 },
-  btnRecargar: { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E293B' },
+  btnRecargar: { backgroundColor: '#F1F5F9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: '#1E40AF' },
   btnRecargarTexto: { color: '#0F172A', fontSize: 16, fontWeight: '600' },
 
   // Filtros
   filtrosScroll: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
-  chip: { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E293B' },
-  chipActivo: { backgroundColor: '#1E293B' },
+  chip: { backgroundColor: 'rgba(255,255,255,1.0)', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: '#1E40AF' },
+  chipActivo: { backgroundColor: '#1E40AF' },
   chipTexto: { color: '#0F172A', fontSize: 12, fontWeight: '500' },
   chipTextoActivo: { color: '#F8FAFC', fontWeight: '600' },
 
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   empty: { color: '#0F172A', textAlign: 'center', marginTop: 40, fontSize: 13 },
 
   // Card
-  card: { backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#1E293B', borderRadius: 12, padding: 14, marginBottom: 12 },
+  card: { backgroundColor: 'rgba(255,255,255,1.0)', borderWidth: 1.5, borderColor: '#1E40AF', borderRadius: 12, padding: 14, marginBottom: 12 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
   cardId: { color: '#0F172A', fontWeight: '700', fontSize: 14 },
   cardFecha: { color: '#64748B', fontSize: 11, marginBottom: 10 },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   mensajeTexto: { fontSize: 12, color: '#854D0E', lineHeight: 18 },
 
   // Bottom nav
-  bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10, backgroundColor: 'rgba(255,255,255,1.0)', borderTopWidth: 1.5, borderTopColor: '#1E293B' },
+  bottomNav: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10, backgroundColor: 'rgba(255,255,255,1.0)', borderTopWidth: 1.5, borderTopColor: '#1E40AF' },
   bnav: { alignItems: 'center', gap: 2 },
   bnavIcon: { fontSize: 18 },
   bnavLabel: { fontSize: 9, color: '#64748B' },

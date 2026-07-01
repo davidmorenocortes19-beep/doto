@@ -5,7 +5,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const BASE = 'http://192.168.137.9/doto/api';
+const BASE = 'http://192.168.40.8/doto/api';
 
 type Rol = { id_rol: number; nombre_rol: string };
 
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, marginTop: 10,
   },
   btnReintentar: {
-    marginTop: 20, backgroundColor: '#1E293B',
+    marginTop: 20, backgroundColor: '#991B1B',
     paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8,
   },
   btnReintentarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
@@ -330,11 +330,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
   },
   titulo: { fontSize: 18, fontWeight: '600', color: '#0F172A' },
   btnVolver: {
-    padding: 8, backgroundColor: '#1E293B',
+    padding: 8, backgroundColor: '#991B1B',
     borderRadius: 8, width: 70, alignItems: 'center',
   },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     color: '#0F172A', padding: 14, borderRadius: 10,
-    marginBottom: 4, borderWidth: 1.5, borderColor: '#1E293B', fontSize: 15,
+    marginBottom: 4, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 15,
   },
   inputError: { borderColor: '#DC2626', borderWidth: 1.5, marginBottom: 0 },
   inputDeshabilitado: {
@@ -367,9 +367,9 @@ const styles = StyleSheet.create({
   rolBtn: {
     flex: 1, minWidth: '45%', padding: 10, borderRadius: 8,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    alignItems: 'center', borderWidth: 1.5, borderColor: '#1E293B',
+    alignItems: 'center', borderWidth: 1.5, borderColor: '#991B1B',
   },
-  rolActivo:      { backgroundColor: '#1E293B' },
+  rolActivo:      { backgroundColor: '#991B1B' },
   rolTexto:       { fontWeight: '600', color: '#0F172A', fontSize: 13 },
   rolTextoActivo: { fontWeight: '600', color: '#F8FAFC', fontSize: 13 },
 
@@ -377,10 +377,10 @@ const styles = StyleSheet.create({
   footerBtn: {
     padding: 20, paddingTop: 10,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderTopWidth: 1.5, borderTopColor: '#1E293B',
+    borderTopWidth: 1.5, borderTopColor: '#991B1B',
   },
   button: {
-    backgroundColor: '#1E293B', padding: 15,
+    backgroundColor: '#991B1B', padding: 15,
     borderRadius: 10, alignItems: 'center',
   },
   buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 15 },
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   exitoContenedor: {
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
     padding: 14, margin: 16, borderRadius: 10,
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#991B1B',
   },
   exitoTexto: { color: '#16A34A', fontWeight: '600', textAlign: 'center', fontSize: 14 },
 });

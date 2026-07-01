@@ -8,10 +8,10 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_URL      = 'http://192.168.137.9/doto/api/productos.php';
-const API_CARRITO  = 'http://192.168.137.9/doto/api/carrito.php';
-const API_PEDIDOS  = 'http://192.168.137.9/doto/api/pedidos.php';
-const API_BASE     = 'http://192.168.137.9/doto/';
+const API_URL      = 'http://192.168.40.8/doto/api/productos.php';
+const API_CARRITO  = 'http://192.168.40.8/doto/api/carrito.php';
+const API_PEDIDOS  = 'http://192.168.40.8/doto/api/pedidos.php';
+const API_BASE     = 'http://192.168.40.8/doto/';
 
 type Producto = {
   id_producto: number;
@@ -316,17 +316,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 14, paddingVertical: 12,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#1E40AF',
   },
   btnVolver: {
-    backgroundColor: '#1E293B', borderRadius: 8,
+    backgroundColor: '#1E40AF', borderRadius: 8,
     paddingHorizontal: 12, paddingVertical: 4,
   },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 20, fontWeight: '600' },
   logoArea:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoCircle:  {
     width: 30, height: 30, borderRadius: 15,
-    backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#1E40AF', alignItems: 'center', justifyContent: 'center',
   },
   logoInitials: { color: '#F8FAFC', fontWeight: 'bold', fontSize: 10 },
   brand:        { color: '#0F172A', fontWeight: '700', fontSize: 15 },
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   carritoIcon:  { fontSize: 22 },
   carritoBadge: {
     position: 'absolute', top: 0, right: 0,
-    backgroundColor: '#1E293B', borderRadius: 8,
+    backgroundColor: '#1E40AF', borderRadius: 8,
     minWidth: 16, alignItems: 'center',
   },
   carritoBadgeText: { color: '#F8FAFC', fontSize: 10, fontWeight: 'bold', paddingHorizontal: 3 },
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   hero: {
     padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#1E293B',
+    borderBottomWidth: 1.5, borderBottomColor: '#1E40AF',
   },
   heroTitle: { color: '#0F172A', fontSize: 20, fontWeight: '700', marginBottom: 8 },
   heroDesc:  { color: '#64748B', fontSize: 12, lineHeight: 19 },
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   card: {
     width: '48%',
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderWidth: 1.5, borderColor: '#1E293B',
+    borderWidth: 1.5, borderColor: '#1E40AF',
     borderRadius: 12, padding: 10,
   },
   cardImg:            { width: '100%', height: 76, borderRadius: 8, marginBottom: 8 },
@@ -379,14 +379,14 @@ const styles = StyleSheet.create({
   estadoDispText:   { color: '#16A34A' },
   estadoAgotText:   { color: '#DC2626' },
 
-  btnAgregar:         { backgroundColor: '#1E293B', padding: 7, borderRadius: 6, alignItems: 'center' },
+  btnAgregar:         { backgroundColor: '#1E40AF', padding: 7, borderRadius: 6, alignItems: 'center' },
   btnAgregarDisabled: { backgroundColor: '#94A3B8' },
   btnAgregarText:     { color: '#F8FAFC', fontSize: 11, fontWeight: '600' },
 
   bottomNav: {
     flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 10,
     backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderTopWidth: 1.5, borderTopColor: '#1E293B',
+    borderTopWidth: 1.5, borderTopColor: '#1E40AF',
   },
   bnav:       { alignItems: 'center', gap: 2 },
   bnavIcon:   { fontSize: 18 },
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20, borderTopRightRadius: 20,
     padding: 20, maxHeight: '70%',
-    borderTopWidth: 1.5, borderColor: '#1E293B',
+    borderTopWidth: 1.5, borderColor: '#1E40AF',
   },
   modalHeader: {
     flexDirection: 'row', justifyContent: 'space-between',
@@ -421,6 +421,6 @@ const styles = StyleSheet.create({
   },
   carritoTotalLabel: { color: '#0F172A', fontWeight: 'bold', fontSize: 14 },
   carritoTotalValor: { color: '#0F172A', fontWeight: 'bold', fontSize: 16 },
-  btnPedir:          { backgroundColor: '#1E293B', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
+  btnPedir:          { backgroundColor: '#1E40AF', padding: 13, borderRadius: 8, alignItems: 'center', marginTop: 8 },
   btnPedirText:      { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 });
