@@ -5,7 +5,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const BASE = 'http://192.168.40.8/doto/api';
+const BASE = 'http://192.168.1.19/doto/api';
 
 type Rol = { id_rol: number; nombre_rol: string };
 
@@ -26,6 +26,7 @@ export default function EditarUsuarioScreen() {
   const [direccion, setDireccion] = useState('');
   const [idRol,     setIdRol]     = useState<number>(0);
   const [roles,     setRoles]     = useState<Rol[]>([]);
+  const [estado,    setEstado]    = useState<'Habilitado' | 'Inhabilitado'>('Habilitado');
   const [cargando,  setCargando]  = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [errorMsg,  setErrorMsg]  = useState('');
@@ -53,6 +54,7 @@ export default function EditarUsuarioScreen() {
       setTelefono(u.telefono   ?? '');
       setDireccion(u.direccion ?? '');
       setIdRol(Number(u.id_rol_fk) ?? 0);
+      setEstado(u.estado === 'Inhabilitado' ? 'Inhabilitado' : 'Habilitado');
       if (Array.isArray(resRoles.data)) setRoles(resRoles.data);
     } catch (e: any) {
       setErrorMsg(`Error al cargar: ${e?.message ?? 'desconocido'}`);
@@ -123,7 +125,7 @@ export default function EditarUsuarioScreen() {
       setGuardando(true);
       const res = await axios.post(`${BASE}/editarAdmin.php`, {
         id_usuario: Number(id),
-        nombre, documento, correo, telefono, direccion, id_rol: idRol,
+        nombre, documento, correo, telefono, direccion, id_rol: idRol, estado,
       }, { timeout: 8000 });
 
       if (res.data.mensaje) {
@@ -276,6 +278,34 @@ export default function EditarUsuarioScreen() {
           </View>
           {rolError !== '' && <Text style={styles.fieldHint}>{rolError}</Text>}
 
+          {/* ESTADO — Habilitar / Inhabilitar */}
+          <Text style={styles.label}>Estado del usuario:</Text>
+          <View style={styles.rolContainer}>
+            <TouchableOpacity
+              style={[
+                styles.rolBtn,
+                estado === 'Habilitado' && styles.estadoHabilitadoActivo,
+              ]}
+              onPress={() => setEstado('Habilitado')}
+            >
+              <Text style={estado === 'Habilitado' ? styles.rolTextoActivo : styles.rolTexto}>
+                ✅ Habilitado
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.rolBtn,
+                estado === 'Inhabilitado' && styles.estadoInhabilitadoActivo,
+              ]}
+              onPress={() => setEstado('Inhabilitado')}
+            >
+              <Text style={estado === 'Inhabilitado' ? styles.rolTextoActivo : styles.rolTexto}>
+                🚫 Inhabilitado
+              </Text>
+            </TouchableOpacity>
+          </View>
+
         </ScrollView>
 
         {/* FOOTER */}
@@ -372,6 +402,10 @@ const styles = StyleSheet.create({
   rolActivo:      { backgroundColor: '#991B1B' },
   rolTexto:       { fontWeight: '600', color: '#0F172A', fontSize: 13 },
   rolTextoActivo: { fontWeight: '600', color: '#F8FAFC', fontSize: 13 },
+
+  // Estado (Habilitar / Inhabilitar)
+  estadoHabilitadoActivo:   { backgroundColor: '#16A34A', borderColor: '#16A34A' },
+  estadoInhabilitadoActivo: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
 
   // Footer
   footerBtn: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { router } from 'expo-router';
 import {
   TextInput, TouchableOpacity, Text, StyleSheet,
@@ -7,7 +7,7 @@ import {
 import axios, { isAxiosError } from 'axios';
 import { sesion } from '../../constants/sesion';
 
-const API_URL = 'http://192.168.40.8/doto/api/login.php';
+const API_URL = 'http://192.168.1.19/doto/api/login.php';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -46,6 +46,8 @@ export default function LoginScreen() {
         else if (rol_lower === 'bodeguero') router.replace('/bodeguero/panel_bodeguero');
         else if (rol_lower === 'vendedor') router.replace('/vendedor/panel_vendedor');
         else if (rol_lower === 'cliente') router.replace('/cliente/panel_cliente');
+      } else if (res.data?.mensaje?.toLowerCase().includes('inhabilitado')) {
+        setMensaje('Error de inicio de sesión: este usuario ha sido inhabilitado');
       } else {
         setMensaje(res.data?.mensaje || 'Credenciales incorrectas');
       }

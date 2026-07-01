@@ -49,7 +49,7 @@ class Usuario {
 
         $stmt = $db->query("
             SELECT u.id_usuario, u.nombre, u.documento, u.correo,
-                   u.telefono, u.direccion, u.id_rol_fk, r.nombre_rol
+                   u.telefono, u.direccion, u.id_rol_fk, u.estado, r.nombre_rol
             FROM usuario u
             INNER JOIN rol r ON u.id_rol_fk = r.id_rol
             ORDER BY u.nombre ASC
@@ -65,7 +65,7 @@ class Usuario {
 
         $stmt = $db->prepare("
             SELECT u.id_usuario, u.nombre, u.documento, u.correo,
-                   u.telefono, u.direccion, u.id_rol_fk, r.nombre_rol
+                   u.telefono, u.direccion, u.id_rol_fk, u.estado, r.nombre_rol
             FROM usuario u
             INNER JOIN rol r ON u.id_rol_fk = r.id_rol
             WHERE u.id_usuario = ?
@@ -76,7 +76,7 @@ class Usuario {
     }
 
     // ── ACTUALIZAR USUARIO ───────────────────────────────────────────
-    public static function actualizar($id, $nombre, $documento, $correo, $telefono, $direccion, $id_rol) {
+    public static function actualizar($id, $nombre, $documento, $correo, $telefono, $direccion, $id_rol, $estado = 'Habilitado') {
 
         $db = DataBase::conectar();
 
@@ -94,11 +94,12 @@ class Usuario {
                 correo    = ?,
                 telefono  = ?,
                 direccion = ?,
-                id_rol_fk = ?
+                id_rol_fk = ?,
+                estado    = ?
             WHERE id_usuario = ?
         ");
 
-        return $stmt->execute([$nombre, $documento, $correo, $telefono, $direccion, $id_rol, $id]);
+        return $stmt->execute([$nombre, $documento, $correo, $telefono, $direccion, $id_rol, $estado, $id]);
     }
 
     // ── ACTUALIZAR CONTRASEÑA ────────────────────────────────────────
@@ -136,6 +137,9 @@ class Usuario {
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($usuario && password_verify($password, $usuario['password'])) {
+            if ($usuario['estado'] === 'Inhabilitado') {
+                return "inhabilitado";
+            }
             return $usuario;
         }
 

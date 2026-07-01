@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { sesion } from '../../../constants/sesion';
 
-const API_DEVOLUCIONES = 'http://192.168.40.8/doto/api/devoluciones.php';
+const API_DEVOLUCIONES = 'http://192.168.1.19/doto/api/devoluciones.php';
 
 type Devolucion = {
   id_devolucion: number;

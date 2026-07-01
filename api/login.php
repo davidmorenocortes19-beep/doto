@@ -12,7 +12,12 @@ if (!$data || !isset($data['username']) || !isset($data['password'])) {
 
 $user = Usuario::login($data['username'], $data['password']);
 
-if ($user) {
+if ($user === 'inhabilitado') {
+    echo json_encode([
+        "success" => false,
+        "mensaje" => "Error de inicio de sesión: estás inhabilitado en el sistema"
+    ]);
+} elseif ($user) {
     echo json_encode([
         "success" => true,
         "rol"     => $user['nombre_rol'],

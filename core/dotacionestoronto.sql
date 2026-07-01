@@ -16,6 +16,7 @@ telefono VARCHAR(20),
 password VARCHAR(255),
 direccion VARCHAR(150),
 id_rol_fk INT DEFAULT 2,
+estado ENUM('Habilitado','Inhabilitado') DEFAULT 'Habilitado' AFTER id_rol_fk;
 FOREIGN KEY(id_rol_fk) REFERENCES rol(id_rol)
 );
 
@@ -26,6 +27,7 @@ precio DECIMAL(10,2) NOT NULL,
 talla VARCHAR(10),
 color VARCHAR(30),
 imagen VARCHAR(255),
+inhabilitado TINYINT(1) DEFAULT 0,
 estado ENUM('Disponible','Agotado') DEFAULT 'Disponible'
 );
 

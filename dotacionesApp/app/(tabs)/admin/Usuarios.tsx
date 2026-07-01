@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList, ScrollView, Modal,
   StyleSheet, ActivityIndicator, Alert, Linking, ImageBackground } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import axios from 'axios';
 
-const API_URL  = 'http://192.168.40.8/doto/api/usuarios.php';
-const API_BASE = 'http://192.168.40.8/doto/api';
+const API_URL  = 'http://192.168.1.19/doto/api/usuarios.php';
+const API_BASE = 'http://192.168.1.19/doto/api';
 
 type Usuario = {
   id_usuario:  number;
@@ -17,6 +17,7 @@ type Usuario = {
   direccion:   string;
   id_rol_fk:   number;
   nombre_rol:  string;
+  estado:      string;
 };
 
 export default function UsuariosScreen() {
@@ -28,6 +29,7 @@ export default function UsuariosScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [filtroRol, setFiltroRol] = useState<string>('Todos');
+  const [filtroEstado, setFiltroEstado] = useState<string>('Todos');
 
   const cargarUsuarios = async () => {
     try {
@@ -49,12 +51,20 @@ export default function UsuariosScreen() {
     }
   };
 
-  useEffect(() => { cargarUsuarios(); }, []);
+  // ✅ Se ejecuta cada vez que la pantalla vuelve a estar en foco
+  // (por ejemplo, al regresar de EditarUsuario), no solo al montar.
+  useFocusEffect(
+    useCallback(() => {
+      cargarUsuarios();
+    }, [])
+  );
 
   const rolesDisponibles = useMemo(() => {
     const unicos = Array.from(new Set(usuarios.map(u => u.nombre_rol).filter(Boolean)));
     return ['Todos', ...unicos];
   }, [usuarios]);
+
+  const estadosDisponibles = ['Todos', 'Habilitado', 'Inhabilitado'];
 
   useEffect(() => {
     let resultado = [...usuarios];
@@ -73,12 +83,20 @@ export default function UsuariosScreen() {
       resultado = resultado.filter(u => u.nombre_rol === filtroRol);
     }
 
+    if (filtroEstado !== 'Todos') {
+      resultado = resultado.filter(u => u.estado === filtroEstado);
+    }
+
     setFiltrados(resultado);
-  }, [usuarios, busqueda, filtroRol]);
+  }, [usuarios, busqueda, filtroRol, filtroEstado]);
 
-  const filtrosActivos = filtroRol !== 'Todos' ? 1 : 0;
+  const filtrosActivos =
+    (filtroRol !== 'Todos' ? 1 : 0) + (filtroEstado !== 'Todos' ? 1 : 0);
 
-  const limpiarFiltros = () => { setFiltroRol('Todos'); };
+  const limpiarFiltros = () => {
+    setFiltroRol('Todos');
+    setFiltroEstado('Todos');
+  };
 
   const exportarPDF = async () => {
     try {
@@ -116,8 +134,20 @@ export default function UsuariosScreen() {
         <Text style={styles.detalle}>✉️  {item.correo}</Text>
         <Text style={styles.detalle}>📞 {item.telefono}</Text>
         <Text style={styles.detalle}>📍 {item.direccion}</Text>
-        <View style={styles.rolBadge}>
-          <Text style={styles.rolTexto}>{item.nombre_rol}</Text>
+
+        <View style={styles.badgesFila}>
+          <View style={styles.rolBadge}>
+            <Text style={styles.rolTexto}>{item.nombre_rol}</Text>
+          </View>
+
+          <View style={[
+            styles.estadoBadge,
+            item.estado === 'Inhabilitado' ? styles.estadoBadgeInhabilitado : styles.estadoBadgeHabilitado
+          ]}>
+            <Text style={styles.estadoTexto}>
+              {item.estado === 'Inhabilitado' ? '🚫 Inhabilitado' : '✅ Habilitado'}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -223,6 +253,13 @@ export default function UsuariosScreen() {
                     renderChip(r, filtroRol === r, () => setFiltroRol(r))
                   )}
                 </View>
+
+                <Text style={styles.filtrosTitulo}>Estado</Text>
+                <View style={styles.chipsWrap}>
+                  {estadosDisponibles.map(e =>
+                    renderChip(e, filtroEstado === e, () => setFiltroEstado(e))
+                  )}
+                </View>
               </ScrollView>
 
               <View style={styles.modalBotones}>
@@ -285,8 +322,16 @@ const styles = StyleSheet.create({
   infoBloque:  { marginBottom: 12 },
   nombre:      { fontSize: 16, fontWeight: '600', color: '#0F172A', marginBottom: 4 },
   detalle:     { color: '#64748B', fontSize: 13, marginBottom: 2 },
-  rolBadge:    { marginTop: 6, alignSelf: 'flex-start', backgroundColor: '#991B1B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+
+  badgesFila:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
+  rolBadge:    { alignSelf: 'flex-start', backgroundColor: '#991B1B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
   rolTexto:    { color: '#F8FAFC', fontWeight: '600', fontSize: 12 },
+
+  estadoBadge:              { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
+  estadoBadgeHabilitado:    { backgroundColor: '#16A34A' },
+  estadoBadgeInhabilitado:  { backgroundColor: '#DC2626' },
+  estadoTexto:              { color: '#F8FAFC', fontWeight: '600', fontSize: 12 },
+
   acciones:    { flexDirection: 'row', gap: 10 },
   btnEditar:   { flex: 1, backgroundColor: '#991B1B', padding: 10, borderRadius: 8, alignItems: 'center' },
   btnEliminar: { flex: 1, backgroundColor: '#DC2626', padding: 10, borderRadius: 8, alignItems: 'center' },

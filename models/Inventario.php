@@ -13,6 +13,7 @@ class Inventario {
                    p.nombre, p.precio, p.talla, p.color, p.estado
             FROM inventario i
             INNER JOIN producto p ON i.id_producto_fk = p.id_producto
+            WHERE i.inhabilitado = 0
             ORDER BY p.nombre ASC
         ");
 
@@ -126,5 +127,26 @@ class Inventario {
         ");
 
         return $stmt->execute([$id_producto, $cantidad_actual]);
+    }
+
+    // ── LISTAR INHABILITADOS ─────────────────────────────────────────
+    public static function listarInhabilitados() {
+        $db   = DataBase::conectar();
+        $stmt = $db->query("
+            SELECT i.id_inventario, i.id_producto_fk, p.nombre, p.precio,
+                p.talla, p.color, p.estado, i.cantidad_actual, i.stock_minimo
+            FROM inventario i
+            INNER JOIN producto p ON p.id_producto = i.id_producto_fk
+            WHERE i.inhabilitado = 1
+            ORDER BY p.nombre ASC
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // ── TOGGLE INHABILITADO ───────────────────────────────────────────
+    public static function toggleInhabilitado($id_inventario, $inhabilitado) {
+        $db   = DataBase::conectar();
+        $stmt = $db->prepare("UPDATE inventario SET inhabilitado = ? WHERE id_inventario = ?");
+        return $stmt->execute([$inhabilitado ? 1 : 0, $id_inventario]);
     }
 }

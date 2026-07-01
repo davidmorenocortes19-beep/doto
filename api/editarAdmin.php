@@ -29,6 +29,12 @@ if (!filter_var($body['correo'], FILTER_VALIDATE_EMAIL)) {
     responder(400, ['error' => 'El correo no tiene un formato válido']);
 }
 
+// ✅ Validar estado (opcional, si no llega se asume Habilitado)
+$estado = $body['estado'] ?? 'Habilitado';
+if (!in_array($estado, ['Habilitado', 'Inhabilitado'], true)) {
+    responder(400, ['error' => "El campo 'estado' debe ser 'Habilitado' o 'Inhabilitado'"]);
+}
+
 // ✅ Obtener el usuario para usar su documento original
 $usuario = Usuario::obtenerPorId((int) $body['id_usuario']);
 if (!$usuario) responder(404, ['error' => 'Usuario no encontrado']);
@@ -40,7 +46,8 @@ $resultado = Usuario::actualizar(
     trim($body['correo']),
     trim($body['telefono']),
     trim($body['direccion']),
-    (int) $body['id_rol']
+    (int) $body['id_rol'],
+    $estado                      // ✅ nuevo parámetro
 );
 
 if ($resultado === 'exist') {

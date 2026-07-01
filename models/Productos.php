@@ -12,6 +12,7 @@ class Producto {
         $stmt = $db->query("
             SELECT id_producto, nombre, precio, talla, color, imagen, estado
             FROM producto
+            WHERE inhabilitado = 0
             ORDER BY nombre ASC
         ");
 
@@ -100,4 +101,23 @@ class Producto {
         $stmt->execute([$estado]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // ── LISTAR INHABILITADOS ─────────────────────────────────────────
+public static function listarInhabilitados() {
+    $db   = DataBase::conectar();
+    $stmt = $db->query("
+        SELECT id_producto, nombre, precio, talla, color, imagen, estado
+        FROM producto
+        WHERE inhabilitado = 1
+        ORDER BY nombre ASC
+    ");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// ── TOGGLE INHABILITADO ───────────────────────────────────────────
+public static function toggleInhabilitado($id_producto, $inhabilitado) {
+    $db   = DataBase::conectar();
+    $stmt = $db->prepare("UPDATE producto SET inhabilitado = ? WHERE id_producto = ?");
+    return $stmt->execute([$inhabilitado ? 1 : 0, $id_producto]);
+}
 }
