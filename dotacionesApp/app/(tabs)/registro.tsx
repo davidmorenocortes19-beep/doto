@@ -44,6 +44,7 @@ export default function RegistroScreen() {
   const [rol, setRol] = useState('Cliente');
   const [mensaje, setMensaje] = useState('');
   const [cargando, setCargando] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const roles = ['Administrador', 'Cliente', 'Vendedor', 'Bodeguero'];
 
@@ -153,88 +154,171 @@ export default function RegistroScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay} />
-
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.card}>
           <Text style={styles.title}>Dotaciones Toronto</Text>
           <Text style={styles.subtitle}>Crea tu cuenta aquí</Text>
 
           {/* NOMBRE */}
-          <TextInput
-            placeholder="Nombre completo" placeholderTextColor="#94A3B8"
-            style={[styles.input, nombreError ? styles.inputError : null]}
-            onChangeText={handleNombre} value={nombre} autoCorrect={false}
-          />
+          <Text style={styles.label}>Nombre completo</Text>
+          <View
+            style={[
+              styles.inputOutline,
+              focusedField === 'nombre' && styles.inputOutlineFocused,
+              nombreError ? styles.inputOutlineError : null,
+            ]}
+          >
+            <TextInput
+              style={styles.inputField}
+              placeholder="Nombre completo"
+              placeholderTextColor="#9AA5B1"
+              onChangeText={handleNombre}
+              value={nombre}
+              autoCorrect={false}
+              onFocus={() => setFocusedField('nombre')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
           {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
           {nombre.trim().length >= 3 && nombreError === '' && (
             <Text style={styles.fieldOk}>✅ Nombre válido</Text>
           )}
 
           {/* DOCUMENTO */}
-          <TextInput
-            placeholder="Documento" placeholderTextColor="#94A3B8"
-            style={[styles.input, docError ? styles.inputError : null]}
-            keyboardType="numeric" onChangeText={handleDocumento}
-            value={documento} maxLength={15}
-          />
+          <Text style={styles.label}>Documento</Text>
+          <View
+            style={[
+              styles.inputOutline,
+              focusedField === 'documento' && styles.inputOutlineFocused,
+              docError ? styles.inputOutlineError : null,
+            ]}
+          >
+            <TextInput
+              style={styles.inputField}
+              placeholder="Documento"
+              placeholderTextColor="#9AA5B1"
+              keyboardType="numeric"
+              onChangeText={handleDocumento}
+              value={documento}
+              maxLength={15}
+              onFocus={() => setFocusedField('documento')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
           {docError !== '' && <Text style={styles.fieldHint}>{docError}</Text>}
           {documento.length >= 5 && docError === '' && (
             <Text style={styles.fieldOk}>✅ Documento válido</Text>
           )}
 
           {/* CORREO */}
-          <TextInput
-            placeholder="Correo electrónico" placeholderTextColor="#94A3B8"
-            style={[styles.input, correoError ? styles.inputError : null]}
-            keyboardType="email-address"
-            autoCapitalize="none" onChangeText={handleCorreo} value={correo}
-          />
+          <Text style={styles.label}>Correo electrónico</Text>
+          <View
+            style={[
+              styles.inputOutline,
+              focusedField === 'correo' && styles.inputOutlineFocused,
+              correoError ? styles.inputOutlineError : null,
+            ]}
+          >
+            <TextInput
+              style={styles.inputField}
+              placeholder="tu@correo.com"
+              placeholderTextColor="#9AA5B1"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onChangeText={handleCorreo}
+              value={correo}
+              onFocus={() => setFocusedField('correo')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
           {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
           {correo !== '' && correoError === '' && (
             <Text style={styles.fieldOk}>✅ Correo válido</Text>
           )}
 
           {/* TELÉFONO */}
-          <TextInput
-            placeholder="Teléfono" placeholderTextColor="#94A3B8"
-            style={[styles.input, telError ? styles.inputError : null]}
-            keyboardType="phone-pad" onChangeText={handleTelefono}
-            value={telefono} maxLength={10}
-          />
+          <Text style={styles.label}>Teléfono</Text>
+          <View
+            style={[
+              styles.inputOutline,
+              focusedField === 'telefono' && styles.inputOutlineFocused,
+              telError ? styles.inputOutlineError : null,
+            ]}
+          >
+            <TextInput
+              style={styles.inputField}
+              placeholder="Teléfono"
+              placeholderTextColor="#9AA5B1"
+              keyboardType="phone-pad"
+              onChangeText={handleTelefono}
+              value={telefono}
+              maxLength={10}
+              onFocus={() => setFocusedField('telefono')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
           {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
           {telefono.length >= 7 && telError === '' && (
             <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
           )}
 
           {/* DIRECCIÓN */}
-          <TextInput
-            placeholder="Dirección" placeholderTextColor="#94A3B8"
-            style={[styles.input, dirError ? styles.inputError : null]}
-            onChangeText={handleDireccion} value={direccion}
-          />
+          <Text style={styles.label}>Dirección</Text>
+          <View
+            style={[
+              styles.inputOutline,
+              focusedField === 'direccion' && styles.inputOutlineFocused,
+              dirError ? styles.inputOutlineError : null,
+            ]}
+          >
+            <TextInput
+              style={styles.inputField}
+              placeholder="Dirección"
+              placeholderTextColor="#9AA5B1"
+              onChangeText={handleDireccion}
+              value={direccion}
+              onFocus={() => setFocusedField('direccion')}
+              onBlur={() => setFocusedField(null)}
+            />
+          </View>
           {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
           {direccion.trim().length >= 5 && dirError === '' && (
             <Text style={styles.fieldOk}>✅ Dirección válida</Text>
           )}
 
           {/* CONTRASEÑA */}
-          <View style={[styles.inputWrapper, passError ? styles.inputError : null]}>
-            <TextInput
-              placeholder="Contraseña" placeholderTextColor="#94A3B8"
-              secureTextEntry={!mostrarPassword}
-              style={styles.inputPasswordInner}
-              onChangeText={handlePassword} value={password}
-            />
-            <TouchableOpacity
-              onPress={() => setMostrarPassword(!mostrarPassword)}
-              activeOpacity={0.6}
-              style={styles.eyeBtn}
-            >
-              <Text style={{ fontSize: 18 }}>
-                {mostrarPassword ? '🙈' : '👁️'}
-              </Text>
-            </TouchableOpacity>
+          <Text style={styles.label}>Contraseña</Text>
+          <View
+            style={[
+              styles.inputOutline,
+              focusedField === 'password' && styles.inputOutlineFocused,
+              passError ? styles.inputOutlineError : null,
+            ]}
+          >
+            <View style={styles.passwordRow}>
+              <TextInput
+                style={[styles.inputField, styles.passwordField]}
+                placeholder="••••••••"
+                placeholderTextColor="#9AA5B1"
+                secureTextEntry={!mostrarPassword}
+                onChangeText={handlePassword}
+                value={password}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
+              />
+              <TouchableOpacity
+                onPress={() => setMostrarPassword(!mostrarPassword)}
+                activeOpacity={0.6}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={styles.eyeIcon}>
+                  {mostrarPassword ? 'Ocultar' : 'Ver'}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
           {passError !== '' && <Text style={styles.fieldHint}>{passError}</Text>}
           {password !== '' && passError === '' && (
@@ -242,13 +326,14 @@ export default function RegistroScreen() {
           )}
 
           {/* ROL */}
-          <Text style={styles.label}>Selecciona tu rol:</Text>
+          <Text style={styles.label}>Selecciona tu rol</Text>
           <View style={styles.rolContainer}>
             {roles.map((r) => (
               <TouchableOpacity
                 key={r}
                 style={[styles.rolBtn, rol === r && styles.rolActivo]}
                 onPress={() => setRol(r)}
+                activeOpacity={0.85}
               >
                 <Text style={rol === r ? styles.rolTextoActivo : styles.rolTexto}>{r}</Text>
               </TouchableOpacity>
@@ -259,6 +344,7 @@ export default function RegistroScreen() {
             style={[styles.button, cargando && { opacity: 0.7 }]}
             onPress={registrar}
             disabled={cargando}
+            activeOpacity={0.85}
           >
             {cargando
               ? <ActivityIndicator color="#F8FAFC" />
@@ -276,66 +362,121 @@ export default function RegistroScreen() {
   );
 }
 
+const ACCENT = '#1E293B';
+const BORDER = 'rgba(100, 116, 139, 0.25)';
+const TEXT_DARK = '#0F172A';
+const TEXT_GRAY = '#64748B';
+
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  overlay: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+  background: {
+    flex: 1,
   },
-  scroll: { flexGrow: 1 },
-  container: {
-    flex: 1, justifyContent: 'center', padding: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0)',
-    margin: 16, borderRadius: 16,
-    borderWidth: 1.5, borderColor: '#1E293B',
-    marginTop: 50, marginBottom: 30,
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  title: { fontSize: 24, textAlign: 'center', marginBottom: 4, fontWeight: '700', color: '#0F172A' },
-  subtitle: { fontSize: 14, textAlign: 'center', color: '#64748B', marginBottom: 24 },
-
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    padding: 14, borderRadius: 10, marginBottom: 4,
-    borderWidth: 1.5, borderColor: '#1E293B', fontSize: 15, color: '#0F172A',
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderRadius: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 32,
+    marginVertical: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
-  inputError: { borderColor: '#DC2626', marginBottom: 0 },
-  fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk: { color: '#16A34A', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-
-  inputWrapper: {
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: TEXT_DARK,
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: TEXT_GRAY,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: TEXT_GRAY,
+    marginBottom: 6,
+    marginLeft: 2,
+  },
+  inputOutline: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 4,
+  },
+  inputOutlineFocused: {
+    borderColor: ACCENT,
+    borderWidth: 1.5,
+    paddingHorizontal: 13.5,
+    paddingVertical: 11.5,
+  },
+  inputOutlineError: {
+    borderColor: '#DC2626',
+  },
+  inputField: {
+    fontSize: 14,
+    color: TEXT_DARK,
+    padding: 0,
+    outlineStyle: 'none',
+  },
+  passwordRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderRadius: 10,
-    marginBottom: 4,
-    borderWidth: 1.5,
-    borderColor: '#1E293B',
   },
-  inputPasswordInner: {
+  passwordField: {
     flex: 1,
-    padding: 14,
-    fontSize: 15,
-    color: '#0F172A',
   },
-  eyeBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+  eyeIcon: {
+    fontSize: 12,
+    color: TEXT_GRAY,
+    fontWeight: '500',
+    paddingLeft: 8,
   },
+  fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 12, marginLeft: 4, marginTop: 4 },
+  fieldOk: { color: '#16A34A', fontSize: 12, marginBottom: 12, marginLeft: 4, marginTop: 4 },
 
-  label: { marginTop: 8, marginBottom: 8, fontWeight: '600', color: '#0F172A', fontSize: 13 },
-  rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
+  rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
   rolBtn: {
     flex: 1, minWidth: '45%', padding: 10, borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderWidth: 1.5, borderColor: '#1E293B', alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1, borderColor: BORDER, alignItems: 'center',
   },
-  rolActivo: { backgroundColor: '#1E293B' },
-  rolTexto: { fontWeight: '600', color: '#0F172A', fontSize: 13 },
+  rolActivo: { backgroundColor: ACCENT, borderColor: ACCENT },
+  rolTexto: { fontWeight: '600', color: TEXT_DARK, fontSize: 13 },
   rolTextoActivo: { fontWeight: '600', color: '#F8FAFC', fontSize: 13 },
 
-  button: { backgroundColor: '#1E293B', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 6 },
-  buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 15 },
+  button: {
+    backgroundColor: ACCENT,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 
-  mensaje: { marginTop: 14, textAlign: 'center', color: '#0F172A', fontSize: 13 },
-  linkLogin: { marginTop: 20, textAlign: 'center', color: '#102646', textDecorationLine: 'underline', fontSize: 14, fontWeight: '600' },
+  mensaje: { marginTop: 14, textAlign: 'center', color: TEXT_DARK, fontSize: 13 },
+  linkLogin: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: TEXT_GRAY,
+    textDecorationLine: 'underline',
+    fontSize: 13,
+  },
 });

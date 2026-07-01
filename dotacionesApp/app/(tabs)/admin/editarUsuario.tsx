@@ -38,6 +38,8 @@ export default function EditarUsuarioScreen() {
   const [dirError,    setDirError]    = useState('');
   const [rolError,    setRolError]    = useState('');
 
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
   useEffect(() => { if (id) cargarDatos(); }, [id]);
 
   const cargarDatos = async () => {
@@ -149,7 +151,7 @@ export default function EditarUsuarioScreen() {
   if (cargando) {
     return (
       <View style={styles.centrado}>
-        <ActivityIndicator size="large" color="#1E293B" />
+        <ActivityIndicator size="large" color="#991B1B" />
         <Text style={styles.centradoTexto}>Cargando usuario...</Text>
       </View>
     );
@@ -172,8 +174,6 @@ export default function EditarUsuarioScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay} />
-
       <View style={styles.container}>
 
         {/* HEADER */}
@@ -185,159 +185,210 @@ export default function EditarUsuarioScreen() {
           <View style={{ width: 70 }} />
         </View>
 
-        {exitoMsg ? (
-          <View style={styles.exitoContenedor}>
-            <Text style={styles.exitoTexto}>{exitoMsg}</Text>
-          </View>
-        ) : null}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.card}>
 
-        <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
+            {exitoMsg ? (
+              <View style={styles.exitoContenedor}>
+                <Text style={styles.exitoTexto}>{exitoMsg}</Text>
+              </View>
+            ) : null}
 
-          {/* NOMBRE */}
-          <TextInput
-            placeholder="Nombre completo"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, nombreError ? styles.inputError : null]}
-            onChangeText={handleNombre}
-            value={nombre}
-            autoCorrect={false}
-          />
-          {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
-          {nombre.trim().length >= 3 && nombreError === '' && (
-            <Text style={styles.fieldOk}>✅ Nombre válido</Text>
-          )}
+            {/* NOMBRE */}
+            <Text style={styles.label}>Nombre completo</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'nombre' && styles.inputOutlineFocused,
+                nombreError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Nombre completo"
+                placeholderTextColor="#9AA5B1"
+                onChangeText={handleNombre}
+                value={nombre}
+                autoCorrect={false}
+                onFocus={() => setFocusedField('nombre')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+            {nombre.trim().length >= 3 && nombreError === '' && (
+              <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+            )}
 
-          {/* DOCUMENTO — solo lectura */}
-          <TextInput
-            placeholder="Documento"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, styles.inputDeshabilitado]}
-            value={documento}
-            editable={false}
-            keyboardType="numeric"
-          />
-          <Text style={styles.nota}>* El documento no puede ser modificado</Text>
+            {/* DOCUMENTO — solo lectura */}
+            <Text style={styles.label}>Documento</Text>
+            <View style={[styles.inputOutline, styles.inputOutlineDeshabilitado]}>
+              <TextInput
+                style={[styles.inputField, styles.inputFieldDeshabilitado]}
+                placeholder="Documento"
+                placeholderTextColor="#9AA5B1"
+                value={documento}
+                editable={false}
+                keyboardType="numeric"
+              />
+            </View>
+            <Text style={styles.nota}>* El documento no puede ser modificado</Text>
 
-          {/* CORREO */}
-          <TextInput
-            placeholder="Correo electrónico"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, correoError ? styles.inputError : null]}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            onChangeText={handleCorreo}
-            value={correo}
-          />
-          {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
-          {correo !== '' && correoError === '' && (
-            <Text style={styles.fieldOk}>✅ Correo válido</Text>
-          )}
+            {/* CORREO */}
+            <Text style={styles.label}>Correo electrónico</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'correo' && styles.inputOutlineFocused,
+                correoError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="tu@correo.com"
+                placeholderTextColor="#9AA5B1"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={handleCorreo}
+                value={correo}
+                onFocus={() => setFocusedField('correo')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {correoError !== '' && <Text style={styles.fieldHint}>{correoError}</Text>}
+            {correo !== '' && correoError === '' && (
+              <Text style={styles.fieldOk}>✅ Correo válido</Text>
+            )}
 
-          {/* TELÉFONO */}
-          <TextInput
-            placeholder="Teléfono"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, telError ? styles.inputError : null]}
-            keyboardType="phone-pad"
-            onChangeText={handleTelefono}
-            value={telefono}
-            maxLength={15}
-          />
-          {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
-          {telefono.length >= 7 && telError === '' && (
-            <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
-          )}
+            {/* TELÉFONO */}
+            <Text style={styles.label}>Teléfono</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'telefono' && styles.inputOutlineFocused,
+                telError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Teléfono"
+                placeholderTextColor="#9AA5B1"
+                keyboardType="phone-pad"
+                onChangeText={handleTelefono}
+                value={telefono}
+                maxLength={15}
+                onFocus={() => setFocusedField('telefono')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {telError !== '' && <Text style={styles.fieldHint}>{telError}</Text>}
+            {telefono.length >= 7 && telError === '' && (
+              <Text style={styles.fieldOk}>✅ Teléfono válido</Text>
+            )}
 
-          {/* DIRECCIÓN */}
-          <TextInput
-            placeholder="Dirección"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, dirError ? styles.inputError : null]}
-            onChangeText={handleDireccion}
-            value={direccion}
-          />
-          {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
-          {direccion.trim().length >= 5 && dirError === '' && (
-            <Text style={styles.fieldOk}>✅ Dirección válida</Text>
-          )}
+            {/* DIRECCIÓN */}
+            <Text style={styles.label}>Dirección</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'direccion' && styles.inputOutlineFocused,
+                dirError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Dirección"
+                placeholderTextColor="#9AA5B1"
+                onChangeText={handleDireccion}
+                value={direccion}
+                onFocus={() => setFocusedField('direccion')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {dirError !== '' && <Text style={styles.fieldHint}>{dirError}</Text>}
+            {direccion.trim().length >= 5 && dirError === '' && (
+              <Text style={styles.fieldOk}>✅ Dirección válida</Text>
+            )}
 
-          {/* ROL */}
-          <Text style={styles.label}>Selecciona el rol:</Text>
-          <View style={styles.rolContainer}>
-            {roles.map(r => (
+            {/* ROL */}
+            <Text style={styles.label}>Selecciona el rol</Text>
+            <View style={styles.rolContainer}>
+              {roles.map(r => (
+                <TouchableOpacity
+                  key={r.id_rol}
+                  style={[styles.rolBtn, idRol === r.id_rol && styles.rolActivo]}
+                  onPress={() => { setIdRol(r.id_rol); setRolError(''); }}
+                  activeOpacity={0.85}
+                >
+                  <Text style={idRol === r.id_rol ? styles.rolTextoActivo : styles.rolTexto}>
+                    {r.nombre_rol}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {rolError !== '' && <Text style={styles.fieldHint}>{rolError}</Text>}
+
+            {/* ESTADO — Habilitar / Inhabilitar */}
+            <Text style={styles.label}>Estado del usuario</Text>
+            <View style={styles.rolContainer}>
               <TouchableOpacity
-                key={r.id_rol}
-                style={[styles.rolBtn, idRol === r.id_rol && styles.rolActivo]}
-                onPress={() => { setIdRol(r.id_rol); setRolError(''); }}
+                style={[
+                  styles.rolBtn,
+                  estado === 'Habilitado' && styles.estadoHabilitadoActivo,
+                ]}
+                onPress={() => setEstado('Habilitado')}
+                activeOpacity={0.85}
               >
-                <Text style={idRol === r.id_rol ? styles.rolTextoActivo : styles.rolTexto}>
-                  {r.nombre_rol}
+                <Text style={estado === 'Habilitado' ? styles.rolTextoActivo : styles.rolTexto}>
+                  Habilitado
                 </Text>
               </TouchableOpacity>
-            ))}
-          </View>
-          {rolError !== '' && <Text style={styles.fieldHint}>{rolError}</Text>}
 
-          {/* ESTADO — Habilitar / Inhabilitar */}
-          <Text style={styles.label}>Estado del usuario:</Text>
-          <View style={styles.rolContainer}>
-            <TouchableOpacity
-              style={[
-                styles.rolBtn,
-                estado === 'Habilitado' && styles.estadoHabilitadoActivo,
+              <TouchableOpacity
+                style={[
+                  styles.rolBtn,
+                  estado === 'Inhabilitado' && styles.estadoInhabilitadoActivo,
+                ]}
+                onPress={() => setEstado('Inhabilitado')}
+                activeOpacity={0.85}
+              >
+                <Text style={estado === 'Inhabilitado' ? styles.rolTextoActivo : styles.rolTexto}>
+                  Inhabilitado
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                guardando && { opacity: 0.6 },
+                pressed && { opacity: 0.8 },
               ]}
-              onPress={() => setEstado('Habilitado')}
+              onPress={guardar}
+              disabled={guardando}
             >
-              <Text style={estado === 'Habilitado' ? styles.rolTextoActivo : styles.rolTexto}>
-                ✅ Habilitado
-              </Text>
-            </TouchableOpacity>
+              {guardando
+                ? <ActivityIndicator color="#F8FAFC" />
+                : <Text style={styles.buttonText}>💾 GUARDAR CAMBIOS</Text>
+              }
+            </Pressable>
 
-            <TouchableOpacity
-              style={[
-                styles.rolBtn,
-                estado === 'Inhabilitado' && styles.estadoInhabilitadoActivo,
-              ]}
-              onPress={() => setEstado('Inhabilitado')}
-            >
-              <Text style={estado === 'Inhabilitado' ? styles.rolTextoActivo : styles.rolTexto}>
-                🚫 Inhabilitado
-              </Text>
-            </TouchableOpacity>
           </View>
-
         </ScrollView>
-
-        {/* FOOTER */}
-        <View style={styles.footerBtn}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              guardando && { opacity: 0.6 },
-              pressed && { opacity: 0.8 },
-            ]}
-            onPress={guardar}
-            disabled={guardando}
-          >
-            {guardando
-              ? <ActivityIndicator color="#F8FAFC" />
-              : <Text style={styles.buttonText}>💾 GUARDAR CAMBIOS</Text>
-            }
-          </Pressable>
-        </View>
-
       </View>
     </ImageBackground>
   );
 }
 
+const ACCENT = '#991B1B';
+const BORDER = 'rgba(153, 27, 27, 0.25)';
+const TEXT_DARK = '#0F172A';
+const TEXT_GRAY = '#64748B';
+
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  overlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-  },
   container: { flex: 1 },
 
   // Carga / error
@@ -346,11 +397,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   centradoTexto: {
-    color: '#0F172A', fontSize: 14, textAlign: 'center',
+    color: TEXT_DARK, fontSize: 14, textAlign: 'center',
     paddingHorizontal: 20, marginTop: 10,
   },
   btnReintentar: {
-    marginTop: 20, backgroundColor: '#991B1B',
+    marginTop: 20, backgroundColor: ACCENT,
     paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8,
   },
   btnReintentarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
@@ -359,71 +410,110 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
   },
-  titulo: { fontSize: 18, fontWeight: '600', color: '#0F172A' },
+  titulo: { fontSize: 18, fontWeight: '600', color: TEXT_DARK },
   btnVolver: {
-    padding: 8, backgroundColor: '#991B1B',
+    padding: 8, backgroundColor: ACCENT,
     borderRadius: 8, width: 70, alignItems: 'center',
   },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
 
-  // Formulario
-  form: { padding: 20, paddingBottom: 20 },
+  // Card / formulario
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    padding: 20,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderRadius: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
   label: {
-    marginTop: 8, marginBottom: 8,
-    fontWeight: '600', color: '#0F172A', fontSize: 13,
+    fontSize: 12,
+    fontWeight: '600',
+    color: TEXT_GRAY,
+    marginBottom: 6,
+    marginLeft: 2,
   },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    color: '#0F172A', padding: 14, borderRadius: 10,
-    marginBottom: 4, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 15,
+  inputOutline: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 4,
   },
-  inputError: { borderColor: '#DC2626', borderWidth: 1.5, marginBottom: 0 },
-  inputDeshabilitado: {
+  inputOutlineFocused: {
+    borderColor: ACCENT,
+    borderWidth: 1.5,
+    paddingHorizontal: 13.5,
+    paddingVertical: 11.5,
+  },
+  inputOutlineError: {
+    borderColor: '#DC2626',
+  },
+  inputOutlineDeshabilitado: {
     backgroundColor: '#F1F5F9',
-    color: '#64748B', borderColor: '#CBD5E1',
+    borderColor: '#CBD5E1',
+    marginBottom: 4,
+  },
+  inputField: {
+    fontSize: 14,
+    color: TEXT_DARK,
+    padding: 0,
+    outlineStyle: 'none',
+  },
+  inputFieldDeshabilitado: {
+    color: TEXT_GRAY,
   },
   nota: {
-    color: '#64748B', fontSize: 11,
-    marginBottom: 8, marginLeft: 4, fontStyle: 'italic',
+    color: TEXT_GRAY, fontSize: 11,
+    marginBottom: 12, marginLeft: 4, marginTop: 4, fontStyle: 'italic',
   },
-  fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 8, marginLeft: 4 },
-  fieldOk:   { color: '#16A34A', fontSize: 12, marginBottom: 8, marginLeft: 4 },
+  fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 12, marginLeft: 4, marginTop: 4 },
+  fieldOk:   { color: '#16A34A', fontSize: 12, marginBottom: 12, marginLeft: 4, marginTop: 4 },
 
-  // Roles
-  rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
+  // Roles / estado
+  rolContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
   rolBtn: {
     flex: 1, minWidth: '45%', padding: 10, borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    alignItems: 'center', borderWidth: 1.5, borderColor: '#991B1B',
+    backgroundColor: '#fff',
+    alignItems: 'center', borderWidth: 1, borderColor: BORDER,
   },
-  rolActivo:      { backgroundColor: '#991B1B' },
-  rolTexto:       { fontWeight: '600', color: '#0F172A', fontSize: 13 },
+  rolActivo:      { backgroundColor: ACCENT, borderColor: ACCENT },
+  rolTexto:       { fontWeight: '600', color: TEXT_DARK, fontSize: 13 },
   rolTextoActivo: { fontWeight: '600', color: '#F8FAFC', fontSize: 13 },
 
-  // Estado (Habilitar / Inhabilitar)
   estadoHabilitadoActivo:   { backgroundColor: '#16A34A', borderColor: '#16A34A' },
   estadoInhabilitadoActivo: { backgroundColor: '#DC2626', borderColor: '#DC2626' },
 
-  // Footer
-  footerBtn: {
-    padding: 20, paddingTop: 10,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderTopWidth: 1.5, borderTopColor: '#991B1B',
-  },
+  // Botón guardar
   button: {
-    backgroundColor: '#991B1B', padding: 15,
-    borderRadius: 10, alignItems: 'center',
+    backgroundColor: ACCENT,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 4,
   },
-  buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 15 },
+  buttonText: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
 
   // Éxito
   exitoContenedor: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    padding: 14, margin: 16, borderRadius: 10,
-    borderWidth: 1.5, borderColor: '#991B1B',
+    backgroundColor: '#fff',
+    padding: 14, marginBottom: 20, borderRadius: 10,
+    borderWidth: 1, borderColor: BORDER,
   },
   exitoTexto: { color: '#16A34A', fontWeight: '600', textAlign: 'center', fontSize: 14 },
 });

@@ -6,8 +6,8 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.40.8/doto/api/inventario.php';
-const PRODUCTOS_API_URL = 'http://192.168.40.8/doto/api/productos.php';
+const API_URL = 'http://192.168.1.19/doto/api/inventario.php';
+const PRODUCTOS_API_URL = 'http://192.168.1.19/doto/api/productos.php';
 
 type InventarioItem = {
   id_inventario: number;
@@ -49,6 +49,7 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const esEdicion = Boolean(idInventario);
 
@@ -175,9 +176,8 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
         style={styles.background}
         resizeMode="cover"
       >
-        <View style={styles.overlay} />
         <View style={styles.centrado}>
-          <ActivityIndicator size="large" color="#1E293B" />
+          <ActivityIndicator size="large" color="#991B1B" />
           <Text style={styles.cargandoTexto}>Cargando inventario...</Text>
         </View>
       </ImageBackground>
@@ -191,7 +191,6 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
         style={styles.background}
         resizeMode="cover"
       >
-        <View style={styles.overlay} />
         <View style={styles.centrado}>
           <Text style={styles.error}>{error}</Text>
           <TouchableOpacity onPress={cargarDatos} style={styles.btnReintentar}>
@@ -211,8 +210,6 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay} />
-
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.push(listadoRuta as any)} style={styles.btnVolver}>
@@ -222,159 +219,229 @@ export default function InventarioFormulario({ listadoRuta }: InventarioFormular
           <View style={{ width: 70 }} />
         </View>
 
-        <ScrollView contentContainerStyle={styles.formulario} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.card}>
 
-          <Text style={styles.label}>Producto</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Buscar producto por nombre, talla, color o ID..."
-            placeholderTextColor="#94A3B8"
-            value={productoBusqueda}
-            onChangeText={(text) => {
-              setProductoBusqueda(text);
-              setIdProducto('');
-            }}
-          />
-
-          {productosFiltrados.length > 0 ? (
-            <View style={styles.productosSelector}>
-              {productosFiltrados.map((producto) => {
-                const activo = idProducto === String(producto.id_producto);
-                return (
-                  <TouchableOpacity
-                    key={producto.id_producto}
-                    style={[styles.productoOpcion, activo && styles.productoOpcionActiva]}
-                    onPress={() => {
-                      setIdProducto(String(producto.id_producto));
-                      setProductoBusqueda(producto.nombre);
-                    }}
-                  >
-                    <Text style={[styles.productoNombre, activo && styles.productoNombreActivo]}>
-                      {producto.nombre}
-                    </Text>
-                    <Text style={[styles.productoDetalle, activo && styles.productoDetalleActivo]}>
-                      ID {producto.id_producto} | Talla {producto.talla || 'N/A'} | Color {producto.color || 'N/A'}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+            <Text style={styles.label}>Producto</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'busqueda' && styles.inputOutlineFocused,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Buscar producto por nombre, talla, color o ID..."
+                placeholderTextColor="#9AA5B1"
+                value={productoBusqueda}
+                onChangeText={(text) => {
+                  setProductoBusqueda(text);
+                  setIdProducto('');
+                }}
+                onFocus={() => setFocusedField('busqueda')}
+                onBlur={() => setFocusedField(null)}
+              />
             </View>
-          ) : (
-            <Text style={styles.sinProductos}>No hay productos disponibles para registrar</Text>
-          )}
 
-          {idProducto !== '' && (
-            <Text style={styles.productoSeleccionado}>✅ Producto seleccionado: ID {idProducto}</Text>
-          )}
+            {productosFiltrados.length > 0 ? (
+              <View style={styles.productosSelector}>
+                {productosFiltrados.map((producto) => {
+                  const activo = idProducto === String(producto.id_producto);
+                  return (
+                    <TouchableOpacity
+                      key={producto.id_producto}
+                      style={[styles.productoOpcion, activo && styles.productoOpcionActiva]}
+                      onPress={() => {
+                        setIdProducto(String(producto.id_producto));
+                        setProductoBusqueda(producto.nombre);
+                      }}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={[styles.productoNombre, activo && styles.productoNombreActivo]}>
+                        {producto.nombre}
+                      </Text>
+                      <Text style={[styles.productoDetalle, activo && styles.productoDetalleActivo]}>
+                        ID {producto.id_producto} | Talla {producto.talla || 'N/A'} | Color {producto.color || 'N/A'}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ) : (
+              <Text style={styles.sinProductos}>No hay productos disponibles para registrar</Text>
+            )}
 
-          <Text style={styles.label}>Cantidad actual</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Cantidad actual"
-            placeholderTextColor="#94A3B8"
-            keyboardType="numeric"
-            value={cantidadActual}
-            onChangeText={(text) => setCantidadActual(text.replace(/[^0-9]/g, ''))}
-          />
+            {idProducto !== '' && (
+              <Text style={styles.productoSeleccionado}>✅ Producto seleccionado: ID {idProducto}</Text>
+            )}
 
-          <Text style={styles.label}>Stock mínimo</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Stock mínimo"
-            placeholderTextColor="#94A3B8"
-            keyboardType="numeric"
-            value={stockMinimo}
-            onChangeText={(text) => setStockMinimo(text.replace(/[^0-9]/g, ''))}
-          />
+            <Text style={styles.label}>Cantidad actual</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'cantidad' && styles.inputOutlineFocused,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Cantidad actual"
+                placeholderTextColor="#9AA5B1"
+                keyboardType="numeric"
+                value={cantidadActual}
+                onChangeText={(text) => setCantidadActual(text.replace(/[^0-9]/g, ''))}
+                onFocus={() => setFocusedField('cantidad')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
 
-          {mensaje !== '' && <Text style={styles.mensaje}>{mensaje}</Text>}
+            <Text style={styles.label}>Stock mínimo</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'stock' && styles.inputOutlineFocused,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Stock mínimo"
+                placeholderTextColor="#9AA5B1"
+                keyboardType="numeric"
+                value={stockMinimo}
+                onChangeText={(text) => setStockMinimo(text.replace(/[^0-9]/g, ''))}
+                onFocus={() => setFocusedField('stock')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
 
-          <TouchableOpacity
-            style={[styles.btnGuardar, guardando && { opacity: 0.7 }]}
-            onPress={guardarInventario}
-            disabled={guardando}
-          >
-            {guardando
-              ? <ActivityIndicator color="#F8FAFC" />
-              : <Text style={styles.btnGuardarTexto}>{esEdicion ? 'Actualizar' : 'Registrar'}</Text>}
-          </TouchableOpacity>
+            {mensaje !== '' && <Text style={styles.mensaje}>{mensaje}</Text>}
 
-          <TouchableOpacity style={styles.btnCancelar} onPress={() => router.push(listadoRuta as any)}>
-            <Text style={styles.btnCancelarTexto}>Cancelar</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btnGuardar, guardando && { opacity: 0.7 }]}
+              onPress={guardarInventario}
+              disabled={guardando}
+              activeOpacity={0.85}
+            >
+              {guardando
+                ? <ActivityIndicator color="#F8FAFC" />
+                : <Text style={styles.btnGuardarTexto}>{esEdicion ? 'Actualizar' : 'Registrar'}</Text>}
+            </TouchableOpacity>
 
+            <TouchableOpacity style={styles.btnCancelar} onPress={() => router.push(listadoRuta as any)}>
+              <Text style={styles.btnCancelarTexto}>Cancelar</Text>
+            </TouchableOpacity>
+
+          </View>
         </ScrollView>
       </View>
     </ImageBackground>
   );
 }
 
+const ACCENT = '#991B1B';
+const BORDER = 'rgba(153, 27, 27, 0.25)';
+const TEXT_DARK = '#0F172A';
+const TEXT_GRAY = '#64748B';
+
 const styles = StyleSheet.create({
   background: { flex: 1 },
-  overlay: {
-    position: 'absolute',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-  },
   container: { flex: 1 },
   centrado: {
     flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20,
   },
-  cargandoTexto: { color: '#0F172A', marginTop: 10, fontSize: 14 },
+  cargandoTexto: { color: TEXT_DARK, marginTop: 10, fontSize: 14 },
 
   // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: 16, paddingTop: 50,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5, borderBottomColor: '#991B1B',
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
   },
-  titulo:         { fontSize: 18, fontWeight: '600', color: '#0F172A' },
-  btnVolver:      { padding: 8, backgroundColor: '#991B1B', borderRadius: 8, width: 70, alignItems: 'center' },
+  titulo:         { fontSize: 18, fontWeight: '600', color: TEXT_DARK },
+  btnVolver:      { padding: 8, backgroundColor: ACCENT, borderRadius: 8, width: 70, alignItems: 'center' },
   btnVolverTexto: { color: '#F8FAFC', fontSize: 13, fontWeight: '600' },
 
-  // Formulario
-  formulario: { padding: 16, paddingBottom: 40 },
-  label: {
-    color: '#0F172A', fontSize: 13, fontWeight: '600',
-    marginBottom: 6, marginTop: 12,
+  // Card / formulario
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    padding: 20,
   },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    color: '#0F172A', padding: 12, borderRadius: 10,
-    marginBottom: 8, borderWidth: 1.5, borderColor: '#991B1B', fontSize: 14,
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderRadius: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: TEXT_GRAY,
+    marginBottom: 6,
+    marginTop: 12,
+  },
+  inputOutline: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 8,
+  },
+  inputOutlineFocused: {
+    borderColor: ACCENT,
+    borderWidth: 1.5,
+    paddingHorizontal: 13.5,
+    paddingVertical: 11.5,
+  },
+  inputField: {
+    fontSize: 14,
+    color: TEXT_DARK,
+    padding: 0,
+    outlineStyle: 'none',
   },
 
   // Selector de productos
   productosSelector: { marginBottom: 8, gap: 6 },
   productoOpcion: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderWidth: 1.5, borderColor: '#991B1B',
+    backgroundColor: '#fff',
+    borderWidth: 1, borderColor: BORDER,
     borderRadius: 10, padding: 10,
   },
-  productoOpcionActiva: { backgroundColor: '#991B1B', borderColor: '#991B1B' },
-  productoNombre:       { color: '#0F172A', fontWeight: '600', fontSize: 13 },
+  productoOpcionActiva: { backgroundColor: ACCENT, borderColor: ACCENT },
+  productoNombre:       { color: TEXT_DARK, fontWeight: '600', fontSize: 13 },
   productoNombreActivo: { color: '#F8FAFC' },
-  productoDetalle:      { color: '#64748B', fontSize: 11, marginTop: 2 },
-  productoDetalleActivo:{ color: '#CBD5E1' },
+  productoDetalle:      { color: TEXT_GRAY, fontSize: 11, marginTop: 2 },
+  productoDetalleActivo:{ color: '#F1D9D9' },
   productoSeleccionado: { color: '#16A34A', fontSize: 12, marginBottom: 8, fontWeight: '600' },
-  sinProductos:         { color: '#64748B', fontSize: 12, textAlign: 'center', marginBottom: 8 },
+  sinProductos:         { color: TEXT_GRAY, fontSize: 12, textAlign: 'center', marginBottom: 8 },
 
   // Botones
   btnGuardar: {
-    backgroundColor: '#991B1B', padding: 14,
-    borderRadius: 10, alignItems: 'center', marginTop: 18,
+    backgroundColor: ACCENT, paddingVertical: 14,
+    borderRadius: 8, alignItems: 'center', marginTop: 18,
   },
   btnGuardarTexto: { color: '#F8FAFC', fontWeight: '600', fontSize: 14 },
   btnCancelar:     { padding: 12, alignItems: 'center', marginTop: 4 },
-  btnCancelarTexto:{ color: '#64748B', textDecorationLine: 'underline', fontSize: 13 },
+  btnCancelarTexto:{ color: TEXT_GRAY, textDecorationLine: 'underline', fontSize: 13 },
   btnReintentar:   {
-    backgroundColor: '#991B1B', paddingHorizontal: 16,
+    backgroundColor: ACCENT, paddingHorizontal: 16,
     paddingVertical: 10, borderRadius: 8, marginTop: 16,
   },
   btnReintentarTexto: { color: '#F8FAFC', fontWeight: '600' },
 
   // Feedback
-  mensaje: { color: '#0F172A', textAlign: 'center', marginTop: 8, fontSize: 13, fontWeight: '500' },
+  mensaje: { color: TEXT_DARK, textAlign: 'center', marginTop: 8, fontSize: 13, fontWeight: '500' },
   error:   { color: '#DC2626', textAlign: 'center', fontSize: 14, paddingHorizontal: 20 },
 });

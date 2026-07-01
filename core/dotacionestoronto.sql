@@ -36,6 +36,7 @@ id_inventario INT AUTO_INCREMENT PRIMARY KEY,
 id_producto_fk INT,
 cantidad_actual INT,
 stock_minimo INT,
+inhabilitado TINYINT(1) NOT NULL DEFAULT 0;
 FOREIGN KEY (id_producto_fk) REFERENCES producto(id_producto)
 );
 

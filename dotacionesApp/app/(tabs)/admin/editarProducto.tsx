@@ -27,6 +27,8 @@ export default function EditarProductoScreen() {
   const [tallaError,  setTallaError]  = useState('');
   const [colorError,  setColorError]  = useState('');
 
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
   useEffect(() => { if (id) cargarProducto(); }, [id]);
 
   const cargarProducto = async () => {
@@ -136,7 +138,7 @@ export default function EditarProductoScreen() {
   if (cargando) {
     return (
       <View style={styles.centrado}>
-        <ActivityIndicator size="large" color="#1E293B" />
+        <ActivityIndicator size="large" color="#991B1B" />
         <Text style={styles.centradoTexto}>Cargando producto...</Text>
       </View>
     );
@@ -159,8 +161,6 @@ export default function EditarProductoScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay} />
-
       <View style={styles.container}>
 
         {/* HEADER */}
@@ -172,137 +172,186 @@ export default function EditarProductoScreen() {
           <View style={{ width: 70 }} />
         </View>
 
-        {exitoMsg ? (
-          <View style={styles.exitoContenedor}>
-            <Text style={styles.exitoTexto}>{exitoMsg}</Text>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.card}>
+
+            {exitoMsg ? (
+              <View style={styles.exitoContenedor}>
+                <Text style={styles.exitoTexto}>{exitoMsg}</Text>
+              </View>
+            ) : null}
+
+            {/* NOMBRE */}
+            <Text style={styles.label}>Nombre del producto</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'nombre' && styles.inputOutlineFocused,
+                nombreError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Nombre del producto"
+                placeholderTextColor="#9AA5B1"
+                value={nombre}
+                onChangeText={handleNombre}
+                onFocus={() => setFocusedField('nombre')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
+            {nombre.trim().length >= 3 && nombreError === '' && (
+              <Text style={styles.fieldOk}>✅ Nombre válido</Text>
+            )}
+
+            {/* PRECIO */}
+            <Text style={styles.label}>Precio</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'precio' && styles.inputOutlineFocused,
+                precioError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Precio (ej: 25000)"
+                placeholderTextColor="#9AA5B1"
+                value={precio}
+                onChangeText={handlePrecio}
+                keyboardType="decimal-pad"
+                onFocus={() => setFocusedField('precio')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {precioError !== '' && <Text style={styles.fieldHint}>{precioError}</Text>}
+            {precio !== '' && !precioError && parseFloat(precio) > 0 && (
+              <Text style={styles.fieldOk}>✅ Precio válido</Text>
+            )}
+
+            {/* TALLA */}
+            <Text style={styles.label}>Talla</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'talla' && styles.inputOutlineFocused,
+                tallaError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Talla (ej: M, XL, 42...)"
+                placeholderTextColor="#9AA5B1"
+                value={talla}
+                onChangeText={handleTalla}
+                autoCapitalize="characters"
+                onFocus={() => setFocusedField('talla')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {tallaError !== '' && <Text style={styles.fieldHint}>{tallaError}</Text>}
+            {talla !== '' && tallaError === '' && (
+              <Text style={styles.fieldOk}>✅ Talla válida</Text>
+            )}
+
+            {/* COLOR */}
+            <Text style={styles.label}>Color</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'color' && styles.inputOutlineFocused,
+                colorError ? styles.inputOutlineError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="Color del producto"
+                placeholderTextColor="#9AA5B1"
+                value={color}
+                onChangeText={handleColor}
+                onFocus={() => setFocusedField('color')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+            {colorError !== '' && <Text style={styles.fieldHint}>{colorError}</Text>}
+            {color !== '' && colorError === '' && (
+              <Text style={styles.fieldOk}>✅ Color válido</Text>
+            )}
+
+            {/* IMAGEN */}
+            <Text style={styles.label}>Imagen</Text>
+            <View
+              style={[
+                styles.inputOutline,
+                focusedField === 'imagen' && styles.inputOutlineFocused,
+              ]}
+            >
+              <TextInput
+                style={styles.inputField}
+                placeholder="URL o ruta de imagen"
+                placeholderTextColor="#9AA5B1"
+                value={imagen}
+                onChangeText={setImagen}
+                autoCapitalize="none"
+                onFocus={() => setFocusedField('imagen')}
+                onBlur={() => setFocusedField(null)}
+              />
+            </View>
+
+            {/* ESTADO */}
+            <Text style={styles.label}>Estado</Text>
+            <View style={styles.estadoContenedor}>
+              {(['Disponible', 'Agotado'] as const).map(e => (
+                <TouchableOpacity
+                  key={e}
+                  style={[
+                    styles.estadoBtn,
+                    estado === e && (e === 'Disponible' ? styles.estadoBtnDisponible : styles.estadoBtnAgotado)
+                  ]}
+                  onPress={() => setEstado(e)}
+                  activeOpacity={0.85}
+                >
+                  <Text style={[styles.estadoBtnTexto, estado === e && styles.estadoBtnTextoActivo]}>
+                    {e}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.btnGuardar,
+                guardando && { opacity: 0.6 },
+                pressed && { opacity: 0.8 },
+              ]}
+              onPress={guardar}
+              disabled={guardando}
+            >
+              {guardando
+                ? <ActivityIndicator color="#F8FAFC" />
+                : <Text style={styles.btnGuardarTexto}>💾 GUARDAR CAMBIOS</Text>
+              }
+            </Pressable>
+
           </View>
-        ) : null}
-
-        <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
-
-          {/* NOMBRE */}
-          <TextInput
-            placeholder="Nombre del producto"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, nombreError ? styles.inputError : null]}
-            value={nombre}
-            onChangeText={handleNombre}
-          />
-          {nombreError !== '' && <Text style={styles.fieldHint}>{nombreError}</Text>}
-          {nombre.trim().length >= 3 && nombreError === '' && (
-            <Text style={styles.fieldOk}>✅ Nombre válido</Text>
-          )}
-
-          {/* PRECIO */}
-          <TextInput
-            placeholder="Precio (ej: 25000)"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, precioError ? styles.inputError : null]}
-            value={precio}
-            onChangeText={handlePrecio}
-            keyboardType="decimal-pad"
-          />
-          {precioError !== '' && <Text style={styles.fieldHint}>{precioError}</Text>}
-          {precio !== '' && !precioError && parseFloat(precio) > 0 && (
-            <Text style={styles.fieldOk}>✅ Precio válido</Text>
-          )}
-
-          {/* TALLA */}
-          <TextInput
-            placeholder="Talla (ej: M, XL, 42...)"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, tallaError ? styles.inputError : null]}
-            value={talla}
-            onChangeText={handleTalla}
-            autoCapitalize="characters"
-          />
-          {tallaError !== '' && <Text style={styles.fieldHint}>{tallaError}</Text>}
-          {talla !== '' && tallaError === '' && (
-            <Text style={styles.fieldOk}>✅ Talla válida</Text>
-          )}
-
-          {/* COLOR */}
-          <TextInput
-            placeholder="Color del producto"
-            placeholderTextColor="#94A3B8"
-            style={[styles.input, colorError ? styles.inputError : null]}
-            value={color}
-            onChangeText={handleColor}
-          />
-          {colorError !== '' && <Text style={styles.fieldHint}>{colorError}</Text>}
-          {color !== '' && colorError === '' && (
-            <Text style={styles.fieldOk}>✅ Color válido</Text>
-          )}
-
-          {/* IMAGEN */}
-          <TextInput
-            placeholder="URL o ruta de imagen"
-            placeholderTextColor="#94A3B8"
-            style={styles.input}
-            value={imagen}
-            onChangeText={setImagen}
-            autoCapitalize="none"
-          />
-
-          {/* ESTADO */}
-          <Text style={styles.label}>Estado</Text>
-          <View style={styles.estadoContenedor}>
-            {(['Disponible', 'Agotado'] as const).map(e => (
-              <TouchableOpacity
-                key={e}
-                style={[
-                  styles.estadoBtn,
-                  estado === e && (e === 'Disponible' ? styles.estadoBtnDisponible : styles.estadoBtnAgotado)
-                ]}
-                onPress={() => setEstado(e)}
-              >
-                <Text style={[styles.estadoBtnTexto, estado === e && styles.estadoBtnTextoActivo]}>
-                  {e}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
         </ScrollView>
-
-        {/* FOOTER */}
-        <View style={styles.footerBtn}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.btnGuardar,
-              guardando && { opacity: 0.6 },
-              pressed && { opacity: 0.8 },
-            ]}
-            onPress={guardar}
-            disabled={guardando}
-          >
-            {guardando
-              ? <ActivityIndicator color="#F8FAFC" />
-              : <Text style={styles.btnGuardarTexto}>💾 GUARDAR CAMBIOS</Text>
-            }
-          </Pressable>
-        </View>
-
       </View>
     </ImageBackground>
   );
 }
 
+const ACCENT = '#991B1B';
+const BORDER = 'rgba(153, 27, 27, 0.25)';
+const TEXT_DARK = '#0F172A';
+const TEXT_GRAY = '#64748B';
+
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-  },
-  container: {
-    flex: 1,
-  },
+  background: { flex: 1 },
+  container: { flex: 1 },
 
   // Pantallas de carga / error
   centrado: {
@@ -312,7 +361,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   centradoTexto: {
-    color: '#0F172A',
+    color: TEXT_DARK,
     fontSize: 14,
     textAlign: 'center',
     paddingHorizontal: 20,
@@ -320,7 +369,7 @@ const styles = StyleSheet.create({
   },
   btnReintentar: {
     marginTop: 20,
-    backgroundColor: '#991B1B',
+    backgroundColor: ACCENT,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -338,18 +387,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     paddingTop: 50,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderBottomWidth: 1.5,
-    borderBottomColor: '#991B1B',
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
   },
   titulo: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#0F172A',
+    color: TEXT_DARK,
   },
   btnVolver: {
     padding: 8,
-    backgroundColor: '#991B1B',
+    backgroundColor: ACCENT,
     borderRadius: 8,
     width: 70,
     alignItems: 'center',
@@ -360,70 +407,85 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Formulario
-  form: {
+  // Card / formulario
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
     padding: 20,
-    paddingBottom: 20,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderRadius: 16,
+    paddingHorizontal: 28,
+    paddingVertical: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
   },
   label: {
-    color: '#0F172A',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
+    color: TEXT_GRAY,
     marginBottom: 6,
-    marginTop: 8,
+    marginLeft: 2,
   },
-  input: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    color: '#0F172A',
-    padding: 14,
-    borderRadius: 10,
+  inputOutline: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     marginBottom: 4,
-    borderWidth: 1.5,
-    borderColor: '#991B1B',
-    fontSize: 15,
   },
-  inputError: {
+  inputOutlineFocused: {
+    borderColor: ACCENT,
+    borderWidth: 1.5,
+    paddingHorizontal: 13.5,
+    paddingVertical: 11.5,
+  },
+  inputOutlineError: {
     borderColor: '#DC2626',
-    borderWidth: 1.5,
-    marginBottom: 0,
   },
-  fieldHint: {
-    color: '#DC2626',
-    fontSize: 12,
-    marginBottom: 8,
-    marginLeft: 4,
+  inputField: {
+    fontSize: 14,
+    color: TEXT_DARK,
+    padding: 0,
+    outlineStyle: 'none',
   },
-  fieldOk: {
-    color: '#16A34A',
-    fontSize: 12,
-    marginBottom: 8,
-    marginLeft: 4,
-  },
+  fieldHint: { color: '#DC2626', fontSize: 12, marginBottom: 12, marginLeft: 4, marginTop: 4 },
+  fieldOk:   { color: '#16A34A', fontSize: 12, marginBottom: 12, marginLeft: 4, marginTop: 4 },
 
   // Estado
   estadoContenedor: {
     flexDirection: 'row',
     gap: 10,
-    marginTop: 4,
+    marginBottom: 20,
   },
   estadoBtn: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#991B1B',
+    borderWidth: 1,
+    borderColor: BORDER,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    backgroundColor: '#fff',
   },
   estadoBtnDisponible: {
-    backgroundColor: '#991B1B',
+    backgroundColor: ACCENT,
+    borderColor: ACCENT,
   },
   estadoBtnAgotado: {
     backgroundColor: '#DC2626',
     borderColor: '#DC2626',
   },
   estadoBtnTexto: {
-    color: '#0F172A',
+    color: TEXT_DARK,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -431,34 +493,28 @@ const styles = StyleSheet.create({
     color: '#F8FAFC',
   },
 
-  // Footer botón guardar
-  footerBtn: {
-    padding: 20,
-    paddingTop: 10,
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
-    borderTopWidth: 1.5,
-    borderTopColor: '#991B1B',
-  },
+  // Botón guardar
   btnGuardar: {
-    backgroundColor: '#991B1B',
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: ACCENT,
+    paddingVertical: 14,
+    borderRadius: 8,
     alignItems: 'center',
+    marginTop: 4,
   },
   btnGuardarTexto: {
     color: '#F8FAFC',
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 14,
   },
 
   // Éxito
   exitoContenedor: {
-    backgroundColor: 'rgba(255, 255, 255, 1.0)',
+    backgroundColor: '#fff',
     padding: 14,
-    margin: 16,
+    marginBottom: 20,
     borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: '#991B1B',
+    borderWidth: 1,
+    borderColor: BORDER,
   },
   exitoTexto: {
     color: '#16A34A',

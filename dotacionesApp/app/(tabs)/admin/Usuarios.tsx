@@ -145,7 +145,7 @@ export default function UsuariosScreen() {
             item.estado === 'Inhabilitado' ? styles.estadoBadgeInhabilitado : styles.estadoBadgeHabilitado
           ]}>
             <Text style={styles.estadoTexto}>
-              {item.estado === 'Inhabilitado' ? '🚫 Inhabilitado' : '✅ Habilitado'}
+              {item.estado === 'Inhabilitado' ? ' Inhabilitado' : ' Habilitado'}
             </Text>
           </View>
         </View>

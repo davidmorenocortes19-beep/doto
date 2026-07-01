@@ -48,7 +48,7 @@ export default function PanelAdmin() {
           {/* Barra de acceso */}
           <View style={[styles.accesoBar, { backgroundColor: ROL_LIGHT, borderColor: ROL_COLOR }]}>
             <Text style={[styles.accesoTexto, { color: ROL_COLOR }]}>
-              🔐 Nivel de acceso: <Text style={{ fontWeight: '700' }}>Total</Text>
+               Nivel de acceso: <Text style={{ fontWeight: '700' }}>Total</Text>
             </Text>
           </View>
         </View>
