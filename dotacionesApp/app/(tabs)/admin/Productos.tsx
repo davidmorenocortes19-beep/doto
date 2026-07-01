@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList, ScrollView, Modal,
   StyleSheet, ActivityIndicator, Alert, Linking, Image, ImageBackground } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import axios from 'axios';
 
 const API_URL      = 'http://192.168.1.19/doto/api/productos.php';
@@ -60,7 +60,13 @@ export default function ProductosScreen() {
     }
   };
 
-  useEffect(() => { cargarProductos(); }, [verInhabilitados]);
+  // Se ejecuta cada vez que la pantalla obtiene el foco (por ejemplo, al volver
+  // de editarProducto o agregarProducto), además de la primera vez que se monta.
+  useFocusEffect(
+    useCallback(() => {
+      cargarProductos();
+    }, [verInhabilitados])
+  );
 
   const tallasDisponibles = useMemo(() => {
     const unicas = Array.from(new Set(productos.map(p => p.talla).filter(Boolean)));

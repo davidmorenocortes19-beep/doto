@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList, ScrollView, Modal,
   StyleSheet, ActivityIndicator, Alert, Linking, ImageBackground
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import axios from 'axios';
 
 const API_URL = 'http://192.168.1.19/doto/api/inventario.php';
@@ -78,7 +78,13 @@ export default function InventarioListado({ volverA, formularioRuta }: Inventari
     }
   };
 
-  useEffect(() => { cargarInventario(); }, []);
+  // Se ejecuta al montar y también cada vez que la pantalla vuelve a tener foco
+  // (por ejemplo, al volver de registrar o editar un inventario).
+  useFocusEffect(
+    useCallback(() => {
+      cargarInventario();
+    }, [])
+  );
 
   const resumen = useMemo(() => {
     const agotados  = inventario.filter(i => Number(i.cantidad_actual) <= 0).length;
