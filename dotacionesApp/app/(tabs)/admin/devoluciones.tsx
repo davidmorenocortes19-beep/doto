@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_DEVOLUCIONES = 'http://192.168.1.19/doto/api/devoluciones.php';
+const API_DEVOLUCIONES = 'http://192.168.40.8/doto/api/devoluciones.php';
 
 type Devolucion = {
   id_devolucion:    number;

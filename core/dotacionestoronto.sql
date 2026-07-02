@@ -15,8 +15,8 @@ correo VARCHAR(100) UNIQUE,
 telefono VARCHAR(20),
 password VARCHAR(255),
 direccion VARCHAR(150),
+estado ENUM('Habilitado','Inhabilitado') DEFAULT 'Habilitado',
 id_rol_fk INT DEFAULT 2,
-estado ENUM('Habilitado','Inhabilitado') DEFAULT 'Habilitado' AFTER id_rol_fk;
 FOREIGN KEY(id_rol_fk) REFERENCES rol(id_rol)
 );
 
@@ -36,7 +36,7 @@ id_inventario INT AUTO_INCREMENT PRIMARY KEY,
 id_producto_fk INT,
 cantidad_actual INT,
 stock_minimo INT,
-inhabilitado TINYINT(1) NOT NULL DEFAULT 0;
+inhabilitado TINYINT(1) NOT NULL DEFAULT 0,
 FOREIGN KEY (id_producto_fk) REFERENCES producto(id_producto)
 );
 

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, FlatList, ScrollView, Modal,
-  StyleSheet, ActivityIndicator, Alert, Linking, Image, ImageBackground } from 'react-native';
+  StyleSheet, ActivityIndicator, Linking, Image, ImageBackground, RefreshControl,
+} from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import axios from 'axios';
 
-const API_URL      = 'http://192.168.1.19/doto/api/productos.php';
-const API_BASE     = 'http://192.168.1.19/doto/';
-const API_REPORTES = 'http://192.168.1.19/doto/api';
+const API_URL      = 'http://192.168.40.8/doto/api/productos.php';
+const API_BASE     = 'http://192.168.40.8/doto/';
+const API_REPORTES = 'http://192.168.40.8/doto/api';
 
 type Producto = {
   id_producto:  number;
@@ -17,7 +18,7 @@ type Producto = {
   color:        string;
   imagen?:      string;
   estado:       'Disponible' | 'Agotado';
-  inhabilitado?: number;
+  inhabilitado: number;
 };
 
 type FiltroEstado = 'Todos' | 'Disponible' | 'Agotado';
@@ -30,19 +31,42 @@ const RANGOS_PRECIO = [
   { key: 'r4',    label: '> $200.000',          test: (p: number) => p > 200000 },
 ];
 
+function confirmar(titulo: string, mensaje: string, onConfirmar: () => void) {
+  if (typeof window !== 'undefined') {
+    if (window.confirm(`${titulo}\n${mensaje}`)) onConfirmar();
+  } else {
+    const { Alert } = require('react-native');
+    Alert.alert(titulo, mensaje, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Confirmar', onPress: onConfirmar },
+    ]);
+  }
+}
+
+function notificar(titulo: string, mensaje: string) {
+  if (typeof window !== 'undefined') {
+    window.alert(`${titulo}\n${mensaje}`);
+  } else {
+    const { Alert } = require('react-native');
+    Alert.alert(titulo, mensaje);
+  }
+}
+
 export default function ProductosScreen() {
-  const [productos,    setProductos]    = useState<Producto[]>([]);
-  const [filtrados,    setFiltrados]    = useState<Producto[]>([]);
-  const [busqueda,     setBusqueda]     = useState('');
-  const [cargando,     setCargando]     = useState(false);
-  const [error,        setError]        = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
+  const [productos,        setProductos]        = useState<Producto[]>([]);
+  const [filtrados,        setFiltrados]        = useState<Producto[]>([]);
+  const [busqueda,         setBusqueda]         = useState('');
+  const [cargando,         setCargando]         = useState(false);
+  const [error,            setError]            = useState('');
+  const [modalVisible,     setModalVisible]     = useState(false);
   const [verInhabilitados, setVerInhabilitados] = useState(false);
 
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>('Todos');
   const [filtroTalla,  setFiltroTalla]  = useState<string>('Todas');
   const [filtroColor,  setFiltroColor]  = useState<string>('Todos');
   const [filtroPrecio, setFiltroPrecio] = useState<string>('Todos');
+
+  useFocusEffect(useCallback(() => { cargarProductos(); }, [verInhabilitados]));
 
   const cargarProductos = async () => {
     try {
@@ -59,14 +83,6 @@ export default function ProductosScreen() {
       setCargando(false);
     }
   };
-
-  // Se ejecuta cada vez que la pantalla obtiene el foco (por ejemplo, al volver
-  // de editarProducto o agregarProducto), además de la primera vez que se monta.
-  useFocusEffect(
-    useCallback(() => {
-      cargarProductos();
-    }, [verInhabilitados])
-  );
 
   const tallasDisponibles = useMemo(() => {
     const unicas = Array.from(new Set(productos.map(p => p.talla).filter(Boolean)));
@@ -115,39 +131,29 @@ export default function ProductosScreen() {
     setFiltroPrecio('Todos');
   };
 
-  const toggleInhabilitar = async (item: Producto) => {
-    const accion = item.inhabilitado ? 'habilitar' : 'inhabilitar';
-    try {
-      await axios.put(API_URL, {
-        id_producto:  item.id_producto,
-        inhabilitado: !item.inhabilitado,
-      }, { timeout: 5000 });
-      await cargarProductos();
-      Alert.alert('✅', `Producto ${accion === 'inhabilitar' ? 'inhabilitado' : 'habilitado'} correctamente`);
-    } catch {
-      Alert.alert('Error', `No se pudo ${accion} el producto`);
-    }
-  };
-
-  const eliminar = (id: number, nombre: string) => {
-    Alert.alert('Eliminar producto', `¿Deseas eliminar "${nombre}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar', style: 'destructive',
-        onPress: async () => {
-          try {
-            await axios.delete(`${API_URL}?id=${id}`, { timeout: 5000 });
-            cargarProductos();
-          } catch {
-            Alert.alert('Error', 'No se pudo eliminar el producto');
-          }
+  const toggleInhabilitar = (item: Producto) => {
+    const nuevoValor = item.inhabilitado === 1 ? 0 : 1;
+    const accion     = nuevoValor === 1 ? 'inhabilitar' : 'habilitar';
+    confirmar(
+      `${accion.charAt(0).toUpperCase() + accion.slice(1)} producto`,
+      `¿Deseas ${accion} "${item.nombre}"?`,
+      async () => {
+        try {
+          await axios.put(API_URL, {
+            id_producto:  item.id_producto,
+            inhabilitado: nuevoValor,
+          }, { timeout: 5000 });
+          await cargarProductos();
+          notificar('✅', `Producto ${nuevoValor === 1 ? 'inhabilitado' : 'habilitado'} correctamente`);
+        } catch {
+          notificar('Error', `No se pudo ${accion} el producto`);
         }
       }
-    ]);
+    );
   };
 
-  const exportarPDF   = async () => { try { await Linking.openURL(`${API_REPORTES}/reporteProductosPDF.php`); } catch { Alert.alert('Error', 'No se pudo abrir el reporte PDF'); } };
-  const exportarExcel = async () => { try { await Linking.openURL(`${API_REPORTES}/reporteProductosExcel.php`); } catch { Alert.alert('Error', 'No se pudo abrir el reporte Excel'); } };
+  const exportarPDF   = async () => { try { await Linking.openURL(`${API_REPORTES}/reporteProductosPDF.php`); }   catch { notificar('Error', 'No se pudo abrir el reporte PDF'); } };
+  const exportarExcel = async () => { try { await Linking.openURL(`${API_REPORTES}/reporteProductosExcel.php`); } catch { notificar('Error', 'No se pudo abrir el reporte Excel'); } };
 
   const obtenerImagen = (imagen?: string) => {
     if (!imagen) return '';
@@ -189,19 +195,10 @@ export default function ProductosScreen() {
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          style={[styles.btnEditar, { backgroundColor: item.inhabilitado ? '#166534' : '#854D0E' }]}
-          onPress={() => {
-            Alert.alert(
-              item.inhabilitado ? 'Habilitar producto' : 'Inhabilitar producto',
-              `¿Deseas ${item.inhabilitado ? 'habilitar' : 'inhabilitar'} "${item.nombre}"?`,
-              [
-                { text: 'Cancelar', style: 'cancel' },
-                { text: 'Confirmar', onPress: () => toggleInhabilitar(item) },
-              ]
-            );
-          }}
+          style={[styles.btnEditar, { backgroundColor: item.inhabilitado === 1 ? '#166534' : '#854D0E' }]}
+          onPress={() => toggleInhabilitar(item)}
         >
-          <Text style={styles.btnTexto}>{item.inhabilitado ? '✅ Habilitar' : '🚫 Inhabilitar'}</Text>
+          <Text style={styles.btnTexto}>{item.inhabilitado === 1 ? '✅ Habilitar' : '🚫 Inhabilitar'}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -224,11 +221,10 @@ export default function ProductosScreen() {
           ) : <View style={{ width: 70 }} />}
         </View>
 
-        {/* Barra inhabilitados + exportar */}
         <View style={styles.accionesBar}>
           <TouchableOpacity
             style={[styles.btnInhabilitados, verInhabilitados && styles.btnInhabilitadosActivo]}
-            onPress={() => { setVerInhabilitados(!verInhabilitados); setProductos([]); }}
+            onPress={() => { setVerInhabilitados(!verInhabilitados); setProductos([]); setFiltrados([]); }}
           >
             <Text style={[styles.btnInhabilitadosTexto, verInhabilitados && styles.btnInhabilitadosTextoActivo]}>
               {verInhabilitados ? '✅ Ver activos' : '🚫 Ver inhabilitados'}
@@ -240,6 +236,9 @@ export default function ProductosScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={styles.btnExportarSmall} onPress={exportarExcel}>
               <Text style={styles.btnExportarSmallTexto}>Excel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btnExportarSmall} onPress={cargarProductos}>
+              <Text style={styles.btnExportarSmallTexto}>↻ Recargar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -260,7 +259,9 @@ export default function ProductosScreen() {
         {cargando && <ActivityIndicator size="large" color="#991B1B" style={{ marginTop: 30 }} />}
         {error !== '' && <Text style={styles.error}>{error}</Text>}
         {!cargando && filtrados.length === 0 && error === '' && (
-          <Text style={styles.sinResultados}>{verInhabilitados ? 'No hay productos inhabilitados' : 'No se encontraron productos'}</Text>
+          <Text style={styles.sinResultados}>
+            {verInhabilitados ? 'No hay productos inhabilitados' : 'No se encontraron productos'}
+          </Text>
         )}
 
         <FlatList
@@ -268,8 +269,7 @@ export default function ProductosScreen() {
           keyExtractor={item => item.id_producto.toString()}
           renderItem={renderProducto}
           contentContainerStyle={styles.lista}
-          onRefresh={cargarProductos}
-          refreshing={cargando}
+          refreshControl={<RefreshControl refreshing={cargando} onRefresh={cargarProductos} />}
         />
 
         <Modal visible={modalVisible} animationType="slide" transparent onRequestClose={() => setModalVisible(false)}>
